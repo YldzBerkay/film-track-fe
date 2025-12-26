@@ -86,7 +86,7 @@
                 <div class="user-avatar-small"></div>
                 <div class="activity-meta">
                   <p class="activity-text">
-                    <span class="user-name">{{ activity.userId.nickname || activity.userId.username }}</span>
+                    <span class="user-name">{{ activity.userId.name || activity.userId.username }}</span>
                     @if (activity.type === 'movie_watched') {
                     watched
                     } @else if (activity.type === 'tv_episode_watched') {
@@ -378,7 +378,7 @@
           (click)="toggleFriendSelection(friend.id)">
           <div class="friend-avatar"></div>
           <div class="friend-info">
-            <span class="friend-nickname">{{ friend.nickname }}</span>
+            <span class="friend-nickname">{{ friend.name || friend.username }}</span>
             <span class="friend-username">@{{ friend.username }}</span>
           </div>
           <div class="friend-check">

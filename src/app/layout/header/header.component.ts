@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../../core/services/socket.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-header',
@@ -14,6 +15,8 @@ import { SocketService } from '../../core/services/socket.service';
 export class HeaderComponent {
     router = inject(Router);
     socketService = inject(SocketService);
+    authService = inject(AuthService);
+    user = this.authService.user;
 
     searchQuery = signal<string>('');
     showNotificationMenu = signal(false);

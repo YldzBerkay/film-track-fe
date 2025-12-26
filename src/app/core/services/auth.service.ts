@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 
 export interface RegisterRequest {
   username: string;
-  nickname: string;
   email: string;
   password: string;
 }
@@ -19,7 +18,9 @@ export interface AuthResponse {
   user: {
     id: string;
     username: string;
-    nickname: string;
+    name?: string;
+    avatar?: string;
+    banner?: string;
     email: string;
   };
   accessToken: string;
@@ -35,7 +36,9 @@ export interface ApiResponse<T> {
 export interface User {
   id: string;
   username: string;
-  nickname: string;
+  name?: string;
+  avatar?: string;
+  banner?: string;
   email: string;
   onboardingCompleted?: boolean;
   streak?: number;
@@ -195,6 +198,15 @@ export class AuthService {
       obs.next(false);
       obs.complete();
     });
+  }
+
+  updateUser(partialUser: Partial<User>): void {
+    const current = this.currentUser();
+    if (current) {
+      const updated = { ...current, ...partialUser };
+      this.currentUser.set(updated);
+      localStorage.setItem(this.userKey, JSON.stringify(updated));
+    }
   }
 
   isTokenExpired(token: string | null): boolean {

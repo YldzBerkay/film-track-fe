@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UserService, UserProfile } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -13,7 +14,7 @@ type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, MoodChartComponent, HeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, HeaderComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -40,8 +41,21 @@ export class ProfileComponent implements OnInit {
   // Followers/Following dialog state
   showUserListDialog = signal(false);
   userListType = signal<'followers' | 'following'>('followers');
-  userList = signal<Array<{ id: string; username: string; nickname: string }>>([]);
+  userList = signal<Array<{ id: string; username: string; name: string }>>([]);
   isUserListLoading = signal(false);
+
+  // Edit Profile state
+  showEditProfileDialog = signal(false);
+  editName = signal('');
+  editUsername = signal('');
+  editAvatar = signal('');
+  editBanner = signal('');
+  selectedFile: File | null = null;
+  selectedBannerFile: File | null = null;
+  isEditLoading = signal(false);
+  canChangeUsername = signal(true);
+  canChangeUsernameAt = signal<string | null>(null);
+
 
   readonly username = computed(() => {
     const param = this.route.snapshot.paramMap.get('username');
@@ -83,6 +97,14 @@ export class ProfileComponent implements OnInit {
           if (response.data.isFollowedByMe !== undefined) {
             this.isFollowing.set(response.data.isFollowedByMe);
           }
+          // Sync with AuthService if it's our own profile
+          if (this.isOwnProfile()) {
+            this.authService.updateUser({
+              name: response.data.user.name,
+              avatar: response.data.user.avatar || undefined,
+              banner: response.data.user.banner || undefined
+            });
+          }
         } else {
           this.error.set('Profile not found');
         }
@@ -103,6 +125,11 @@ export class ProfileComponent implements OnInit {
       next: (response) => {
         if (response.success && response.data) {
           this.profile.set(response.data);
+          this.authService.updateUser({
+            name: response.data.user.name,
+            avatar: response.data.user.avatar || undefined,
+            banner: response.data.user.banner || undefined
+          });
         } else {
           this.error.set('Failed to load profile');
         }
@@ -309,6 +336,132 @@ export class ProfileComponent implements OnInit {
         }
       },
       error: (err) => console.error('Failed to unfollow:', err)
+    });
+  }
+
+  openEditProfile(): void {
+    const profile = this.profile();
+    if (!profile) return;
+
+    this.editName.set(profile.user.name || '');
+    this.editUsername.set(profile.user.username);
+    this.editAvatar.set(profile.user.avatar || '');
+    this.editBanner.set(profile.user.banner || '');
+    this.selectedFile = null;
+    this.selectedBannerFile = null;
+
+    // Check if username can be changed
+    if (profile.user.canChangeUsernameAt) {
+      const canChangeAt = new Date(profile.user.canChangeUsernameAt);
+      if (canChangeAt > new Date()) {
+        this.canChangeUsername.set(false);
+        this.canChangeUsernameAt.set(profile.user.canChangeUsernameAt);
+      } else {
+        this.canChangeUsername.set(true);
+        this.canChangeUsernameAt.set(null);
+      }
+    } else {
+      this.canChangeUsername.set(true);
+      this.canChangeUsernameAt.set(null);
+    }
+
+    this.showEditProfileDialog.set(true);
+  }
+
+  onBannerSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size exceeds 2MB limit');
+        return;
+      }
+      this.selectedBannerFile = file;
+
+      // Update preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.editBanner.set(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 1 * 1024 * 1024) {
+        alert('File size exceeds 1MB limit');
+        return;
+      }
+      this.selectedFile = file;
+
+      // Update preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.editAvatar.set(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  closeEditProfile(): void {
+    this.showEditProfileDialog.set(false);
+    this.editName.set('');
+    this.editUsername.set('');
+    this.editAvatar.set('');
+    this.editBanner.set('');
+    this.selectedFile = null;
+    this.selectedBannerFile = null;
+  }
+
+  saveProfile(): void {
+    const profile = this.profile();
+    if (!profile) return;
+
+    this.isEditLoading.set(true);
+
+    const formData = new FormData();
+    let hasChanges = false;
+
+    if (this.editName() !== (profile.user.name || '')) {
+      formData.append('name', this.editName());
+      hasChanges = true;
+    }
+    if (this.canChangeUsername() && this.editUsername() !== profile.user.username) {
+      formData.append('username', this.editUsername());
+      hasChanges = true;
+    }
+    if (this.selectedFile) {
+      formData.append('avatar', this.selectedFile);
+      hasChanges = true;
+    }
+    if (this.selectedBannerFile) {
+      formData.append('banner', this.selectedBannerFile);
+      hasChanges = true;
+    }
+
+    if (!hasChanges) {
+      this.closeEditProfile();
+      this.isEditLoading.set(false);
+      return;
+    }
+
+    this.userService.updateProfile(formData).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Simplest is to reload the current profile to get synchronized data
+          this.loadCurrentProfile();
+          this.closeEditProfile();
+        } else {
+          alert(response.message);
+        }
+        this.isEditLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to update profile:', err);
+        alert(err.error?.message || 'Failed to update profile');
+        this.isEditLoading.set(false);
+      }
     });
   }
 }

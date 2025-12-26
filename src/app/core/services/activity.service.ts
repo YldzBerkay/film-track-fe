@@ -7,7 +7,7 @@ export interface Activity {
   userId: {
     _id: string;
     username: string;
-    nickname: string;
+    name: string;
   };
   type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating';
   mediaType: 'movie' | 'tv_show' | 'tv_episode';
@@ -47,7 +47,7 @@ export interface ApiResponse<T> {
 export class ActivityService {
   private readonly apiUrl = 'http://localhost:3000/api/activities';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getFeed(
     feedType: 'following' | 'friends' | 'global' = 'following',

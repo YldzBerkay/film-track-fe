@@ -34,44 +34,24 @@
       </div>
       }
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="username" class="form-label">Username</label>
-          <div class="input-wrapper">
-            <span class="material-symbols-outlined input-icon">alternate_email</span>
-            <input id="username" type="text" formControlName="username" class="form-input"
-              [class.error]="username?.invalid && username?.touched" placeholder="username" />
-          </div>
-          @if (username?.invalid && username?.touched) {
-          <div class="form-error">
-            @if (username?.errors?.['required']) {
-            Username is required
-            } @else if (username?.errors?.['minlength']) {
-            Min 3 characters
-            } @else if (username?.errors?.['pattern']) {
-            Letters, numbers, underscores only
-            }
-          </div>
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined input-icon">alternate_email</span>
+          <input id="username" type="text" formControlName="username" class="form-input"
+            [class.error]="username?.invalid && username?.touched" placeholder="Choose a username" />
+        </div>
+        @if (username?.invalid && username?.touched) {
+        <div class="form-error">
+          @if (username?.errors?.['required']) {
+          Username is required
+          } @else if (username?.errors?.['minlength']) {
+          Min 3 characters
+          } @else if (username?.errors?.['pattern']) {
+          Letters, numbers, underscores only
           }
         </div>
-
-        <div class="form-group">
-          <label for="nickname" class="form-label">Display Name</label>
-          <div class="input-wrapper">
-            <span class="material-symbols-outlined input-icon">person</span>
-            <input id="nickname" type="text" formControlName="nickname" class="form-input"
-              [class.error]="nickname?.invalid && nickname?.touched" placeholder="Your name" />
-          </div>
-          @if (nickname?.invalid && nickname?.touched) {
-          <div class="form-error">
-            @if (nickname?.errors?.['required']) {
-            Display name is required
-            } @else if (nickname?.errors?.['minlength']) {
-            Min 2 characters
-            }
-          </div>
-          }
-        </div>
+        }
       </div>
 
       <div class="form-group">

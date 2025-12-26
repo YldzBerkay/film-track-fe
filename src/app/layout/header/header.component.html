@@ -68,8 +68,13 @@
                 </div>
                 }
             </div>
+            @let currentUser = user();
             <div class="profile-avatar" (click)="router.navigate(['/profile'])">
+                @if (currentUser?.avatar) {
+                <img [src]="currentUser!.avatar" alt="Avatar" class="header-avatar-img">
+                } @else {
                 <div class="avatar-image"></div>
+                }
             </div>
         </div>
     </div>

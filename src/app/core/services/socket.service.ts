@@ -10,7 +10,7 @@ export interface Notification {
     fromUser: {
         id: string;
         username: string;
-        nickname: string;
+        name: string;
     };
     createdAt: string;
     read?: boolean;

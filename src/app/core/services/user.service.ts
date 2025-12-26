@@ -6,7 +6,9 @@ export interface UserProfile {
   user: {
     id: string;
     username: string;
-    nickname: string;
+    name?: string;
+    avatar: string | null;
+    banner: string | null;
     email: string;
     stats: {
       moviesWatched: number;
@@ -30,6 +32,8 @@ export interface UserProfile {
       current: number;
       lastLoginDate: string | null;
     };
+    usernameLastChanged: string | null;
+    canChangeUsernameAt: string | null;
     createdAt: string;
   };
   recentActivities: Array<{
@@ -56,7 +60,7 @@ export interface UserSearchResults {
   users: Array<{
     id: string;
     username: string;
-    nickname: string;
+    name?: string;
     avatar: string | null;
   }>;
   pagination: {
@@ -97,16 +101,20 @@ export class UserService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${userId}/follow`);
   }
 
-  getFollowers(userId: string): Observable<ApiResponse<Array<{ id: string; username: string; nickname: string }>>> {
-    return this.http.get<ApiResponse<Array<{ id: string; username: string; nickname: string }>>>(`${this.apiUrl}/${userId}/followers`);
+  getFollowers(userId: string): Observable<ApiResponse<Array<{ id: string; username: string; name: string }>>> {
+    return this.http.get<ApiResponse<Array<{ id: string; username: string; name: string }>>>(`${this.apiUrl}/${userId}/followers`);
   }
 
-  getFollowing(userId: string): Observable<ApiResponse<Array<{ id: string; username: string; nickname: string }>>> {
-    return this.http.get<ApiResponse<Array<{ id: string; username: string; nickname: string }>>>(`${this.apiUrl}/${userId}/following`);
+  getFollowing(userId: string): Observable<ApiResponse<Array<{ id: string; username: string; name: string }>>> {
+    return this.http.get<ApiResponse<Array<{ id: string; username: string; name: string }>>>(`${this.apiUrl}/${userId}/following`);
   }
 
   removeFollower(userId: string): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${userId}/follower`);
+  }
+
+  updateProfile(data: FormData): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.apiUrl}/profile/me`, data);
   }
 }
 

@@ -34,14 +34,6 @@ export class RegisterComponent {
             Validators.pattern(/^[a-zA-Z0-9_]+$/)
           ]
         ],
-        nickname: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.maxLength(50)
-          ]
-        ],
         email: ['', [Validators.required, Validators.email]],
         password: [
           '',
@@ -79,10 +71,10 @@ export class RegisterComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const { username, nickname, email, password } = this.registerForm.value;
+    const { username, email, password } = this.registerForm.value;
 
     this.authService
-      .register({ username, nickname, email, password })
+      .register({ username, email, password })
       .pipe(
         finalize(() => {
           this.isLoading.set(false);
@@ -112,9 +104,6 @@ export class RegisterComponent {
     return this.registerForm.get('username');
   }
 
-  get nickname() {
-    return this.registerForm.get('nickname');
-  }
 
   get email() {
     return this.registerForm.get('email');

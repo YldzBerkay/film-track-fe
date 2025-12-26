@@ -19,14 +19,19 @@
 
   <!-- Profile Hero Section -->
   <div class="profile-hero">
-    <div class="hero-banner"></div>
+    <div class="hero-banner"
+      [style.background-image]="profileData.user.banner ? 'url(' + profileData.user.banner + ')' : 'none'"></div>
     <div class="hero-content">
       <div class="profile-header">
         <div class="profile-avatar-section">
           <div class="profile-avatar-large">
+            @if (profileData.user.avatar) {
+            <img [src]="profileData.user.avatar" alt="Profile Avatar" class="avatar-img-large">
+            } @else {
             <div class="avatar-image"></div>
+            }
             @if (isOwnProfile()) {
-            <button class="edit-avatar-btn">
+            <button class="edit-avatar-btn" (click)="openEditProfile()">
               <span class="material-symbols-outlined">edit</span>
             </button>
             }
@@ -35,11 +40,11 @@
         <div class="profile-info">
           <div class="profile-title-section">
             <div>
-              <h1 class="profile-username">@{{ profileData.user.username }}</h1>
-              <p class="profile-bio">{{ profileData.user.nickname }}</p>
+              <h1 class="profile-username">{{ profileData.user.name || profileData.user.username }}</h1>
+              <p class="profile-bio">@{{ profileData.user.username }}</p>
             </div>
             @if (isOwnProfile()) {
-            <button class="edit-profile-btn">
+            <button class="edit-profile-btn" (click)="openEditProfile()">
               <span class="material-symbols-outlined">edit</span>
               <span>Edit Profile</span>
             </button>
@@ -231,7 +236,7 @@
               <span class="material-symbols-outlined">person</span>
             </div>
             <div class="user-info">
-              <span class="user-nickname">{{ user.nickname || user.username }}</span>
+              <span class="user-nickname">{{ user.name || user.username }}</span>
               <span class="user-username">@{{ user.username }}</span>
             </div>
           </div>
@@ -245,6 +250,103 @@
         }
       </div>
       }
+    </div>
+  </div>
+</div>
+}
+
+<!-- Edit Profile Dialog -->
+@if (showEditProfileDialog()) {
+<div class="user-list-dialog-backdrop" (click)="closeEditProfile()">
+  <div class="user-list-dialog edit-profile-dialog" (click)="$event.stopPropagation()">
+    <div class="user-list-dialog-header">
+      <h3>Edit Profile</h3>
+      <button class="dialog-close" (click)="closeEditProfile()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="edit-profile-body">
+      <!-- Avatar Section -->
+      <div class="form-group">
+        <label>Avatar URL</label>
+        <div class="avatar-input-wrapper">
+          <div class="avatar-preview">
+            @if (editAvatar()) {
+            <img [src]="editAvatar()" alt="Avatar preview" onError="this.style.display='none'">
+            } @else {
+            <div class="avatar-placeholder">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            }
+          </div>
+          <div class="avatar-upload-controls">
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
+            <button class="upload-btn" (click)="fileInput.click()" type="button">
+              <span class="material-symbols-outlined">upload_file</span>
+              {{ selectedFile ? 'Change Image' : 'Choose Image' }}
+            </button>
+            <p class="help-text">Max size: 1MB. JPG, PNG or WebP.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner Section -->
+      <div class="form-group">
+        <label>Banner Image</label>
+        <div class="avatar-input-wrapper">
+          <div class="banner-preview">
+            @if (editBanner()) {
+            <img [src]="editBanner()" alt="Banner preview" class="banner-preview-img"
+              onError="this.style.display='none'">
+            } @else {
+            <div class="banner-placeholder">
+              <span class="material-symbols-outlined">image</span>
+            </div>
+            }
+          </div>
+          <div class="avatar-upload-controls">
+            <input type="file" #bannerInput (change)="onBannerSelected($event)" accept="image/*" hidden>
+            <button class="upload-btn" (click)="bannerInput.click()" type="button">
+              <span class="material-symbols-outlined">upload_file</span>
+              {{ selectedBannerFile ? 'Change Banner' : 'Choose Banner' }}
+            </button>
+            <p class="help-text">Max size: 2MB. 1200x350px.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Name Section -->
+      <div class="form-group">
+        <label>Real Name</label>
+        <input type="text" [ngModel]="editName()" (ngModelChange)="editName.set($event)"
+          placeholder="Enter your full name..." class="form-input" maxlength="100">
+      </div>
+
+      <!-- Username Section -->
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" [ngModel]="editUsername()" (ngModelChange)="editUsername.set($event)"
+          placeholder="Choose a username..." class="form-input" maxlength="30" [disabled]="!canChangeUsername()">
+        @if (!canChangeUsername() && canChangeUsernameAt()) {
+        <p class="username-restriction-text">
+          <span class="material-symbols-outlined">schedule</span>
+          You can change your username on {{ canChangeUsernameAt() | date:'mediumDate' }}
+        </p>
+        }
+      </div>
+
+      <div class="dialog-actions">
+        <button class="cancel-btn" (click)="closeEditProfile()">Cancel</button>
+        <button class="save-btn" (click)="saveProfile()" [disabled]="isEditLoading()">
+          @if (isEditLoading()) {
+          <span class="spinner-small"></span>
+          Saving...
+          } @else {
+          Save Changes
+          }
+        </button>
+      </div>
     </div>
   </div>
 </div>

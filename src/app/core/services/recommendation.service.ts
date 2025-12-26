@@ -20,7 +20,7 @@ export interface FriendMealtimeRecommendation extends MealtimeRecommendation {
 export interface Friend {
     id: string;
     username: string;
-    nickname: string;
+    name: string;
 }
 
 interface ApiResponse<T> {
