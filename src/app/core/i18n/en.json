@@ -24,6 +24,35 @@
         "noUsers": "No users found.",
         "back": "Back"
     },
+    "watchlist": {
+        "title": "Watchlist",
+        "addToWatchlist": "Add to Watchlist",
+        "removeFromWatchlist": "Remove from Watchlist",
+        "inWatchlist": "In Watchlist",
+        "emptyWatchlist": "Your watchlist is empty",
+        "emptyWatchlistHint": "Add movies and TV shows you want to watch later",
+        "itemAdded": "Added to watchlist",
+        "itemRemoved": "Removed from watchlist",
+        "items": "items"
+    },
+    "watched": {
+        "title": "Watched",
+        "markAsWatched": "Mark as Watched",
+        "removeFromWatched": "Remove from Watched",
+        "alreadyWatched": "Already Watched",
+        "emptyWatched": "You haven't watched anything yet",
+        "emptyWatchedHint": "Start watching movies and TV shows to track your history",
+        "itemAdded": "Marked as watched",
+        "itemRemoved": "Removed from watched",
+        "totalWatchTime": "Total Watch Time",
+        "moviesWatched": "Movies Watched",
+        "tvShowsWatched": "TV Shows Watched",
+        "averageRating": "Average Rating",
+        "rateThis": "Rate this",
+        "yourRating": "Your Rating",
+        "hours": "hours",
+        "minutes": "minutes"
+    },
     "profile": {
         "profile": "Profile",
         "logout": "Logout",
@@ -100,7 +129,14 @@
         "confirm": "Confirm",
         "cancel": "Cancel",
         "close": "Close",
-        "charsMin": "{{length}} / {{min}} characters min"
+        "charsMin": "{{length}} / {{min}} characters min",
+        "createList": {
+            "title": "Create New List",
+            "nameLabel": "List Name",
+            "namePlaceholder": "e.g. Action Movies 2024",
+            "iconLabel": "Select Icon",
+            "create": "Create List"
+        }
     },
     "share": {
         "title": "Share Your CineTrack Mood",

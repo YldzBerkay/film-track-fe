@@ -24,6 +24,35 @@
         "noUsers": "Kullanıcı bulunamadı.",
         "back": "Geri"
     },
+    "watchlist": {
+        "title": "İzleyeceklerim",
+        "addToWatchlist": "İzleme Listesine Ekle",
+        "removeFromWatchlist": "İzleme Listesinden Kaldır",
+        "inWatchlist": "İzleme Listesinde",
+        "emptyWatchlist": "İzleme listeniz boş",
+        "emptyWatchlistHint": "Daha sonra izlemek istediğiniz film ve dizileri ekleyin",
+        "itemAdded": "İzleme listesine eklendi",
+        "itemRemoved": "İzleme listesinden kaldırıldı",
+        "items": "içerik"
+    },
+    "watched": {
+        "title": "İzlediklerim",
+        "markAsWatched": "İzlendi Olarak İşaretle",
+        "removeFromWatched": "İzlenenlerden Kaldır",
+        "alreadyWatched": "Zaten İzlendi",
+        "emptyWatched": "Henüz hiçbir şey izlemediniz",
+        "emptyWatchedHint": "Geçmişinizi takip etmek için film ve dizi izlemeye başlayın",
+        "itemAdded": "İzlendi olarak işaretlendi",
+        "itemRemoved": "İzlenenlerden kaldırıldı",
+        "totalWatchTime": "Toplam İzleme Süresi",
+        "moviesWatched": "İzlenen Filmler",
+        "tvShowsWatched": "İzlenen Diziler",
+        "averageRating": "Ortalama Puan",
+        "rateThis": "Puanla",
+        "yourRating": "Puanınız",
+        "hours": "saat",
+        "minutes": "dakika"
+    },
     "profile": {
         "profile": "Profil",
         "logout": "Çıkış Yap",
@@ -100,7 +129,14 @@
         "confirm": "Onayla",
         "cancel": "İptal",
         "close": "Kapat",
-        "charsMin": "{{length}} / {{min}} karakter min"
+        "charsMin": "{{length}} / {{min}} karakter min",
+        "createList": {
+            "title": "Yeni Liste Oluştur",
+            "nameLabel": "Liste Adı",
+            "namePlaceholder": "örn. Aksiyon Filmleri 2024",
+            "iconLabel": "İkon Seç",
+            "create": "Liste Oluştur"
+        }
     },
     "share": {
         "title": "CineTrack Ruh Halini Paylaş",

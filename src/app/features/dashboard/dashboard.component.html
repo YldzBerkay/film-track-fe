@@ -39,19 +39,62 @@
 
         <div class="lists-section">
           <div class="lists-header">
-            <h3 class="lists-title">My Lists</h3>
-            <button class="lists-add-btn">
+            <h3 class="lists-title">{{ 'nav.lists' | translate }}</h3>
+            <button class="lists-add-btn" (click)="openCreateListDialog()">
               <span class="material-symbols-outlined">add</span>
             </button>
           </div>
           <div class="lists-items">
-            <a class="list-item" href="#">
-              <div class="list-cover"></div>
+            <!-- Watched List -->
+            @if (watchedList(); as watched) {
+            <a class="list-item" routerLink="/lists/watched">
+              <div class="list-cover" [class.has-items]="watched.items.length > 0">
+                @if (watched.items.length > 0 && watched.items[0].posterPath) {
+                <img [src]="tmdbService.getPosterUrl(watched.items[0].posterPath)" alt="">
+                } @else {
+                <span class="material-symbols-outlined">visibility</span>
+                }
+              </div>
               <div class="list-info">
-                <p class="list-name">Watchlist</p>
-                <p class="list-count">0 films</p>
+                <p class="list-name">{{ 'watched.title' | translate }}</p>
+                <p class="list-count">{{ watched.items.length }} {{ 'watchlist.items' | translate }}</p>
               </div>
             </a>
+            }
+
+            <!-- Default Watchlist -->
+            @if (defaultWatchlist(); as watchlist) {
+            <a class="list-item" routerLink="/lists/watchlist">
+              <div class="list-cover" [class.has-items]="watchlist.items.length > 0">
+                @if (watchlist.items.length > 0 && watchlist.items[0].posterPath) {
+                <img [src]="tmdbService.getPosterUrl(watchlist.items[0].posterPath)" alt="">
+                } @else {
+                <span class="material-symbols-outlined">bookmark</span>
+                }
+              </div>
+              <div class="list-info">
+                <p class="list-name">{{ 'watchlist.title' | translate }}</p>
+                <p class="list-count">{{ watchlist.items.length }} {{ 'watchlist.items' | translate }}</p>
+              </div>
+            </a>
+            }
+
+            <!-- Custom Lists -->
+            @for (list of customWatchlists(); track list._id) {
+            <a class="list-item" [routerLink]="['/lists', list._id]">
+              <div class="list-cover" [class.has-items]="list.items.length > 0">
+                @if (list.items.length > 0 && list.items[0].posterPath) {
+                <img [src]="tmdbService.getPosterUrl(list.items[0].posterPath)" alt="">
+                } @else {
+                <span class="material-symbols-outlined">{{ list.icon || 'list' }}</span>
+                }
+              </div>
+              <div class="list-info">
+                <p class="list-name">{{ list.name }}</p>
+                <p class="list-count">{{ list.items.length }} {{ 'watchlist.items' | translate }}</p>
+              </div>
+            </a>
+            }
           </div>
         </div>
       </aside>
@@ -453,3 +496,9 @@
     </div>
   </div>
 </div>
+<app-create-list-dialog 
+  [isOpen]="showCreateListDialog()"
+  [isLoading]="isCreatingList()"
+  (close)="closeCreateListDialog()"
+  (create)="handleCreateList($event)">
+</app-create-list-dialog>

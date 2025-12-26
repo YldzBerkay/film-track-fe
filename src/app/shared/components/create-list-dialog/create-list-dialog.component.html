@@ -1,0 +1,41 @@
+<div class="dialog-backdrop" *ngIf="isOpen" [@backdropAnimation] (click)="onBackdropClick($event)">
+    <div class="dialog-modal" [@modalAnimation]>
+        <div class="dialog-header">
+            <h3 class="dialog-title">{{ 'dialog.createList.title' | translate }}</h3>
+            <button class="close-btn" (click)="onCancel()" *ngIf="!isLoading">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            <div class="input-group">
+                <label>{{ 'dialog.createList.nameLabel' | translate }}</label>
+                <input type="text" [ngModel]="listName()" (ngModelChange)="listName.set($event)"
+                    [placeholder]="'dialog.createList.namePlaceholder' | translate" class="dialog-input"
+                    [disabled]="isLoading" maxlength="50" autofocus>
+            </div>
+
+            <div class="input-group">
+                <label>{{ 'dialog.createList.iconLabel' | translate }}</label>
+                <div class="icon-grid">
+                    @for (icon of availableIcons; track icon) {
+                    <div class="icon-option" [class.selected]="selectedIcon() === icon" (click)="selectIcon(icon)">
+                        <span class="material-symbols-outlined">{{ icon }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-footer">
+            <button class="btn btn-secondary" (click)="onCancel()" [disabled]="isLoading">
+                {{ 'dialog.cancel' | translate }}
+            </button>
+            <button class="btn btn-primary" (click)="onSubmit()" [disabled]="!listName().trim() || isLoading">
+                <span class="material-symbols-outlined" *ngIf="!isLoading">add</span>
+                <div class="spinner-small" *ngIf="isLoading"></div>
+                {{ 'dialog.createList.create' | translate }}
+            </button>
+        </div>
+    </div>
+</div>
