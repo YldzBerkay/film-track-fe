@@ -1,263 +1,221 @@
 @if (isLoading()) {
-  <div class="loading-container">
-    <div class="loading">Loading profile...</div>
-  </div>
+<div class="loading-container">
+  <div class="loading">Loading profile...</div>
+</div>
 } @else if (error()) {
-  <div class="error-container">
-    <div class="error-message">{{ error() }}</div>
-    <button class="back-btn" (click)="router.navigate(['/dashboard'])" type="button">Go Back</button>
-  </div>
+<div class="error-container">
+  <div class="error-message">{{ error() }}</div>
+  <button class="back-btn" (click)="router.navigate(['/dashboard'])" type="button">Go Back</button>
+</div>
 } @else if (profile()) {
-  @let profileData = profile()!;
-  <div class="profile-container">
-    <!-- Navigation Header -->
-    <nav class="nav-header">
-      <div class="nav-content">
-        <div class="nav-left">
-          <div class="logo-section" (click)="router.navigate(['/dashboard'])">
-            <div class="logo-icon">
-              <span class="material-symbols-outlined">movie_filter</span>
-            </div>
-            <h2 class="logo-text">CineTrack</h2>
+@let profileData = profile()!;
+<div class="profile-container">
+  <!-- Floating Ambient Orbs -->
+  <div class="floating-orb floating-orb--primary"></div>
+  <div class="floating-orb floating-orb--accent"></div>
+  <div class="floating-orb floating-orb--secondary"></div>
+
+  <!-- Navigation Header -->
+  <nav class="nav-header">
+    <div class="nav-content">
+      <div class="nav-left">
+        <div class="logo-section" (click)="router.navigate(['/dashboard'])">
+          <div class="logo-icon">
+            <span class="material-symbols-outlined">movie_filter</span>
           </div>
-          <div class="nav-links">
-            <a class="nav-link" href="#">Movies</a>
-            <a class="nav-link" href="#">TV Shows</a>
-            <a class="nav-link" href="#">Community</a>
-            <a class="nav-link" href="#">Lists</a>
-          </div>
+          <h2 class="logo-text">CineTrack</h2>
         </div>
-        <div class="nav-right">
-          <div class="search-container">
-            <div class="search-icon">
-              <span class="material-symbols-outlined">search</span>
-            </div>
-            <input
-              type="text"
-              class="search-input"
-              placeholder="Search movies, people..."
-            />
+        <div class="nav-links">
+          <a class="nav-link" href="#">Movies</a>
+          <a class="nav-link" href="#">TV Shows</a>
+          <a class="nav-link" href="#">Community</a>
+          <a class="nav-link" href="#">Lists</a>
+        </div>
+      </div>
+      <div class="nav-right">
+        <div class="search-container">
+          <div class="search-icon">
+            <span class="material-symbols-outlined">search</span>
           </div>
-          <div class="profile-avatar-nav" (click)="router.navigate(['/profile'])">
+          <input type="text" class="search-input" placeholder="Search movies, people..." />
+        </div>
+        <div class="profile-avatar-nav" (click)="router.navigate(['/profile'])">
+          <div class="avatar-image"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile Hero Section -->
+  <div class="profile-hero">
+    <div class="hero-banner"></div>
+    <div class="hero-content">
+      <div class="profile-header">
+        <div class="profile-avatar-section">
+          <div class="profile-avatar-large">
             <div class="avatar-image"></div>
+            @if (isOwnProfile()) {
+            <button class="edit-avatar-btn">
+              <span class="material-symbols-outlined">edit</span>
+            </button>
+            }
+          </div>
+        </div>
+        <div class="profile-info">
+          <div class="profile-title-section">
+            <div>
+              <h1 class="profile-username">@{{ profileData.user.username }}</h1>
+              <p class="profile-bio">{{ profileData.user.nickname }}</p>
+            </div>
+            @if (isOwnProfile()) {
+            <button class="edit-profile-btn">
+              <span class="material-symbols-outlined">edit</span>
+              <span>Edit Profile</span>
+            </button>
+            }
           </div>
         </div>
       </div>
-    </nav>
-
-    <!-- Profile Hero Section -->
-    <div class="profile-hero">
-      <div class="hero-banner"></div>
-      <div class="hero-content">
-        <div class="profile-header">
-          <div class="profile-avatar-section">
-            <div class="profile-avatar-large">
-              <div class="avatar-image"></div>
-              @if (isOwnProfile()) {
-                <button class="edit-avatar-btn">
-                  <span class="material-symbols-outlined">edit</span>
-                </button>
-              }
-            </div>
-          </div>
-          <div class="profile-info">
-            <div class="profile-title-section">
-              <div>
-                <h1 class="profile-username">@{{ profileData.user.username }}</h1>
-                <p class="profile-bio">{{ profileData.user.nickname }}</p>
-              </div>
-              @if (isOwnProfile()) {
-                <button class="edit-profile-btn">
-                  <span class="material-symbols-outlined">edit</span>
-                  <span>Edit Profile</span>
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="stats-section">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-value">{{ profileData.user.stats.moviesWatched }}</span>
-          <div class="stat-label">
-            <span class="material-symbols-outlined">movie</span>
-            <span>Watched</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value">{{ profileData.reviewCount }}</span>
-          <div class="stat-label">
-            <span class="material-symbols-outlined">rate_review</span>
-            <span>Reviews</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value">{{ formatNumber(profileData.user.followersCount) }}</span>
-          <div class="stat-label">
-            <span class="material-symbols-outlined">group</span>
-            <span>Followers</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value">{{ profileData.user.followingCount }}</span>
-          <div class="stat-label">
-            <span class="material-symbols-outlined">person_add</span>
-            <span>Following</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs-section">
-      <div class="tabs-container">
-        <button
-          class="tab-item"
-          [class.active]="activeTab() === 'profile'"
-          (click)="onTabChange('profile')"
-          type="button"
-        >
-          <span>Profile</span>
-        </button>
-        <button
-          class="tab-item"
-          [class.active]="activeTab() === 'watchlist'"
-          (click)="onTabChange('watchlist')"
-          type="button"
-        >
-          <span>Watchlist</span>
-        </button>
-        <button
-          class="tab-item"
-          [class.active]="activeTab() === 'lists'"
-          (click)="onTabChange('lists')"
-          type="button"
-        >
-          <span>Lists</span>
-        </button>
-        <button
-          class="tab-item"
-          [class.active]="activeTab() === 'reviews'"
-          (click)="onTabChange('reviews')"
-          type="button"
-        >
-          <span>Reviews</span>
-        </button>
-        <button
-          class="tab-item"
-          [class.active]="activeTab() === 'likes'"
-          (click)="onTabChange('likes')"
-          type="button"
-        >
-          <span>Likes</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Content Section -->
-    <div class="content-section">
-      @if (activeTab() === 'profile') {
-        <!-- Mood Chart Section -->
-        @if (isOwnProfile()) {
-          <div class="mood-section">
-            <app-mood-chart
-              [moodData]="moodData()"
-              [isLoading]="isLoadingMood()"
-            ></app-mood-chart>
-          </div>
-        }
-        <!-- Favorites Section -->
-        @if (profileData.user.favoriteMovies.length > 0 || profileData.user.favoriteTvShows.length > 0) {
-          <div class="favorites-section">
-            <div class="section-header">
-              <h2 class="section-title">
-                <span class="material-symbols-outlined section-icon">favorite</span>
-                Director's Cut (Favorites)
-              </h2>
-              @if (isOwnProfile()) {
-                <button class="section-edit-btn">Edit</button>
-              }
-            </div>
-            <div class="favorites-grid">
-              @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
-                <div
-                  class="favorite-item"
-                  (click)="router.navigate(['/movies', movie.tmdbId])"
-                >
-                  <img
-                    [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')"
-                    [alt]="movie.title"
-                    class="favorite-poster"
-                  />
-                  <div class="favorite-overlay">
-                    <span class="material-symbols-outlined">visibility</span>
-                  </div>
-                </div>
-              }
-              @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
-                <div
-                  class="favorite-item"
-                  (click)="router.navigate(['/tv', show.tmdbId])"
-                >
-                  <img
-                    [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')"
-                    [alt]="show.name"
-                    class="favorite-poster"
-                  />
-                  <div class="favorite-overlay">
-                    <span class="material-symbols-outlined">visibility</span>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- Recent Activity Section -->
-        @if (profileData.recentActivities.length > 0) {
-          <div class="activity-section">
-            <div class="section-header">
-              <h2 class="section-title">
-                <span class="material-symbols-outlined section-icon">history</span>
-                Recent Activity
-              </h2>
-              <a class="section-view-all" href="#">
-                View all
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-            </div>
-            <div class="activity-carousel">
-              @for (activity of profileData.recentActivities; track activity._id) {
-                <div class="activity-card">
-                  <div class="activity-image">
-                    <img
-                      [src]="tmdbService.getPosterUrl(activity.mediaPosterPath, 'w500')"
-                      [alt]="activity.mediaTitle"
-                    />
-                    @if (activity.rating) {
-                      <div class="activity-rating-badge">
-                        <span class="material-symbols-outlined">star</span>
-                        <span>{{ activity.rating.toFixed(1) }}</span>
-                      </div>
-                    }
-                  </div>
-                  <div class="activity-info">
-                    <h3 class="activity-title">{{ activity.mediaTitle }}</h3>
-                    <div class="activity-meta">
-                      <span class="activity-time">{{ getTimeAgo(activity.createdAt) }}</span>
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      }
     </div>
   </div>
-}
 
+  <!-- Stats Grid -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-value">{{ profileData.user.stats.moviesWatched }}</span>
+        <div class="stat-label">
+          <span class="material-symbols-outlined">movie</span>
+          <span>Watched</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ profileData.reviewCount }}</span>
+        <div class="stat-label">
+          <span class="material-symbols-outlined">rate_review</span>
+          <span>Reviews</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ formatNumber(profileData.user.followersCount) }}</span>
+        <div class="stat-label">
+          <span class="material-symbols-outlined">group</span>
+          <span>Followers</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ profileData.user.followingCount }}</span>
+        <div class="stat-label">
+          <span class="material-symbols-outlined">person_add</span>
+          <span>Following</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-section">
+    <div class="tabs-container">
+      <button class="tab-item" [class.active]="activeTab() === 'profile'" (click)="onTabChange('profile')"
+        type="button">
+        <span>Profile</span>
+      </button>
+      <button class="tab-item" [class.active]="activeTab() === 'watchlist'" (click)="onTabChange('watchlist')"
+        type="button">
+        <span>Watchlist</span>
+      </button>
+      <button class="tab-item" [class.active]="activeTab() === 'lists'" (click)="onTabChange('lists')" type="button">
+        <span>Lists</span>
+      </button>
+      <button class="tab-item" [class.active]="activeTab() === 'reviews'" (click)="onTabChange('reviews')"
+        type="button">
+        <span>Reviews</span>
+      </button>
+      <button class="tab-item" [class.active]="activeTab() === 'likes'" (click)="onTabChange('likes')" type="button">
+        <span>Likes</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="content-section">
+    @if (activeTab() === 'profile') {
+    <!-- Mood Chart Section -->
+    @if (isOwnProfile()) {
+    <div class="mood-section">
+      <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
+    </div>
+    }
+    <!-- Favorites Section -->
+    @if (profileData.user.favoriteMovies.length > 0 || profileData.user.favoriteTvShows.length > 0) {
+    <div class="favorites-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined section-icon">favorite</span>
+          Director's Cut (Favorites)
+        </h2>
+        @if (isOwnProfile()) {
+        <button class="section-edit-btn">Edit</button>
+        }
+      </div>
+      <div class="favorites-grid">
+        @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
+        <div class="favorite-item" (click)="router.navigate(['/movies', movie.tmdbId])">
+          <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title" class="favorite-poster" />
+          <div class="favorite-overlay">
+            <span class="material-symbols-outlined">visibility</span>
+          </div>
+        </div>
+        }
+        @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
+        <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
+          <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="favorite-poster" />
+          <div class="favorite-overlay">
+            <span class="material-symbols-outlined">visibility</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Recent Activity Section -->
+    @if (profileData.recentActivities.length > 0) {
+    <div class="activity-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined section-icon">history</span>
+          Recent Activity
+        </h2>
+        <a class="section-view-all" href="#">
+          View all
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+      </div>
+      <div class="activity-carousel">
+        @for (activity of profileData.recentActivities; track activity._id) {
+        <div class="activity-card">
+          <div class="activity-image">
+            <img [src]="tmdbService.getPosterUrl(activity.mediaPosterPath, 'w500')" [alt]="activity.mediaTitle" />
+            @if (activity.rating) {
+            <div class="activity-rating-badge">
+              <span class="material-symbols-outlined">star</span>
+              <span>{{ activity.rating.toFixed(1) }}</span>
+            </div>
+            }
+          </div>
+          <div class="activity-info">
+            <h3 class="activity-title">{{ activity.mediaTitle }}</h3>
+            <div class="activity-meta">
+              <span class="activity-time">{{ getTimeAgo(activity.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+    }
+  </div>
+</div>
+}

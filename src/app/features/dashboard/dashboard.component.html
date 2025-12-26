@@ -288,7 +288,9 @@
           } @else if (mealtimePick(); as meal) {
           <div class="daily-pick-card mealtime-card" style="margin-top: 16px;">
             <div class="daily-pick-content">
-              <div class="daily-pick-badge mealtime-badge">Mealtime Roulette 🍕</div>
+              <div class="daily-pick-header">
+                <div class="daily-pick-badge mealtime-badge">Mealtime Roulette 🍕</div>
+              </div>
               <h4 class="daily-pick-title" [title]="meal.showTitle">{{ meal.showTitle }}</h4>
               <div class="daily-pick-meta" [title]="meal.episodeTitle">
                 <span>{{ meal.episodeTitle }}</span>
