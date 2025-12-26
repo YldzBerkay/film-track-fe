@@ -1,15 +1,17 @@
-import { Component, inject, signal, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter, HostListener, ElementRef, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../../core/services/socket.service';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageService, SupportedLanguage } from '../../core/services/language.service';
 import { MoodWidgetComponent } from '../../shared/components/mood-widget/mood-widget.component';
+import { TranslatePipe, TranslationService } from '../../core/i18n';
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, MoodWidgetComponent],
+    imports: [CommonModule, FormsModule, RouterModule, MoodWidgetComponent, TranslatePipe],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })
@@ -17,8 +19,12 @@ export class HeaderComponent {
     router = inject(Router);
     socketService = inject(SocketService);
     authService = inject(AuthService);
+    languageService = inject(LanguageService);
     elementRef = inject(ElementRef);
+    private translationService = inject(TranslationService);
     user = this.authService.user;
+
+    currentLanguage = computed(() => this.languageService.language());
 
     searchQuery = signal<string>('');
     showNotificationMenu = signal(false);
@@ -81,32 +87,40 @@ export class HeaderComponent {
         this.closeNotificationMenu();
     }
 
+    toggleLanguage(): void {
+        this.languageService.toggleLanguage();
+    }
+
     formatTimeAgo(dateString: string): string {
         const date = new Date(dateString);
         const now = new Date();
         const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
         if (seconds < 60) {
-            return 'Just now';
+            return this.translationService.t('common.justNow');
         }
 
         const minutes = Math.floor(seconds / 60);
         if (minutes < 60) {
-            return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+            if (minutes === 1) return this.translationService.t('common.minuteAgo');
+            return this.translationService.t('common.minutesAgo', { count: minutes });
         }
 
         const hours = Math.floor(minutes / 60);
         if (hours < 24) {
-            return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+            if (hours === 1) return this.translationService.t('common.hourAgo');
+            return this.translationService.t('common.hoursAgo', { count: hours });
         }
 
         const days = Math.floor(hours / 24);
         if (days < 7) {
-            return days === 1 ? '1 day ago' : `${days} days ago`;
+            if (days === 1) return this.translationService.t('common.dayAgo');
+            return this.translationService.t('common.daysAgo', { count: days });
         }
 
         const weeks = Math.floor(days / 7);
-        return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
+        if (weeks === 1) return this.translationService.t('common.weekAgo');
+        return this.translationService.t('common.weeksAgo', { count: weeks });
     }
 
     clearAllNotifications(): void {

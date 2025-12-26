@@ -38,7 +38,7 @@
                     <textarea [(ngModel)]="inputValue" [placeholder]="inputPlaceholder" class="dialog-textarea"
                         rows="4"></textarea>
                     <div class="char-count" [class.invalid]="inputValue.length < inputMinLength">
-                        {{ inputValue.length }} / {{ inputMinLength }} characters min
+                        {{ 'dialog.charsMin' | translate:{ length: inputValue.length, min: inputMinLength } }}
                     </div>
                 </div>
             </div>
@@ -46,14 +46,14 @@
 
         <div class="dialog-footer" *ngIf="!isLoading">
             <button *ngIf="showCancel && !resultData" class="btn btn-secondary" (click)="onCancel()">
-                {{ cancelText }}
+                {{ cancelText | translate }}
             </button>
             <button *ngIf="!resultData" class="btn btn-primary" [ngClass]="'btn-' + type" (click)="onConfirm()"
                 [disabled]="showInput && inputValue.length < inputMinLength">
-                {{ confirmText }}
+                {{ confirmText | translate }}
             </button>
             <button *ngIf="resultData" class="btn btn-primary" (click)="onCancel()">
-                Close
+                {{ 'dialog.close' | translate }}
             </button>
         </div>
     </div>

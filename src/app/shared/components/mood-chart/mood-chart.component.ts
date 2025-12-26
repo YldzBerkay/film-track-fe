@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { MoodService, MoodVector } from '../../../core/services/mood.service';
+import { TranslatePipe } from '../../../core/i18n';
 
 @Component({
   selector: 'app-mood-chart',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective, TranslatePipe],
   templateUrl: './mood-chart.component.html',
   styleUrl: './mood-chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

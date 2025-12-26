@@ -2,11 +2,12 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed, EffectRef
 import { CommonModule } from '@angular/common';
 import { MoodService, MoodVector } from '../../../core/services/mood.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslatePipe } from '../../../core/i18n';
 
 @Component({
     selector: 'app-mood-widget',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslatePipe],
     templateUrl: './mood-widget.component.html',
     styleUrl: './mood-widget.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

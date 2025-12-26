@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LanguageService } from './language.service';
 
 export interface TMDBMovie {
   id: number;
@@ -151,40 +152,41 @@ export interface ApiResponse<T> {
 export class TMDBService {
   private readonly apiUrl = 'http://localhost:3000/api/tmdb';
   private readonly imageBaseUrl = 'https://image.tmdb.org/t/p';
+  private http = inject(HttpClient);
+  private languageService = inject(LanguageService);
 
-  constructor(private http: HttpClient) { }
+  private getParams(additionalParams?: Record<string, string>): HttpParams {
+    let params = new HttpParams().set('lang', this.languageService.langCode());
+    if (additionalParams) {
+      Object.entries(additionalParams).forEach(([key, value]) => {
+        params = params.set(key, value);
+      });
+    }
+    return params;
+  }
 
   searchMovies(query: string, page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBMovie>>> {
-    const params = new HttpParams()
-      .set('query', query)
-      .set('page', page.toString());
-
+    const params = this.getParams({ query, page: page.toString() });
     return this.http.get<ApiResponse<TMDBSearchResponse<TMDBMovie>>>(`${this.apiUrl}/movies/search`, { params });
   }
 
   searchTvShows(query: string, page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBTvShow>>> {
-    const params = new HttpParams()
-      .set('query', query)
-      .set('page', page.toString());
-
+    const params = this.getParams({ query, page: page.toString() });
     return this.http.get<ApiResponse<TMDBSearchResponse<TMDBTvShow>>>(`${this.apiUrl}/tv/search`, { params });
   }
 
   getPopularMovies(page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBMovie>>> {
-    const params = new HttpParams().set('page', page.toString());
+    const params = this.getParams({ page: page.toString() });
     return this.http.get<ApiResponse<TMDBSearchResponse<TMDBMovie>>>(`${this.apiUrl}/movies/popular`, { params });
   }
 
   getPopularTvShows(page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBTvShow>>> {
-    const params = new HttpParams().set('page', page.toString());
+    const params = this.getParams({ page: page.toString() });
     return this.http.get<ApiResponse<TMDBSearchResponse<TMDBTvShow>>>(`${this.apiUrl}/tv/popular`, { params });
   }
 
   searchPeople(query: string, page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBPerson>>> {
-    const params = new HttpParams()
-      .set('query', query)
-      .set('page', page.toString());
-
+    const params = this.getParams({ query, page: page.toString() });
     return this.http.get<ApiResponse<TMDBSearchResponse<TMDBPerson>>>(`${this.apiUrl}/people/search`, { params });
   }
 
@@ -203,16 +205,20 @@ export class TMDBService {
   }
 
   getMovieDetails(tmdbId: string): Observable<ApiResponse<TMDBMovieDetails>> {
-    return this.http.get<ApiResponse<TMDBMovieDetails>>(`${this.apiUrl}/movies/${tmdbId}`);
+    const params = this.getParams();
+    return this.http.get<ApiResponse<TMDBMovieDetails>>(`${this.apiUrl}/movies/${tmdbId}`, { params });
   }
 
   getShowDetails(tmdbId: string): Observable<ApiResponse<TMDBTvShowDetails>> {
-    return this.http.get<ApiResponse<TMDBTvShowDetails>>(`${this.apiUrl}/tv/${tmdbId}`);
+    const params = this.getParams();
+    return this.http.get<ApiResponse<TMDBTvShowDetails>>(`${this.apiUrl}/tv/${tmdbId}`, { params });
   }
 
   getSeasonDetails(tvId: string, seasonNumber: number): Observable<ApiResponse<TMDBSeasonDetails>> {
+    const params = this.getParams();
     return this.http.get<ApiResponse<TMDBSeasonDetails>>(
-      `${this.apiUrl}/tv/${tvId}/season/${seasonNumber}`
+      `${this.apiUrl}/tv/${tvId}/season/${seasonNumber}`,
+      { params }
     );
   }
 }

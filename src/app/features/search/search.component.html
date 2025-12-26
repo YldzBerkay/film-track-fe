@@ -2,22 +2,22 @@
     <div class="search-header">
         <button class="back-btn" (click)="goBack()">
             <span class="material-symbols-outlined">arrow_back</span>
-            Back
+            {{ 'search.back' | translate }}
         </button>
-        <h1>Search Results for "{{ query() }}"</h1>
+        <h1>{{ 'search.resultsFor' | translate:{ query: query() } }}</h1>
     </div>
 
     <div class="search-tabs">
         <button class="tab-btn" [class.active]="activeTab() === 'movies'" (click)="setActiveTab('movies')">
-            Movies
+            {{ 'nav.films' | translate }}
             <span class="count">{{ movieResults().length }}</span>
         </button>
         <button class="tab-btn" [class.active]="activeTab() === 'tv'" (click)="setActiveTab('tv')">
-            TV Shows
+            {{ 'nav.tvShows' | translate }}
             <span class="count">{{ tvResults().length }}</span>
         </button>
         <button class="tab-btn" [class.active]="activeTab() === 'people'" (click)="setActiveTab('people')">
-            People
+            {{ 'search.people' | translate }}
             <span class="count">{{ userResults().length }}</span>
         </button>
     </div>
@@ -43,7 +43,7 @@
             </div>
             }
             @if (movieResults().length === 0) {
-            <div class="no-results">No movies found.</div>
+            <div class="no-results">{{ 'search.noMovies' | translate }}</div>
             }
         </div>
         }
@@ -63,7 +63,7 @@
             </div>
             }
             @if (tvResults().length === 0) {
-            <div class="no-results">No TV shows found.</div>
+            <div class="no-results">{{ 'search.noTvShows' | translate }}</div>
             }
         </div>
         }
@@ -83,7 +83,7 @@
             </div>
             }
             @if (userResults().length === 0) {
-            <div class="no-results">No users found.</div>
+            <div class="no-results">{{ 'search.noUsers' | translate }}</div>
             }
         </div>
         }

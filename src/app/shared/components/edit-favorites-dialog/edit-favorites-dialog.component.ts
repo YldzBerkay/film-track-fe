@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FavoriteMovie, FavoriteTvShow } from '../../../core/services/favorites.service';
 import { TMDBService } from '../../../core/services/tmdb.service';
+import { TranslatePipe } from '../../../core/i18n';
 
 @Component({
     selector: 'app-edit-favorites-dialog',
     standalone: true,
-    imports: [CommonModule, DragDropModule],
+    imports: [CommonModule, DragDropModule, TranslatePipe],
     templateUrl: './edit-favorites-dialog.component.html',
     styleUrl: './edit-favorites-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

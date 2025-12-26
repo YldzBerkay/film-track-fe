@@ -1,19 +1,24 @@
-import { Component, ChangeDetectionStrategy, signal, inject, ViewChild, ElementRef, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, ViewChild, ElementRef, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MoodVector } from '../../../core/services/mood.service';
 import { UserProfile, Badge } from '../../../core/services/user.service';
 import { MoodChartComponent } from '../mood-chart/mood-chart.component';
 import html2canvas from 'html2canvas';
+import { TranslatePipe, TranslationService } from '../../../core/i18n';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
     selector: 'app-share-dialog',
     standalone: true,
-    imports: [CommonModule, MoodChartComponent],
+    imports: [CommonModule, MoodChartComponent, TranslatePipe],
     templateUrl: './share-dialog.component.html',
     styleUrl: './share-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShareDialogComponent {
+    private translationService = inject(TranslationService);
+    private languageService = inject(LanguageService);
+    currentLang = computed(() => this.languageService.language());
     isOpen = input<boolean>(false);
     profile = input<UserProfile | null>(null);
     moodData = input<MoodVector | null>(null);
@@ -58,12 +63,13 @@ export class ShareDialogComponent {
         if (!profile) return;
 
         const url = `${window.location.origin}/u/${profile.user.username}`;
-        const text = `Check out my movie mood on CineTrack! My current vibe is ${this.primaryMood}. 🎬✨`;
+        const currentMoodLabel = this.translationService.t('mood.' + this.primaryMood);
+        const text = this.translationService.t('share.shareText', { mood: currentMoodLabel });
 
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: 'My CineTrack Mood',
+                    title: this.translationService.t('share.shareTitle'),
                     text: text,
                     url: url
                 });
@@ -73,7 +79,7 @@ export class ShareDialogComponent {
         } else {
             // Fallback to clipboard
             await navigator.clipboard.writeText(`${text} ${url}`);
-            alert('Link copied to clipboard!');
+            alert(this.translationService.t('share.copied'));
         }
     }
 

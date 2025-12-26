@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -13,13 +13,15 @@ import { HeaderComponent } from '../../layout/header/header.component';
 import { ShareDialogComponent } from '../../shared/components/share-dialog/share-dialog.component';
 import { EditFavoritesDialogComponent } from '../../shared/components/edit-favorites-dialog/edit-favorites-dialog.component';
 import { FavoritesService, FavoriteMovie, FavoriteTvShow } from '../../core/services/favorites.service';
+import { LanguageService } from '../../core/services/language.service';
+import { TranslationService, TranslatePipe } from '../../core/i18n';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, TranslatePipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,6 +35,8 @@ export class ProfileComponent implements OnInit {
   moodService = inject(MoodService);
   recommendationService = inject(RecommendationService);
   favoritesService = inject(FavoritesService);
+  languageService = inject(LanguageService);
+  translationService = inject(TranslationService);
 
   profile = signal<UserProfile | null>(null);
   isLoading = signal(true);
@@ -84,6 +88,27 @@ export class ProfileComponent implements OnInit {
   showEditFavoritesDialog = signal(false);
   editFavoritesTab = signal<'movies' | 'tv'>('movies');
 
+  constructor() {
+    effect(() => {
+      // Reload language-dependent content when language changes
+      this.languageService.language();
+      this.reloadLanguageDependentContent();
+    });
+  }
+
+  reloadLanguageDependentContent(): void {
+    if (this.isOwnProfile()) {
+      this.loadMoodRecommendations();
+    }
+    // For other users' profile, we might want to reload the profile data itself if it contains translated fields
+    // but usually TMDB data is what's translated.
+    const username = this.username();
+    if (username) {
+      this.loadProfile(username);
+    } else {
+      this.loadCurrentProfile();
+    }
+  }
 
   readonly username = computed(() => {
     const param = this.route.snapshot.paramMap.get('username');
@@ -238,22 +263,22 @@ export class ProfileComponent implements OnInit {
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) {
-      return 'just now';
+      return this.translationService.t('common.justNow');
     }
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     if (diffInMinutes < 60) {
-      return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`;
+      return this.translationService.t(diffInMinutes === 1 ? 'common.minuteAgo' : 'common.minutesAgo', { count: diffInMinutes });
     }
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) {
-      return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+      return this.translationService.t(diffInHours === 1 ? 'common.hourAgo' : 'common.hoursAgo', { count: diffInHours });
     }
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 7) {
-      return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+      return this.translationService.t(diffInDays === 1 ? 'common.dayAgo' : 'common.daysAgo', { count: diffInDays });
     }
     const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`;
+    return this.translationService.t(diffInWeeks === 1 ? 'common.weekAgo' : 'common.weeksAgo', { count: diffInWeeks });
   }
 
   formatNumber(num: number): string {
@@ -403,19 +428,7 @@ export class ProfileComponent implements OnInit {
   };
 
   getDimensionLabel(dim: string): string {
-    const labels: Record<string, string> = {
-      adrenaline: 'Adrenaline',
-      melancholy: 'Melancholy',
-      joy: 'Joy',
-      tension: 'Tension',
-      intellect: 'Intellect',
-      romance: 'Romance',
-      wonder: 'Wonder',
-      nostalgia: 'Nostalgia',
-      darkness: 'Darkness',
-      inspiration: 'Inspiration'
-    };
-    return labels[dim] || dim;
+    return this.translationService.t(`mood.${dim}`);
   }
 
   openFollowers(): void {
@@ -542,7 +555,7 @@ export class ProfileComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert('File size exceeds 2MB limit');
+        alert(this.translationService.t('profile.bannerHint'));
         return;
       }
       this.selectedBannerFile = file;
@@ -561,7 +574,7 @@ export class ProfileComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert('File size exceeds 2MB limit');
+        alert(this.translationService.t('profile.bannerHint'));
         return;
       }
 
@@ -592,7 +605,7 @@ export class ProfileComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 1 * 1024 * 1024) {
-        alert('File size exceeds 1MB limit');
+        alert(this.translationService.t('profile.avatarHint'));
         return;
       }
       this.selectedFile = file;

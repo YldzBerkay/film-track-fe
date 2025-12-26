@@ -1,11 +1,12 @@
 import { Component, inject, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SocketService, Notification } from '../../../core/services/socket.service';
+import { TranslatePipe } from '../../../core/i18n';
 
 @Component({
   selector: 'app-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     @if (currentToast()) {
       <div class="toast-container">
@@ -25,7 +26,7 @@ import { SocketService, Notification } from '../../../core/services/socket.servi
           </div>
           <div class="toast-content">
             <p class="toast-message">{{ currentToast()!.message }}</p>
-            <span class="toast-time">Just now</span>
+            <span class="toast-time">{{ 'common.justNow' | translate }}</span>
           </div>
           <button class="toast-close" (click)="dismissToast()">
             <span class="material-symbols-outlined">close</span>

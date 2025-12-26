@@ -1,11 +1,12 @@
 @if (isLoading()) {
 <div class="loading-container">
-  <div class="loading">Loading profile...</div>
+  <div class="loading">{{ 'profile.loadingProfile' | translate }}</div>
 </div>
 } @else if (error()) {
 <div class="error-container">
   <div class="error-message">{{ error() }}</div>
-  <button class="back-btn" (click)="router.navigate(['/dashboard'])" type="button">Go Back</button>
+  <button class="back-btn" (click)="router.navigate(['/dashboard'])" type="button">{{ 'profile.goBack' | translate
+    }}</button>
 </div>
 } @else if (profile()) {
 @let profileData = profile()!;
@@ -30,7 +31,7 @@
           <div class="spinner-small"></div>
           } @else {
           <span class="material-symbols-outlined">photo_camera</span>
-          <span>Change Banner</span>
+          <span>{{ 'profile.changeBanner' | translate }}</span>
           }
         </div>
       </div>
@@ -63,27 +64,27 @@
               @if (isOwnProfile()) {
               <button class="edit-profile-btn" (click)="openEditProfile()">
                 <span class="material-symbols-outlined">edit</span>
-                <span>Edit Profile</span>
+                <span>{{ 'profile.editProfile' | translate }}</span>
               </button>
               <button class="share-profile-btn" (click)="openShareDialog()">
                 <span class="material-symbols-outlined">share</span>
-                <span>Share</span>
+                <span>{{ 'profile.share' | translate }}</span>
               </button>
               } @else {
               @if (isFollowing()) {
               <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
                 <span class="material-symbols-outlined">check</span>
-                <span>Following</span>
+                <span>{{ 'profile.following' | translate }}</span>
               </button>
               } @else {
               <button class="follow-btn" (click)="followUser()" [disabled]="isFollowLoading()">
                 <span class="material-symbols-outlined">person_add</span>
-                <span>Follow</span>
+                <span>{{ 'profile.follow' | translate }}</span>
               </button>
               }
               <button class="compare-mood-btn" (click)="openMoodComparison()">
                 <span class="material-symbols-outlined">compare</span>
-                <span>Compare Mood</span>
+                <span>{{ 'profile.compareMood' | translate }}</span>
               </button>
               }
             </div>
@@ -100,28 +101,28 @@
         <span class="stat-value">{{ profileData.user.stats.moviesWatched }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">movie</span>
-          <span>Watched</span>
+          <span>{{ 'profile.watched' | translate }}</span>
         </div>
       </div>
       <div class="stat-card">
         <span class="stat-value">{{ profileData.reviewCount }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">rate_review</span>
-          <span>Reviews</span>
+          <span>{{ 'profile.reviews' | translate }}</span>
         </div>
       </div>
       <div class="stat-card stat-card--clickable" (click)="openFollowers()">
         <span class="stat-value">{{ formatNumber(profileData.user.followersCount) }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">group</span>
-          <span>Followers</span>
+          <span>{{ 'profile.followers' | translate }}</span>
         </div>
       </div>
       <div class="stat-card stat-card--clickable" (click)="openFollowing()">
         <span class="stat-value">{{ profileData.user.followingCount }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">person_add</span>
-          <span>Following</span>
+          <span>{{ 'profile.following' | translate }}</span>
         </div>
       </div>
     </div>
@@ -132,21 +133,21 @@
     <div class="tabs-container">
       <button class="tab-item" [class.active]="activeTab() === 'profile'" (click)="onTabChange('profile')"
         type="button">
-        <span>Profile</span>
+        <span>{{ 'profile.profile' | translate }}</span>
       </button>
       <button class="tab-item" [class.active]="activeTab() === 'watchlist'" (click)="onTabChange('watchlist')"
         type="button">
-        <span>Watchlist</span>
+        <span>{{ 'profile.watchlistTab' | translate }}</span>
       </button>
       <button class="tab-item" [class.active]="activeTab() === 'lists'" (click)="onTabChange('lists')" type="button">
-        <span>Lists</span>
+        <span>{{ 'profile.listsTab' | translate }}</span>
       </button>
       <button class="tab-item" [class.active]="activeTab() === 'reviews'" (click)="onTabChange('reviews')"
         type="button">
-        <span>Reviews</span>
+        <span>{{ 'profile.reviewsTab' | translate }}</span>
       </button>
       <button class="tab-item" [class.active]="activeTab() === 'likes'" (click)="onTabChange('likes')" type="button">
-        <span>Likes</span>
+        <span>{{ 'profile.likesTab' | translate }}</span>
       </button>
     </div>
   </div>
@@ -168,7 +169,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="material-symbols-outlined section-icon">workspace_premium</span>
-          Mood Badges
+          {{ 'profile.moodBadges' | translate }}
         </h2>
       </div>
       @if (isLoadingBadges()) {
@@ -202,7 +203,7 @@
       </div>
       } @else {
       <div class="badges-empty">
-        <p>Watch and rate movies to earn badges!</p>
+        <p>{{ 'profile.earnBadgesHint' | translate }}</p>
       </div>
       }
     </div>
@@ -212,18 +213,18 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="material-symbols-outlined section-icon">movie_filter</span>
-          For Your Mood
+          {{ 'profile.forYourMood' | translate }}
         </h2>
 
         <!-- Controls -->
         <div class="mood-controls">
           <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()">
             <span class="material-symbols-outlined">{{ moodRecsMode() === 'match' ? 'favorite' : 'swap_horiz' }}</span>
-            {{ moodRecsMode() === 'match' ? 'Match' : 'Shift' }}
+            {{ (moodRecsMode() === 'match' ? 'profile.match' : 'profile.shift') | translate }}
           </button>
           <button class="mood-toggle-btn" [class.active]="includeWatched()" (click)="toggleIncludeWatched()">
             <span class="material-symbols-outlined">{{ includeWatched() ? 'visibility' : 'visibility_off' }}</span>
-            {{ includeWatched() ? 'All' : 'Unwatched' }}
+            {{ (includeWatched() ? 'profile.all' : 'profile.unwatched') | translate }}
           </button>
         </div>
       </div>
@@ -257,7 +258,7 @@
       </div>
       } @else {
       <div class="badges-empty">
-        <p>No mood recommendations available right now.</p>
+        <p>{{ 'profile.noMoodRecs' | translate }}</p>
       </div>
       }
     </div>
@@ -268,12 +269,12 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="material-symbols-outlined section-icon">movie</span>
-          Director's Movie Cut (Favorites)
+          {{ 'profile.directorsMovieCut' | translate }}
         </h2>
         @if (isOwnProfile()) {
         <button class="section-edit-btn" (click)="openEditFavorites('movies')">
           <span class="material-symbols-outlined">edit</span>
-          Edit
+          {{ 'profile.edit' | translate }}
         </button>
         }
       </div>
@@ -296,12 +297,12 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="material-symbols-outlined section-icon">tv</span>
-          Director's TV Shows Cut (Favorites)
+          {{ 'profile.directorsTvCut' | translate }}
         </h2>
         @if (isOwnProfile()) {
         <button class="section-edit-btn" (click)="openEditFavorites('tv')">
           <span class="material-symbols-outlined">edit</span>
-          Edit
+          {{ 'profile.edit' | translate }}
         </button>
         }
       </div>
@@ -324,10 +325,10 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="material-symbols-outlined section-icon">history</span>
-          Recent Activity
+          {{ 'profile.recentActivity' | translate }}
         </h2>
         <a class="section-view-all" href="#">
-          View all
+          {{ 'profile.viewAll' | translate }}
           <span class="material-symbols-outlined">arrow_forward</span>
         </a>
       </div>
@@ -363,7 +364,7 @@
 <div class="user-list-dialog-backdrop" (click)="closeUserListDialog()">
   <div class="user-list-dialog" (click)="$event.stopPropagation()">
     <div class="user-list-dialog-header">
-      <h3>{{ userListType() === 'followers' ? 'Followers' : 'Following' }}</h3>
+      <h3>{{ (userListType() === 'followers' ? 'profile.followers' : 'profile.following') | translate }}</h3>
       <button class="dialog-close" (click)="closeUserListDialog()">
         <span class="material-symbols-outlined">close</span>
       </button>
@@ -376,7 +377,7 @@
       } @else if (userList().length === 0) {
       <div class="user-list-empty">
         <span class="material-symbols-outlined">person_off</span>
-        <p>{{ userListType() === 'followers' ? 'No followers yet' : 'Not following anyone yet' }}</p>
+        <p>{{ (userListType() === 'followers' ? 'profile.noFollowers' : 'profile.notFollowingAnyone') | translate }}</p>
       </div>
       } @else {
       <div class="user-list">
@@ -394,7 +395,7 @@
           @if (isOwnProfile()) {
           <button class="user-action-btn"
             (click)="userListType() === 'followers' ? removeFromList(user.id) : unfollowFromList(user.id)">
-            {{ userListType() === 'followers' ? 'Remove' : 'Unfollow' }}
+            {{ (userListType() === 'followers' ? 'profile.remove' : 'profile.unfollow') | translate }}
           </button>
           }
         </div>
@@ -411,7 +412,7 @@
 <div class="user-list-dialog-backdrop" (click)="closeEditProfile()">
   <div class="user-list-dialog edit-profile-dialog" (click)="$event.stopPropagation()">
     <div class="user-list-dialog-header">
-      <h3>Edit Profile</h3>
+      <h3>{{ 'profile.editProfile' | translate }}</h3>
       <button class="dialog-close" (click)="closeEditProfile()">
         <span class="material-symbols-outlined">close</span>
       </button>
@@ -420,7 +421,7 @@
     <div class="edit-profile-body">
       <!-- Avatar Section -->
       <div class="form-group">
-        <label>Avatar URL</label>
+        <label>{{ 'profile.avatarUrl' | translate }}</label>
         <div class="avatar-input-wrapper">
           <div class="avatar-preview">
             @if (editAvatar()) {
@@ -435,16 +436,16 @@
             <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
             <button class="upload-btn" (click)="fileInput.click()" type="button">
               <span class="material-symbols-outlined">upload_file</span>
-              {{ selectedFile ? 'Change Image' : 'Choose Image' }}
+              {{ (selectedFile ? 'profile.changeImage' : 'profile.chooseImage') | translate }}
             </button>
-            <p class="help-text">Max size: 1MB. JPG, PNG or WebP.</p>
+            <p class="help-text">{{ 'profile.avatarHint' | translate }}</p>
           </div>
         </div>
       </div>
 
       <!-- Banner Section -->
       <div class="form-group">
-        <label>Banner Image</label>
+        <label>{{ 'profile.bannerImage' | translate }}</label>
         <div class="banner-upload-wrapper">
           <input type="file" #bannerInput (change)="onBannerSelected($event)" accept="image/*" hidden>
           <div class="banner-preview clickable" (click)="bannerInput.click()">
@@ -453,35 +454,37 @@
               onError="this.style.display='none'">
             <div class="banner-hover-overlay">
               <span class="material-symbols-outlined">edit</span>
-              <span>Change Banner</span>
+              <span>{{ 'profile.changeBanner' | translate }}</span>
             </div>
             } @else {
             <div class="banner-placeholder">
               <span class="material-symbols-outlined">add_photo_alternate</span>
-              <p>Click to select banner</p>
+              <p>{{ 'profile.clickToSelectBanner' | translate }}</p>
             </div>
             }
           </div>
-          <p class="help-text banner-help">Max size: 2MB. 1200x350px.</p>
+          <p class="help-text banner-help">{{ 'profile.bannerHint' | translate }}</p>
         </div>
       </div>
 
       <!-- Real Name Section -->
       <div class="form-group">
-        <label>Real Name</label>
+        <label>{{ 'profile.realName' | translate }}</label>
         <input type="text" [ngModel]="editName()" (ngModelChange)="editName.set($event)"
-          placeholder="Enter your full name..." class="form-input" maxlength="100">
+          [placeholder]="'profile.realNamePlaceholder' | translate" class="form-input" maxlength="100">
       </div>
 
       <!-- Username Section -->
       <div class="form-group">
-        <label>Username</label>
+        <label>{{ 'profile.username' | translate }}</label>
         <input type="text" [ngModel]="editUsername()" (ngModelChange)="editUsername.set($event)"
-          placeholder="Choose a username..." class="form-input" maxlength="30" [disabled]="!canChangeUsername()">
+          [placeholder]="'profile.usernamePlaceholder' | translate" class="form-input" maxlength="30"
+          [disabled]="!canChangeUsername()">
         @if (!canChangeUsername() && canChangeUsernameAt()) {
         <p class="username-restriction-text">
           <span class="material-symbols-outlined">schedule</span>
-          You can change your username on {{ canChangeUsernameAt() | date:'mediumDate' }}
+          {{ 'profile.usernameChangeRestricted' | translate:{ date: (canChangeUsernameAt() | date:'mediumDate') || '' }
+          }}
         </p>
         }
       </div>
@@ -489,13 +492,13 @@
     </div>
 
     <div class="dialog-actions">
-      <button class="cancel-btn" (click)="closeEditProfile()">Cancel</button>
+      <button class="cancel-btn" (click)="closeEditProfile()">{{ 'profile.cancel' | translate }}</button>
       <button class="save-btn" (click)="saveProfile()" [disabled]="isEditLoading()">
         @if (isEditLoading()) {
         <span class="spinner-small"></span>
-        Saving...
+        {{ 'profile.saving' | translate }}
         } @else {
-        Save Changes
+        {{ 'profile.saveChanges' | translate }}
         }
       </button>
     </div>
@@ -507,7 +510,7 @@
 <div class="dialog-overlay" (click)="closeComparisonDialog()">
   <div class="comparison-dialog" (click)="$event.stopPropagation()">
     <div class="dialog-header">
-      <h2><span class="material-symbols-outlined">compare</span> Mood Comparison</h2>
+      <h2><span class="material-symbols-outlined">compare</span> {{ 'profile.moodComparison' | translate }}</h2>
       <button class="close-btn" (click)="closeComparisonDialog()">
         <span class="material-symbols-outlined">close</span>
       </button>
@@ -516,24 +519,24 @@
       @if (isLoadingComparison()) {
       <div class="loading-state">
         <div class="spinner"></div>
-        <p>Comparing mood profiles...</p>
+        <p>{{ 'profile.comparingMoods' | translate }}</p>
       </div>
       } @else if (moodComparison()) {
       <div class="comparison-content">
         <div class="similarity-section">
           <div class="similarity-circle" [class.high]="moodComparison()!.similarity >= 75">
             <span class="similarity-value">{{ moodComparison()!.similarity }}%</span>
-            <span class="similarity-label">Match</span>
+            <span class="similarity-label">{{ 'profile.match' | translate }}</span>
           </div>
           <p class="similarity-text">
-            @if (moodComparison()!.similarity >= 80) { You're cinematic soulmates! 🎬💕 }
-            @else if (moodComparison()!.similarity >= 60) { You have similar movie vibes! 🎥 }
-            @else if (moodComparison()!.similarity >= 40) { Some overlap in your tastes 🎞️ }
-            @else { Different perspectives, different movies! 🌈 }
+            @if (moodComparison()!.similarity >= 80) { {{ 'profile.cinematicSoulmates' | translate }} }
+            @else if (moodComparison()!.similarity >= 60) { {{ 'profile.similarVibes' | translate }} }
+            @else if (moodComparison()!.similarity >= 40) { {{ 'profile.someOverlap' | translate }} }
+            @else { {{ 'profile.differentPerspectives' | translate }} }
           </p>
         </div>
         <div class="dimension-comparison">
-          <h3>Dimension Breakdown</h3>
+          <h3>{{ 'profile.dimensionBreakdown' | translate }}</h3>
           <div class="dimensions-list">
             @for (dim of moodComparison()!.dimensionComparison; track dim.dimension) {
             <div class="dimension-row">
@@ -552,14 +555,14 @@
             }
           </div>
           <div class="legend">
-            <span class="legend-item you"><span class="dot"></span> You</span>
+            <span class="legend-item you"><span class="dot"></span> {{ 'profile.you' | translate }}</span>
             <span class="legend-item them"><span class="dot"></span> {{ profile()?.user?.name ||
               profile()?.user?.username }}</span>
           </div>
         </div>
         @if (moodComparison()!.commonStrengths.length > 0) {
         <div class="strengths-section">
-          <h3>Shared Strengths</h3>
+          <h3>{{ 'profile.sharedStrengths' | translate }}</h3>
           <div class="strength-tags">
             @for (s of moodComparison()!.commonStrengths; track s) {
             <span class="strength-tag common">{{ getDimensionLabel(s) }}</span>

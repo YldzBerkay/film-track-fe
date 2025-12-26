@@ -1,0 +1,253 @@
+{
+    "nav": {
+        "home": "Home",
+        "films": "Films",
+        "tvShows": "TV Shows",
+        "lists": "Lists",
+        "journal": "Journal",
+        "myProfile": "My Profile"
+    },
+    "header": {
+        "searchPlaceholder": "Search films, shows, people...",
+        "log": "Log",
+        "notifications": "Notifications",
+        "noNotifications": "No notifications yet",
+        "clearAll": "Clear all",
+        "profile": "Profile",
+        "logout": "Logout"
+    },
+    "search": {
+        "resultsFor": "Search Results for \"{{query}}\"",
+        "people": "People",
+        "noMovies": "No movies found.",
+        "noTvShows": "No TV shows found.",
+        "noUsers": "No users found.",
+        "back": "Back"
+    },
+    "profile": {
+        "profile": "Profile",
+        "logout": "Logout",
+        "followers": "Followers",
+        "following": "Following",
+        "editProfile": "Edit Profile",
+        "moviesWatched": "Movies",
+        "episodesWatched": "Episodes",
+        "loadingProfile": "Loading profile...",
+        "goBack": "Go Back",
+        "changeBanner": "Change Banner",
+        "share": "Share",
+        "follow": "Follow",
+        "compareMood": "Compare Mood",
+        "watched": "Watched",
+        "reviews": "Reviews",
+        "watchlistTab": "Watchlist",
+        "listsTab": "Lists",
+        "reviewsTab": "Reviews",
+        "likesTab": "Likes",
+        "moodBadges": "Mood Badges",
+        "earnBadgesHint": "Watch and rate movies to earn badges!",
+        "forYourMood": "For Your Mood",
+        "match": "Match",
+        "shift": "Shift",
+        "all": "All",
+        "unwatched": "Unwatched",
+        "noMoodRecs": "No mood recommendations available right now.",
+        "directorsMovieCut": "Director's Movie Cut (Favorites)",
+        "directorsTvCut": "Director's TV Shows Cut (Favorites)",
+        "edit": "Edit",
+        "recentActivity": "Recent Activity",
+        "viewAll": "View all",
+        "noFollowers": "No followers yet",
+        "notFollowingAnyone": "Not following anyone yet",
+        "remove": "Remove",
+        "unfollow": "Unfollow",
+        "avatarUrl": "Avatar URL",
+        "changeImage": "Change Image",
+        "chooseImage": "Choose Image",
+        "avatarHint": "Max size: 1MB. JPG, PNG or WebP.",
+        "bannerImage": "Banner Image",
+        "clickToSelectBanner": "Click to select banner",
+        "bannerHint": "Max size: 2MB. 1200x350px.",
+        "realName": "Real Name",
+        "realNamePlaceholder": "Enter your full name...",
+        "username": "Username",
+        "usernamePlaceholder": "Choose a username...",
+        "usernameChangeRestricted": "You can change your username on {{date}}",
+        "cancel": "Cancel",
+        "saveChanges": "Save Changes",
+        "saving": "Saving...",
+        "moodComparison": "Mood Comparison",
+        "comparingMoods": "Comparing mood profiles...",
+        "cinematicSoulmates": "You're cinematic soulmates! 🎬💕",
+        "similarVibes": "You have similar movie vibes! 🎥",
+        "someOverlap": "Some overlap in your tastes 🎞️",
+        "differentPerspectives": "Different perspectives, different movies! 🌈",
+        "dimensionBreakdown": "Dimension Breakdown",
+        "you": "You",
+        "sharedStrengths": "Shared Strengths",
+        "editDirectorsCut": "Edit Director's Cut",
+        "moviesCount": "Movies ({{count}})",
+        "tvShowsCount": "TV Shows ({{count}})",
+        "noFavoriteMovies": "No favorite movies yet.",
+        "noFavoriteTvShows": "No favorite TV shows yet.",
+        "dragToReorder": "Drag items to reorder",
+        "removeFromFavorites": "Remove from favorites"
+    },
+    "card": {
+        "matchScore": "Match Score: {{score}}%"
+    },
+    "dialog": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "close": "Close",
+        "charsMin": "{{length}} / {{min}} characters min"
+    },
+    "share": {
+        "title": "Share Your CineTrack Mood",
+        "moodIdentity": "Mood Identity",
+        "generatedOn": "Generated on {{date}}",
+        "shareLink": "Share Link",
+        "downloadImage": "Download Image",
+        "generating": "Generating...",
+        "shareText": "Check out my movie mood on CineTrack! My current vibe is {{mood}}. 🎬✨",
+        "shareTitle": "My CineTrack Mood",
+        "copied": "Link copied to clipboard!"
+    },
+    "mood": {
+        "adrenaline": "Adrenaline",
+        "melancholy": "Melancholy",
+        "joy": "Joy",
+        "tension": "Tension",
+        "intellect": "Intellect",
+        "romance": "Romance",
+        "wonder": "Wonder",
+        "nostalgia": "Nostalgia",
+        "darkness": "Darkness",
+        "inspiration": "Inspiration",
+        "cinematicMood": "Your Cinematic Mood",
+        "loadingAnalysis": "Loading mood analysis...",
+        "noData": "Not enough data yet. Watch movies to generate your mood chart.",
+        "moodJourney": "Your Mood Journey",
+        "loadingTimeline": "Loading timeline...",
+        "noTimelineData": "Not enough data yet. Watch movies to see your mood history here.",
+        "basedOnHistory": "Based on your viewing history"
+    },
+    "dashboard": {
+        "followingTab": "Following",
+        "friendsTab": "Friends",
+        "globalTab": "Global",
+        "loadMore": "Load more",
+        "loadingFeed": "Loading feed...",
+        "noActivities": "No activities yet. Start following people to see their updates!",
+        "forYou": "For You",
+        "dailyPick": "Daily Pick",
+        "watch": "Watch",
+        "trendingNow": "Trending Now",
+        "forYourMood": "For Your Mood",
+        "moodMatch": "Mood Match",
+        "logMovies": "Log movies to get recommendations",
+        "mealtimeRoulette": "Mealtime Roulette 🍕",
+        "memoryTitle": "Daily Movie Memory",
+        "memoryMessage": "What do you remember about this film?",
+        "submit": "Submit",
+        "memoryPlaceholder": "Share your thoughts (min 25 characters)...",
+        "verifyMemory": "Verify Memory",
+        "watchWithFriends": "Watch with Friends",
+        "findingEpisode": "Finding the perfect episode...",
+        "watchNow": "Watch Now",
+        "pickAnother": "Pick Another",
+        "sharedInterestWith": "Shared interest with: {{names}}",
+        "loadingFriends": "Loading friends...",
+        "noFriends": "You don't have any friends yet.",
+        "noFriendsHint": "Follow people and have them follow you back!",
+        "selectFriendsHint": "Select friends to find episodes you'll all enjoy:",
+        "findEpisode": "Find Episode ({{count}})"
+    },
+    "common": {
+        "watched": "watched",
+        "watchedEpisode": "watched episode",
+        "justNow": "Just now",
+        "minuteAgo": "1 minute ago",
+        "minutesAgo": "{{count}} minutes ago",
+        "hourAgo": "1 hour ago",
+        "hoursAgo": "{{count}} hours ago",
+        "dayAgo": "1 day ago",
+        "daysAgo": "{{count}} days ago",
+        "weekAgo": "1 week ago",
+        "weeksAgo": "{{count}} weeks ago"
+    },
+    "auth": {
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "getStarted": "Get Started",
+        "continueWithGoogle": "Continue with Google",
+        "email": "Email",
+        "password": "Password",
+        "username": "Username",
+        "confirmPassword": "Confirm Password",
+        "forgotPassword": "Forgot Password?",
+        "noAccount": "Don't have an account?",
+        "haveAccount": "Already have an account?"
+    },
+    "landing": {
+        "tagline": "Track what you watch, how you feel.",
+        "subtitle": "The ultimate diary for film lovers.",
+        "whyFilmTrack": "Why FilmTrack?",
+        "features": "Features",
+        "community": "Community"
+    },
+    "errors": {
+        "somethingWentWrong": "Something went wrong",
+        "tryAgain": "Try again"
+    },
+    "badges": {
+        "thrill_seeker": {
+            "name": "Thrill Seeker",
+            "description": "Adrenaline score above 75"
+        },
+        "deep_thinker": {
+            "name": "Deep Thinker",
+            "description": "Intellect score above 80"
+        },
+        "hopeless_romantic": {
+            "name": "Hopeless Romantic",
+            "description": "Romance score above 70"
+        },
+        "joy_bringer": {
+            "name": "Joy Bringer",
+            "description": "Joy score above 80"
+        },
+        "night_owl": {
+            "name": "Night Owl",
+            "description": "High tension and darkness combo (both > 60)"
+        },
+        "dreamer": {
+            "name": "Dreamer",
+            "description": "Wonder score above 75"
+        },
+        "rising_star": {
+            "name": "Rising Star",
+            "description": "Inspiration score above 80"
+        },
+        "melancholic_soul": {
+            "name": "Melancholic Soul",
+            "description": "Melancholy score above 70"
+        },
+        "nostalgic_heart": {
+            "name": "Nostalgic Heart",
+            "description": "Nostalgia score above 70"
+        },
+        "balanced_explorer": {
+            "name": "Balanced Explorer",
+            "description": "All mood dimensions between 40-60 (balanced)"
+        },
+        "cinephile": {
+            "name": "Cinephile",
+            "description": "Watched 50+ movies"
+        },
+        "movie_buff": {
+            "name": "Movie Buff",
+            "description": "Watched 100+ movies"
+        }
+    }
+}

@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, input, computed } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
+import { TranslatePipe } from '../../../core/i18n';
 
 export interface MoodTimelineEntry {
     date: string;
@@ -23,7 +24,7 @@ export interface MoodTimelineEntry {
 @Component({
     selector: 'app-mood-timeline',
     standalone: true,
-    imports: [CommonModule, BaseChartDirective],
+    imports: [CommonModule, BaseChartDirective, TranslatePipe],
     templateUrl: './mood-timeline.component.html',
     styleUrl: './mood-timeline.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

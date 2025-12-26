@@ -2,13 +2,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { TranslatePipe } from '../../../core/i18n';
 
 export type DialogType = 'info' | 'success' | 'danger' | 'warning';
 
 @Component({
     selector: 'app-dialog',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TranslatePipe],
     templateUrl: './dialog.component.html',
     styleUrls: ['./dialog.component.scss'],
     animations: [

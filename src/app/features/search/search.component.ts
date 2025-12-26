@@ -5,13 +5,14 @@ import { TMDBService, TMDBMovie, TMDBTvShow } from '../../core/services/tmdb.ser
 import { UserService, UserSearchResults } from '../../core/services/user.service';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { TranslatePipe } from '../../core/i18n';
 
 type SearchTab = 'movies' | 'tv' | 'people';
 
 @Component({
     selector: 'app-search',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, RouterLink, FormsModule, TranslatePipe],
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })

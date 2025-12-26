@@ -2,7 +2,7 @@
 <div class="dialog-overlay" (click)="closeDialog($event)">
     <div class="dialog-content" (click)="$event.stopPropagation()">
         <div class="dialog-header">
-            <h2>Edit Director's Cut</h2>
+            <h2>{{ 'profile.editDirectorsCut' | translate }}</h2>
             <button class="close-btn" (click)="closeDialog()">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -10,17 +10,17 @@
 
         <div class="dialog-tabs">
             <button class="tab-btn" [class.active]="activeTab() === 'movies'" (click)="activeTab.set('movies')">
-                Movies ({{ movies().length }})
+                {{ 'profile.moviesCount' | translate:{ count: movies().length } }}
             </button>
             <button class="tab-btn" [class.active]="activeTab() === 'tv'" (click)="activeTab.set('tv')">
-                TV Shows ({{ tvShows().length }})
+                {{ 'profile.tvShowsCount' | translate:{ count: tvShows().length } }}
             </button>
         </div>
 
         <div class="dialog-body">
             @if (activeTab() === 'movies') {
             @if (movies().length === 0) {
-            <div class="empty-state">No favorite movies yet.</div>
+            <div class="empty-state">{{ 'profile.noFavoriteMovies' | translate }}</div>
             } @else {
             <div class="drag-list" cdkDropList (cdkDropListDropped)="dropMovie($event)">
                 @for (movie of movies(); track movie.tmdbId) {
@@ -33,7 +33,8 @@
                         <div class="item-title">{{ movie.title }}</div>
                         <div class="item-meta">{{ movie.releaseDate | date:'yyyy' }}</div>
                     </div>
-                    <button class="remove-btn" (click)="removeMovie(movie.tmdbId)" title="Remove from favorites">
+                    <button class="remove-btn" (click)="removeMovie(movie.tmdbId)"
+                        [title]="'profile.removeFromFavorites' | translate">
                         <span class="material-symbols-outlined">delete</span>
                     </button>
                     <!-- Drag Preview -->
@@ -47,7 +48,7 @@
             }
             } @else {
             @if (tvShows().length === 0) {
-            <div class="empty-state">No favorite TV shows yet.</div>
+            <div class="empty-state">{{ 'profile.noFavoriteTvShows' | translate }}</div>
             } @else {
             <div class="drag-list" cdkDropList (cdkDropListDropped)="dropTvShow($event)">
                 @for (show of tvShows(); track show.tmdbId) {
@@ -60,7 +61,8 @@
                         <div class="item-title">{{ show.name }}</div>
                         <div class="item-meta">{{ show.firstAirDate | date:'yyyy' }}</div>
                     </div>
-                    <button class="remove-btn" (click)="removeTvShow(show.tmdbId)" title="Remove from favorites">
+                    <button class="remove-btn" (click)="removeTvShow(show.tmdbId)"
+                        [title]="'profile.removeFromFavorites' | translate">
                         <span class="material-symbols-outlined">delete</span>
                     </button>
                     <!-- Drag Preview -->
@@ -76,15 +78,15 @@
         </div>
 
         <div class="dialog-footer">
-            <p class="help-text">Drag items to reorder</p>
+            <p class="help-text">{{ 'profile.dragToReorder' | translate }}</p>
             <div class="actions">
-                <button class="cancel-btn" (click)="closeDialog()">Cancel</button>
+                <button class="cancel-btn" (click)="closeDialog()">{{ 'profile.cancel' | translate }}</button>
                 <button class="save-btn" (click)="saveChanges()" [disabled]="isSaving()">
                     @if (isSaving()) {
                     <span class="spinner-small"></span>
-                    Saving...
+                    {{ 'profile.saving' | translate }}
                     } @else {
-                    Save Changes
+                    {{ 'profile.saveChanges' | translate }}
                     }
                 </button>
             </div>

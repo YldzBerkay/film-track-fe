@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,8 @@ import { ActivityService, Activity } from '../../core/services/activity.service'
 import { TMDBService } from '../../core/services/tmdb.service';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 import { HeaderComponent } from '../../layout/header/header.component';
+import { LanguageService } from '../../core/services/language.service';
+import { TranslatePipe, TranslationService } from '../../core/i18n';
 
 type FeedType = 'following' | 'friends' | 'global';
 
@@ -15,7 +17,7 @@ import { RecommendationService, MealtimeRecommendation, DailyPick, Friend, Frien
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DialogComponent, HeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, DialogComponent, HeaderComponent, TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,8 +26,31 @@ export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private activityService = inject(ActivityService);
   private recommendationService = inject(RecommendationService);
+  private languageService = inject(LanguageService);
   tmdbService = inject(TMDBService);
   router = inject(Router);
+
+  private previousLanguage = this.languageService.language();
+
+  constructor() {
+    // Effect to reload language-dependent content when language changes
+    effect(() => {
+      const currentLang = this.languageService.language();
+      // Skip on first run or if language hasn't changed
+      if (currentLang !== this.previousLanguage) {
+        this.previousLanguage = currentLang;
+        this.reloadLanguageDependentContent();
+      }
+    });
+  }
+
+  private reloadLanguageDependentContent(): void {
+    if (this.isAuthenticated()) {
+      this.loadDailyPick();
+      this.loadMealtimePick();
+      this.loadMoodRecommendations();
+    }
+  }
 
   activeFeedType = signal<FeedType>('following');
   searchQuery = signal<string>('');

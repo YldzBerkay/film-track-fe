@@ -1,12 +1,12 @@
 <div class="mood-timeline-container">
     <h3 class="chart-title">
         <span class="material-symbols-outlined">trending_up</span>
-        Mood Yolculuğun
+        {{ 'mood.moodJourney' | translate }}
     </h3>
     @if (isLoading()) {
     <div class="chart-loading">
         <div class="loading-spinner"></div>
-        <p>Timeline yükleniyor...</p>
+        <p>{{ 'mood.loadingTimeline' | translate }}</p>
     </div>
     } @else if (timelineData().length > 0) {
     <div class="chart-wrapper">
@@ -15,7 +15,7 @@
     } @else {
     <div class="chart-empty">
         <span class="material-symbols-outlined">timeline</span>
-        <p>Henüz yeterli veri yok. Film izledikçe mood geçmişin burada görünecek.</p>
+        <p>{{ 'mood.noTimelineData' | translate }}</p>
     </div>
     }
 </div>

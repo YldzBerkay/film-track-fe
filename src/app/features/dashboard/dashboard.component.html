@@ -13,27 +13,27 @@
         <nav class="sidebar-nav">
           <a class="nav-item active" routerLink="/dashboard">
             <span class="material-symbols-outlined">home</span>
-            Home
+            {{ 'nav.home' | translate }}
           </a>
           <a class="nav-item" routerLink="/movies">
             <span class="material-symbols-outlined">movie</span>
-            Films
+            {{ 'nav.films' | translate }}
           </a>
           <a class="nav-item" routerLink="/tv-shows">
             <span class="material-symbols-outlined">tv</span>
-            TV Shows
+            {{ 'nav.tvShows' | translate }}
           </a>
           <a class="nav-item" routerLink="/lists">
             <span class="material-symbols-outlined">list</span>
-            Lists
+            {{ 'nav.lists' | translate }}
           </a>
           <a class="nav-item" routerLink="/journal">
             <span class="material-symbols-outlined">edit_note</span>
-            Journal
+            {{ 'nav.journal' | translate }}
           </a>
           <a class="nav-item" routerLink="/profile">
             <span class="material-symbols-outlined">person</span>
-            My Profile
+            {{ 'nav.myProfile' | translate }}
           </a>
         </nav>
 
@@ -60,23 +60,23 @@
         <div class="feed-tabs">
           <button class="feed-tab" [class.active]="activeFeedType() === 'following'"
             (click)="onFeedTypeChange('following')">
-            Following
+            {{ 'dashboard.followingTab' | translate }}
           </button>
           <button class="feed-tab" [class.active]="activeFeedType() === 'friends'"
             (click)="onFeedTypeChange('friends')">
-            Friends
+            {{ 'dashboard.friendsTab' | translate }}
           </button>
           <button class="feed-tab" [class.active]="activeFeedType() === 'global'" (click)="onFeedTypeChange('global')">
-            Global
+            {{ 'dashboard.globalTab' | translate }}
           </button>
         </div>
 
         <div class="feed-content">
           @if (isLoading() && activities().length === 0) {
-          <div class="loading">Loading feed...</div>
+          <div class="loading">{{ 'dashboard.loadingFeed' | translate }}</div>
           } @else if (activities().length === 0) {
           <div class="empty-state">
-            <p>No activities yet. Start following people to see their updates!</p>
+            <p>{{ 'dashboard.noActivities' | translate }}</p>
           </div>
           } @else {
           @for (activity of activities(); track activity._id) {
@@ -195,7 +195,7 @@
         <div class="recommendations-section">
           <div class="section-header">
             <span class="material-symbols-outlined section-icon">auto_awesome</span>
-            <h3 class="section-title">For You</h3>
+            <h3 class="section-title">{{ 'dashboard.forYou' | translate }}</h3>
           </div>
           @if (isDailyPickLoading()) {
           <div class="daily-pick-card skeleton-card">
@@ -213,7 +213,7 @@
           <div class="daily-pick-card">
             <div class="daily-pick-content">
               <div class="daily-pick-header">
-                <div class="daily-pick-badge">Daily Pick</div>
+                <div class="daily-pick-badge">{{ 'dashboard.dailyPick' | translate }}</div>
                 <div class="streak-badge" *ngIf="user()?.streak">
                   <span class="material-symbols-outlined fire-icon">local_fire_department</span>
                   <span>{{ user()?.streak }}</span>
@@ -228,7 +228,7 @@
               <div class="daily-pick-actions">
                 <button class="daily-pick-btn primary">
                   <span class="material-symbols-outlined">play_arrow</span>
-                  Watch
+                  {{ 'dashboard.watch' | translate }}
                 </button>
                 <button class="daily-pick-btn secondary" [class.watched]="pick.watched" (click)="openMemoryDialog()"
                   [disabled]="pick.watched">
@@ -256,7 +256,7 @@
           <div class="daily-pick-card mealtime-card" style="margin-top: 16px;">
             <div class="daily-pick-content">
               <div class="daily-pick-header">
-                <div class="daily-pick-badge mealtime-badge">Mealtime Roulette 🍕</div>
+                <div class="daily-pick-badge mealtime-badge">{{ 'dashboard.mealtimeRoulette' | translate }}</div>
               </div>
               <h4 class="daily-pick-title" [title]="meal.showTitle">{{ meal.showTitle }}</h4>
               <div class="daily-pick-meta" [title]="meal.episodeTitle">
@@ -271,7 +271,7 @@
               <div class="daily-pick-actions">
                 <button class="daily-pick-btn primary">
                   <span class="material-symbols-outlined">play_arrow</span>
-                  Watch
+                  {{ 'dashboard.watch' | translate }}
                 </button>
                 <button class="daily-pick-btn secondary" (click)="loadMealtimePick()">
                   <span class="material-symbols-outlined">refresh</span>
@@ -292,7 +292,7 @@
           <div class="section-header clickable-header" (click)="router.navigate(['/profile'])" style="cursor: pointer;">
             <h3 class="section-title">
               <span class="material-symbols-outlined section-icon">movie_filter</span>
-              For Your Mood
+              {{ 'dashboard.forYourMood' | translate }}
               <span class="material-symbols-outlined arrow-icon" style="font-size: 18px;">arrow_forward</span>
             </h3>
           </div>
@@ -322,7 +322,7 @@
                   <a class="daily-pick-btn primary" [routerLink]="['/movie', rec.tmdbId]"
                     style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
                     <span class="material-symbols-outlined">play_arrow</span>
-                    Watch
+                    {{ 'dashboard.watch' | translate }}
                   </a>
                 </div>
               </div>
@@ -333,7 +333,7 @@
           </div>
           } @else {
           <div class="empty-state">
-            <p>Log movies to get recommendations</p>
+            <p>{{ 'dashboard.logMovies' | translate }}</p>
           </div>
           }
         </section>
@@ -341,7 +341,7 @@
         <div class="trending-section">
           <div class="section-header">
             <span class="material-symbols-outlined section-icon">trending_up</span>
-            <h3 class="section-title">Trending Now</h3>
+            <h3 class="section-title">{{ 'dashboard.trendingNow' | translate }}</h3>
           </div>
           <div class="trending-card">
             <div class="trending-tags">
@@ -367,17 +367,18 @@
   </main>
 </div>
 
-<app-dialog [isOpen]="showMemoryDialog()" title="Daily Movie Memory" message="What do you remember about this film?"
-  [showInput]="true" [inputMinLength]="25" inputPlaceholder="Share your thoughts (min 25 characters)..."
-  confirmText="Verify Memory" [isLoading]="isDialogLoading()" [resultData]="dialogResult()"
-  (confirm)="handleMemorySubmit($event)" (cancel)="closeMemoryDialog()" (close)="closeMemoryDialog()">
+<app-dialog [isOpen]="showMemoryDialog()" [title]="'dashboard.memoryTitle' | translate"
+  [message]="'dashboard.memoryMessage' | translate" [showInput]="true" [inputMinLength]="25"
+  [inputPlaceholder]="'dashboard.memoryPlaceholder' | translate" [confirmText]="'dashboard.verifyMemory' | translate"
+  [isLoading]="isDialogLoading()" [resultData]="dialogResult()" (confirm)="handleMemorySubmit($event)"
+  (cancel)="closeMemoryDialog()" (close)="closeMemoryDialog()">
 </app-dialog>
 
 <!-- Friend Mealtime Dialog -->
 <div class="friend-dialog-backdrop" *ngIf="showFriendDialog()" (click)="closeFriendDialog()">
   <div class="friend-dialog" (click)="$event.stopPropagation()">
     <div class="friend-dialog-header">
-      <h3>Watch with Friends</h3>
+      <h3>{{ 'dashboard.watchWithFriends' | translate }}</h3>
       <button class="close-btn" (click)="closeFriendDialog()">
         <span class="material-symbols-outlined">close</span>
       </button>
@@ -388,7 +389,7 @@
       @if (isFriendPickLoading()) {
       <div class="friend-loading">
         <div class="spinner"></div>
-        <p>Finding the perfect episode...</p>
+        <p>{{ 'dashboard.findingEpisode' | translate }}</p>
       </div>
       } @else if (friendPickResult(); as result) {
       <!-- Result State -->
@@ -400,12 +401,13 @@
           <p class="episode-info">S{{ result.seasonNumber }} E{{ result.episodeNumber }} - {{ result.episodeTitle }}</p>
           <p class="runtime">{{ result.runtime }}m</p>
           <p class="shared-with" *ngIf="result.sharedWith.length > 0">
-            Shared interest with: {{ result.sharedWith.join(', ') }}
+            {{ 'dashboard.sharedInterestWith' | translate:{ names: result.sharedWith.join(', ') } }}
           </p>
         </div>
         <div class="friend-result-actions">
-          <button class="btn-primary">Watch Now</button>
-          <button class="btn-secondary" (click)="friendPickResult.set(null)">Pick Another</button>
+          <button class="btn-primary">{{ 'dashboard.watchNow' | translate }}</button>
+          <button class="btn-secondary" (click)="friendPickResult.set(null)">{{ 'dashboard.pickAnother' | translate
+            }}</button>
         </div>
       </div>
       } @else {
@@ -413,16 +415,16 @@
       @if (isFriendsLoading()) {
       <div class="friend-loading">
         <div class="spinner"></div>
-        <p>Loading friends...</p>
+        <p>{{ 'dashboard.loadingFriends' | translate }}</p>
       </div>
       } @else if (friendsList().length === 0) {
       <div class="no-friends">
         <span class="material-symbols-outlined">group_off</span>
-        <p>You don't have any friends yet.</p>
-        <p class="hint">Follow people and have them follow you back!</p>
+        <p>{{ 'dashboard.noFriends' | translate }}</p>
+        <p class="hint">{{ 'dashboard.noFriendsHint' | translate }}</p>
       </div>
       } @else {
-      <p class="select-hint">Select friends to find episodes you'll all enjoy:</p>
+      <p class="select-hint">{{ 'dashboard.selectFriendsHint' | translate }}</p>
       <div class="friend-list">
         @for (friend of friendsList(); track friend.id) {
         <div class="friend-item" [class.selected]="isFriendSelected(friend.id)"
@@ -444,9 +446,9 @@
     </div>
 
     <div class="friend-dialog-footer" *ngIf="!isFriendPickLoading() && !friendPickResult()">
-      <button class="btn-secondary" (click)="closeFriendDialog()">Cancel</button>
+      <button class="btn-secondary" (click)="closeFriendDialog()">{{ 'dialog.cancel' | translate }}</button>
       <button class="btn-primary" [disabled]="selectedFriends().size === 0" (click)="submitFriendPick()">
-        Find Episode ({{ selectedFriends().size }})
+        {{ 'dashboard.findEpisode' | translate:{ count: selectedFriends().size } }}
       </button>
     </div>
   </div>

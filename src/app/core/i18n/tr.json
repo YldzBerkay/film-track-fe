@@ -1,0 +1,253 @@
+{
+    "nav": {
+        "home": "Ana Sayfa",
+        "films": "Filmler",
+        "tvShows": "Diziler",
+        "lists": "Listeler",
+        "journal": "Günlük",
+        "myProfile": "Profilim"
+    },
+    "header": {
+        "searchPlaceholder": "Film, dizi, kişi ara...",
+        "log": "Ekle",
+        "notifications": "Bildirimler",
+        "noNotifications": "Henüz bildirim yok",
+        "clearAll": "Tümünü Temizle",
+        "profile": "Profil",
+        "logout": "Çıkış Yap"
+    },
+    "search": {
+        "resultsFor": "\"{{query}}\" için Arama Sonuçları",
+        "people": "Kişiler",
+        "noMovies": "Film bulunamadı.",
+        "noTvShows": "Dizi bulunamadı.",
+        "noUsers": "Kullanıcı bulunamadı.",
+        "back": "Geri"
+    },
+    "profile": {
+        "profile": "Profil",
+        "logout": "Çıkış Yap",
+        "followers": "Takipçiler",
+        "following": "Takip Edilenler",
+        "editProfile": "Profili Düzenle",
+        "moviesWatched": "Filmler",
+        "episodesWatched": "Bölümler",
+        "loadingProfile": "Profil yükleniyor...",
+        "goBack": "Geri Dön",
+        "changeBanner": "Afişi Değiştir",
+        "share": "Paylaş",
+        "follow": "Takip Et",
+        "compareMood": "Ruh Halini Karşılaştır",
+        "watched": "İzlendi",
+        "reviews": "İncelemeler",
+        "watchlistTab": "İzleme Listesi",
+        "listsTab": "Listeler",
+        "reviewsTab": "İncelemeler",
+        "likesTab": "Beğeniler",
+        "moodBadges": "Ruh Hali Rozetleri",
+        "earnBadgesHint": "Rozet kazanmak için film izle ve puanla!",
+        "forYourMood": "Ruh Haline Göre",
+        "match": "Eşleştir",
+        "shift": "Değiştir",
+        "all": "Hepsi",
+        "unwatched": "İzlenmeyenler",
+        "noMoodRecs": "Şu anda ruh haline uygun öneri bulunamadı.",
+        "directorsMovieCut": "Yönetmen Kurgusu: Filmler (Favoriler)",
+        "directorsTvCut": "Yönetmen Kurgusu: Diziler (Favoriler)",
+        "edit": "Düzenle",
+        "recentActivity": "Son Etkinlikler",
+        "viewAll": "Hepsini gör",
+        "noFollowers": "Henüz takipçi yok",
+        "notFollowingAnyone": "Henüz kimseyi takip etmiyor",
+        "remove": "Kaldır",
+        "unfollow": "Takibi Bırak",
+        "avatarUrl": "Profil Resmi URL",
+        "changeImage": "Resmi Değiştir",
+        "chooseImage": "Resim Seç",
+        "avatarHint": "Maksimum boyut: 1MB. JPG, PNG veya WebP.",
+        "bannerImage": "Afiş Resmi",
+        "clickToSelectBanner": "Afiş seçmek için tıkla",
+        "bannerHint": "Maksimum boyut: 2MB. 1200x350px.",
+        "realName": "Ad Soyad",
+        "realNamePlaceholder": "Adınızı soyadınızı girin...",
+        "username": "Kullanıcı Adı",
+        "usernamePlaceholder": "Bir kullanıcı adı seçin...",
+        "usernameChangeRestricted": "Kullanıcı adınızı {{date}} tarihinde değiştirebilirsiniz",
+        "cancel": "İptal",
+        "saveChanges": "Değişiklikleri Kaydet",
+        "saving": "Kaydediliyor...",
+        "moodComparison": "Ruh Hali Karşılaştırması",
+        "comparingMoods": "Ruh hali profilleri karşılaştırılıyor...",
+        "cinematicSoulmates": "Siz sinematik ruh eşisiniz! 🎬💕",
+        "similarVibes": "Film zevkleriniz oldukça benzer! 🎥",
+        "someOverlap": "Zevklerinizde bazı ortak noktalar var 🎞️",
+        "differentPerspectives": "Farklı bakış açıları, farklı filmler! 🌈",
+        "dimensionBreakdown": "Boyut Dağılımı",
+        "you": "Sen",
+        "sharedStrengths": "Ortak Güçlü Yönler",
+        "editDirectorsCut": "Yönetmen Kurgusunu Düzenle",
+        "moviesCount": "Filmler ({{count}})",
+        "tvShowsCount": "Diziler ({{count}})",
+        "noFavoriteMovies": "Henüz favori film yok.",
+        "noFavoriteTvShows": "Henüz favori dizi yok.",
+        "dragToReorder": "Sıralamak için sürükleyin",
+        "removeFromFavorites": "Favorilerden kaldır"
+    },
+    "card": {
+        "matchScore": "Eşleşme Skoru: %{{score}}"
+    },
+    "dialog": {
+        "confirm": "Onayla",
+        "cancel": "İptal",
+        "close": "Kapat",
+        "charsMin": "{{length}} / {{min}} karakter min"
+    },
+    "share": {
+        "title": "CineTrack Ruh Halini Paylaş",
+        "moodIdentity": "Ruh Hali Kimliği",
+        "generatedOn": "{{date}} tarihinde oluşturuldu",
+        "shareLink": "Bağlantıyı Paylaş",
+        "downloadImage": "Resmi İndir",
+        "generating": "Oluşturuluyor...",
+        "shareText": "CineTrack film ruh halime göz at! Şu anki havam: {{mood}}. 🎬✨",
+        "shareTitle": "CineTrack Ruh Halim",
+        "copied": "Bağlantı panoya kopyalandı!"
+    },
+    "mood": {
+        "adrenaline": "Adrenalin",
+        "melancholy": "Melankoli",
+        "joy": "Neşe",
+        "tension": "Gerilim",
+        "intellect": "Entelektüel",
+        "romance": "Romantik",
+        "wonder": "Merak",
+        "nostalgia": "Nostalji",
+        "darkness": "Karanlık",
+        "inspiration": "İlham",
+        "cinematicMood": "Sinematik Ruh Halin",
+        "loadingAnalysis": "Mood analizi yükleniyor...",
+        "noData": "Henüz yeterli veri yok. Film izlemeye başladığınızda mood grafiğiniz oluşacak.",
+        "moodJourney": "Mood Yolculuğun",
+        "loadingTimeline": "Timeline yükleniyor...",
+        "noTimelineData": "Henüz yeterli veri yok. Film izledikçe mood geçmişin burada görünecek.",
+        "basedOnHistory": "İzleme geçmişine dayanmaktadır"
+    },
+    "dashboard": {
+        "followingTab": "Takip Ettiklerim",
+        "friendsTab": "Arkadaşlar",
+        "globalTab": "Global",
+        "loadMore": "Daha fazla yükle",
+        "loadingFeed": "Akış yükleniyor...",
+        "noActivities": "Henüz aktivite yok. Güncellemeleri görmek için insanları takip etmeye başla!",
+        "forYou": "Senin İçin",
+        "dailyPick": "Günün Filmi",
+        "watch": "İzle",
+        "trendingNow": "Trendler",
+        "forYourMood": "Ruh Haline Göre",
+        "moodMatch": "Ruh Hali Eşleşmesi",
+        "logMovies": "Öneri almak için film kaydet",
+        "mealtimeRoulette": "Yemek Ruleti 🍕",
+        "memoryTitle": "Günün Film Anısı",
+        "memoryMessage": "Bu film hakkında ne hatırlıyorsun?",
+        "submit": "Gönder",
+        "memoryPlaceholder": "Düşüncelerini paylaş (min 25 karakter)...",
+        "verifyMemory": "Anıyı Doğrula",
+        "watchWithFriends": "Arkadaşlarla İzle",
+        "findingEpisode": "Mükemmel bölüm bulunuyor...",
+        "watchNow": "Hemen İzle",
+        "pickAnother": "Başka Seç",
+        "sharedInterestWith": "Ortak ilgi alanı: {{names}}",
+        "loadingFriends": "Arkadaşlar yükleniyor...",
+        "noFriends": "Henüz hiç arkadaşın yok.",
+        "noFriendsHint": "İnsanları takip et ve seni geri takip etmelerini sağla!",
+        "selectFriendsHint": "Birlikte keyif alacağınız bölümleri bulmak için arkadaş seç:",
+        "findEpisode": "Bölüm Bul ({{count}})"
+    },
+    "common": {
+        "watched": "izledi",
+        "watchedEpisode": "bölüm izledi",
+        "justNow": "Az önce",
+        "minuteAgo": "1 dakika önce",
+        "minutesAgo": "{{count}} dakika önce",
+        "hourAgo": "1 saat önce",
+        "hoursAgo": "{{count}} saat önce",
+        "dayAgo": "1 gün önce",
+        "daysAgo": "{{count}} gün önce",
+        "weekAgo": "1 hafta önce",
+        "weeksAgo": "{{count}} hafta önce"
+    },
+    "auth": {
+        "signIn": "Giriş Yap",
+        "signUp": "Kayıt Ol",
+        "getStarted": "Başla",
+        "continueWithGoogle": "Google ile Devam Et",
+        "email": "E-posta",
+        "password": "Şifre",
+        "username": "Kullanıcı Adı",
+        "confirmPassword": "Şifre Tekrarı",
+        "forgotPassword": "Şifremi Unuttum?",
+        "noAccount": "Hesabınız yok mu?",
+        "haveAccount": "Zaten hesabınız var mı?"
+    },
+    "landing": {
+        "tagline": "İzlediklerini takip et, hissettiklerini kaydet.",
+        "subtitle": "Film severler için en iyi günlük.",
+        "whyFilmTrack": "Neden FilmTrack?",
+        "features": "Özellikler",
+        "community": "Topluluk"
+    },
+    "errors": {
+        "somethingWentWrong": "Bir şeyler yanlış gitti",
+        "tryAgain": "Tekrar dene"
+    },
+    "badges": {
+        "thrill_seeker": {
+            "name": "Heyecan Tutkunu",
+            "description": "Adrenalin skoru 75 üzeri"
+        },
+        "deep_thinker": {
+            "name": "Derin Düşünür",
+            "description": "Entelektüel skor 80 üzeri"
+        },
+        "hopeless_romantic": {
+            "name": "Umutsuz Romantik",
+            "description": "Romantizm skoru 70 üzeri"
+        },
+        "joy_bringer": {
+            "name": "Neşe Kaynağı",
+            "description": "Neşe skoru 80 üzeri"
+        },
+        "night_owl": {
+            "name": "Gece Kuşu",
+            "description": "Yüksek gerilim ve karanlık kombinasyonu (ikisi de > 60)"
+        },
+        "dreamer": {
+            "name": "Hayalperest",
+            "description": "Merak skoru 75 üzeri"
+        },
+        "rising_star": {
+            "name": "Yükselen Yıldız",
+            "description": "İlham skoru 80 üzeri"
+        },
+        "melancholic_soul": {
+            "name": "Melankolik Ruh",
+            "description": "Melankoli skoru 70 üzeri"
+        },
+        "nostalgic_heart": {
+            "name": "Nostaljik Kalp",
+            "description": "Nostalji skoru 70 üzeri"
+        },
+        "balanced_explorer": {
+            "name": "Dengeli Kaşif",
+            "description": "Tüm mood boyutları 40-60 arasında (dengeli)"
+        },
+        "cinephile": {
+            "name": "Sinefil",
+            "description": "50+ film izlendi"
+        },
+        "movie_buff": {
+            "name": "Film Kurdu",
+            "description": "100+ film izlendi"
+        }
+    }
+}

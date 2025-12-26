@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LanguageService } from './language.service';
 
 export interface MealtimeRecommendation {
     showTitle: string;
@@ -71,15 +72,27 @@ export interface MoodRecommendation {
 })
 export class RecommendationService {
     private readonly apiUrl = 'http://localhost:3000/api/recommendations';
+    private http = inject(HttpClient);
+    private languageService = inject(LanguageService);
 
-    constructor(private http: HttpClient) { }
+    private getParams(additionalParams?: Record<string, string>): HttpParams {
+        let params = new HttpParams().set('lang', this.languageService.langCode());
+        if (additionalParams) {
+            Object.entries(additionalParams).forEach(([key, value]) => {
+                params = params.set(key, value);
+            });
+        }
+        return params;
+    }
 
     getMealtimePick(): Observable<ApiResponse<MealtimeRecommendation>> {
-        return this.http.get<ApiResponse<MealtimeRecommendation>>(`${this.apiUrl}/mealtime`);
+        const params = this.getParams();
+        return this.http.get<ApiResponse<MealtimeRecommendation>>(`${this.apiUrl}/mealtime`, { params });
     }
 
     getDailyPick(): Observable<ApiResponse<DailyPick>> {
-        return this.http.get<ApiResponse<DailyPick>>(`${this.apiUrl}/daily`);
+        const params = this.getParams();
+        return this.http.get<ApiResponse<DailyPick>>(`${this.apiUrl}/daily`, { params });
     }
 
     getFriends(): Observable<ApiResponse<Friend[]>> {
@@ -87,9 +100,10 @@ export class RecommendationService {
     }
 
     getFriendMealtimePick(friendIds: string[]): Observable<ApiResponse<FriendMealtimeRecommendation>> {
+        const params = this.getParams();
         return this.http.post<ApiResponse<FriendMealtimeRecommendation>>(`${this.apiUrl}/mealtime/friends`, {
             friendIds
-        });
+        }, { params });
     }
 
     verifyMemory(filmTitle: string, filmOverview: string, userMemory: string): Observable<ApiResponse<MemoryVerificationResult>> {
@@ -105,8 +119,11 @@ export class RecommendationService {
         limit: number = 10,
         includeWatched: boolean = false
     ): Observable<ApiResponse<MoodRecommendation[]>> {
-        return this.http.get<ApiResponse<MoodRecommendation[]>>(`${this.apiUrl}/mood-based`, {
-            params: { mode, limit: limit.toString(), includeWatched: includeWatched.toString() }
+        const params = this.getParams({
+            mode,
+            limit: limit.toString(),
+            includeWatched: includeWatched.toString()
         });
+        return this.http.get<ApiResponse<MoodRecommendation[]>>(`${this.apiUrl}/mood-based`, { params });
     }
 }

@@ -15,7 +15,7 @@
             <span class="material-symbols-outlined search-icon">search</span>
             <input type="text" class="search-input" [value]="searchQuery()"
                 (input)="searchQuery.set($any($event.target).value)" (keyup.enter)="onSearch()"
-                placeholder="Search films, shows, people..." />
+                [placeholder]="'header.searchPlaceholder' | translate" />
         </div>
 
         <div class="header-actions">
@@ -24,7 +24,10 @@
 
             <button class="log-btn" (click)="onLogClick()">
                 <span class="material-symbols-outlined">add</span>
-                Log
+                {{ 'header.log' | translate }}
+            </button>
+            <button class="lang-toggle-btn" (click)="toggleLanguage()" title="Switch language">
+                <span class="lang-code">{{ currentLanguage() === 'en' ? 'EN' : 'TR' }}</span>
             </button>
             <div class="notification-wrapper">
                 <button class="icon-btn" (click)="toggleNotificationMenu($event)">
@@ -36,16 +39,17 @@
                 @if (showNotificationMenu()) {
                 <div class="notification-menu">
                     <div class="notification-menu-header">
-                        <span>Notifications</span>
+                        <span>{{ 'header.notifications' | translate }}</span>
                         @if (socketService.notifications().length > 0) {
-                        <button class="clear-all-btn" (click)="clearAllNotifications()">Clear all</button>
+                        <button class="clear-all-btn" (click)="clearAllNotifications()">{{ 'header.clearAll' | translate
+                            }}</button>
                         }
                     </div>
                     <div class="notification-menu-body">
                         @if (socketService.notifications().length === 0) {
                         <div class="no-notifications">
                             <span class="material-symbols-outlined">notifications_off</span>
-                            <p>No notifications yet</p>
+                            <p>{{ 'header.noNotifications' | translate }}</p>
                         </div>
                         } @else {
                         @for (notification of socketService.notifications(); track notification.id) {
@@ -86,11 +90,11 @@
                     <div class="profile-menu-body">
                         <div class="profile-menu-item" (click)="router.navigate(['/profile']); closeProfileMenu()">
                             <span class="material-symbols-outlined">person</span>
-                            <span>Profile</span>
+                            <span>{{ 'header.profile' | translate }}</span>
                         </div>
                         <div class="profile-menu-item" (click)="onLogout()">
                             <span class="material-symbols-outlined">logout</span>
-                            <span>Logout</span>
+                            <span>{{ 'header.logout' | translate }}</span>
                         </div>
                     </div>
                 </div>
