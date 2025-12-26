@@ -19,6 +19,15 @@ interface ApiResponse<T> {
     message?: string;
 }
 
+export interface DailyPick {
+    tmdbId: number;
+    title: string;
+    year: number;
+    genre: string;
+    backdropUrl: string;
+    overview: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -29,5 +38,9 @@ export class RecommendationService {
 
     getMealtimePick(): Observable<ApiResponse<MealtimeRecommendation>> {
         return this.http.get<ApiResponse<MealtimeRecommendation>>(`${this.apiUrl}/mealtime`);
+    }
+
+    getDailyPick(): Observable<ApiResponse<DailyPick>> {
+        return this.http.get<ApiResponse<DailyPick>>(`${this.apiUrl}/daily`);
     }
 }

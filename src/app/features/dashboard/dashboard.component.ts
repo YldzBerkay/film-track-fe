@@ -8,7 +8,7 @@ import { TMDBService } from '../../core/services/tmdb.service';
 
 type FeedType = 'following' | 'friends' | 'global';
 
-import { RecommendationService, MealtimeRecommendation } from '../../core/services/recommendation.service';
+import { RecommendationService, MealtimeRecommendation, DailyPick } from '../../core/services/recommendation.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,50 +40,6 @@ export class DashboardComponent implements OnInit {
   isDailyPickLoading = signal(true);
   isMealtimePickLoading = signal(true);
 
-  // Mock pool of daily picks - ideally this would come from a backend 'trending' endpoint
-  private readonly DAILY_PICK_POOL: DailyPick[] = [
-    {
-      tmdbId: 27205,
-      title: 'Inception',
-      year: 2010,
-      genre: 'Sci-Fi',
-      backdropUrl: 'https://image.tmdb.org/t/p/w500/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg',
-      overview: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.'
-    },
-    {
-      tmdbId: 438631,
-      title: 'Dune',
-      year: 2021,
-      genre: 'Sci-Fi',
-      backdropUrl: 'https://image.tmdb.org/t/p/w500/jYEW5xZkZk2WTrdbMGAPFuBqbDc.jpg',
-      overview: 'Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe.'
-    },
-    {
-      tmdbId: 872585,
-      title: 'Oppenheimer',
-      year: 2023,
-      genre: 'History',
-      backdropUrl: 'https://image.tmdb.org/t/p/w500/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg',
-      overview: 'The story of J. Robert Oppenheimer’s role in the development of the atomic bomb during World War II.'
-    },
-    {
-      tmdbId: 157336,
-      title: 'Interstellar',
-      year: 2014,
-      genre: 'Sci-Fi',
-      backdropUrl: 'https://image.tmdb.org/t/p/w500/pbrkL804c8yAv3zBZR4QPEafpAR.jpg',
-      overview: 'The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel.'
-    },
-    {
-      tmdbId: 155,
-      title: 'The Dark Knight',
-      year: 2008,
-      genre: 'Action',
-      backdropUrl: 'https://image.tmdb.org/t/p/w500/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg',
-      overview: 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.'
-    }
-  ];
-
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/login']);
@@ -112,30 +68,15 @@ export class DashboardComponent implements OnInit {
 
   loadDailyPick(): void {
     this.isDailyPickLoading.set(true);
-    // 1. Fetch user's recent activity to find what they've watched
-    this.activityService.getUserActivities(1, 100).subscribe({
+    this.recommendationService.getDailyPick().subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          const watchedTmdbIds = new Set(
-            response.data.activities
-              .filter(a => ['movie_watched', 'rating', 'review'].includes(a.type))
-              .map(a => a.tmdbId)
-          );
-
-          // 2. Find the first movie in the pool that hasn't been watched
-          const pick = this.DAILY_PICK_POOL.find(movie => !watchedTmdbIds.has(movie.tmdbId));
-
-          // 3. Fallback to the first one if all are watched (or maybe randomize)
-          this.dailyPick.set(pick || this.DAILY_PICK_POOL[0]);
-        } else {
-          // Fallback if API fails
-          this.dailyPick.set(this.DAILY_PICK_POOL[0]);
+          this.dailyPick.set(response.data);
         }
         this.isDailyPickLoading.set(false);
       },
-      error: () => {
-        // Fallback on error
-        this.dailyPick.set(this.DAILY_PICK_POOL[0]);
+      error: (err) => {
+        console.error('Failed to load daily pick', err);
         this.isDailyPickLoading.set(false);
       }
     });
@@ -241,12 +182,5 @@ export class DashboardComponent implements OnInit {
   }
 }
 
-interface DailyPick {
-  tmdbId: number;
-  title: string;
-  year: number;
-  genre: string;
-  backdropUrl: string;
-  overview: string;
-}
+
 

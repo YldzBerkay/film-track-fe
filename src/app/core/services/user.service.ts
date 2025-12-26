@@ -26,6 +26,10 @@ export interface UserProfile {
       posterPath: string;
       firstAirDate: string;
     }>;
+    streak: {
+      current: number;
+      lastLoginDate: string | null;
+    };
     createdAt: string;
   };
   recentActivities: Array<{
