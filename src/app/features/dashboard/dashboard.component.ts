@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivityService, Activity } from '../../core/services/activity.service';
 import { TMDBService } from '../../core/services/tmdb.service';
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 
 type FeedType = 'following' | 'friends' | 'global';
 
@@ -13,7 +14,7 @@ import { RecommendationService, MealtimeRecommendation, DailyPick } from '../../
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DialogComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,6 +40,12 @@ export class DashboardComponent implements OnInit {
   mealtimePick = signal<MealtimeRecommendation | null>(null);
   isDailyPickLoading = signal(true);
   isMealtimePickLoading = signal(true);
+
+
+  showMemoryDialog = signal(false);
+  memoryText = signal('');
+  isDialogLoading = signal(false);
+  dialogResult = signal<{ success: boolean; message: string; confidence?: number } | null>(null);
 
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
@@ -168,6 +175,55 @@ export class DashboardComponent implements OnInit {
 
   onLogClick(): void {
     // TODO: Open log modal
+  }
+
+  openMemoryDialog(): void {
+    this.showMemoryDialog.set(true);
+  }
+
+  closeMemoryDialog(): void {
+    this.showMemoryDialog.set(false);
+    this.memoryText.set('');
+    this.isDialogLoading.set(false);
+    this.dialogResult.set(null);
+  }
+
+  handleMemorySubmit(text: string | void): void {
+    if (typeof text === 'string') {
+      const pick = this.dailyPick();
+      if (!pick) {
+        console.error('No daily pick available');
+        return;
+      }
+
+      this.isDialogLoading.set(true);
+
+      this.recommendationService.verifyMemory(pick.title, pick.overview, text).subscribe({
+        next: (response) => {
+          this.isDialogLoading.set(false);
+          if (response.success && response.data) {
+            const result = response.data;
+            this.dialogResult.set({
+              success: result.watched,
+              message: result.watched ? 'You watched today\'s movie successfully!' : result.reasoning,
+              confidence: result.confidence
+            });
+            // Update the dailyPick to reflect watched status
+            if (result.watched) {
+              this.dailyPick.set({ ...pick, watched: true });
+            }
+          }
+        },
+        error: (err) => {
+          console.error('Memory verification failed:', err);
+          this.isDialogLoading.set(false);
+          this.dialogResult.set({
+            success: false,
+            message: 'Failed to verify memory. Please try again.'
+          });
+        }
+      });
+    }
   }
 
   onSearch(): void {

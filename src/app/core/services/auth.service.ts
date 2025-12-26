@@ -38,6 +38,7 @@ export interface User {
   nickname: string;
   email: string;
   onboardingCompleted?: boolean;
+  streak?: number;
 }
 
 @Injectable({

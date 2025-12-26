@@ -245,7 +245,13 @@
           } @else if (dailyPick(); as pick) {
           <div class="daily-pick-card">
             <div class="daily-pick-content">
-              <div class="daily-pick-badge">Daily Pick</div>
+              <div class="daily-pick-header">
+                <div class="daily-pick-badge">Daily Pick</div>
+                <div class="streak-badge" *ngIf="user()?.streak">
+                  <span class="material-symbols-outlined fire-icon">local_fire_department</span>
+                  <span>{{ user()?.streak }}</span>
+                </div>
+              </div>
               <h4 class="daily-pick-title" [title]="pick.title">{{ pick.title }}</h4>
               <div class="daily-pick-meta" [title]="pick.year + ' • ' + pick.genre">
                 <span>{{ pick.year }}</span>
@@ -257,8 +263,9 @@
                   <span class="material-symbols-outlined">play_arrow</span>
                   Watch
                 </button>
-                <button class="daily-pick-btn secondary">
-                  <span class="material-symbols-outlined">add</span>
+                <button class="daily-pick-btn secondary" [class.watched]="pick.watched" (click)="openMemoryDialog()"
+                  [disabled]="pick.watched">
+                  <span class="material-symbols-outlined">{{ pick.watched ? 'done' : 'add' }}</span>
                 </button>
               </div>
             </div>
@@ -336,3 +343,9 @@
     </div>
   </main>
 </div>
+
+<app-dialog [isOpen]="showMemoryDialog()" title="Daily Movie Memory" message="What do you remember about this film?"
+  [showInput]="true" [inputMinLength]="25" inputPlaceholder="Share your thoughts (min 25 characters)..."
+  confirmText="Verify Memory" [isLoading]="isDialogLoading()" [resultData]="dialogResult()"
+  (confirm)="handleMemorySubmit($event)" (cancel)="closeMemoryDialog()" (close)="closeMemoryDialog()">
+</app-dialog>

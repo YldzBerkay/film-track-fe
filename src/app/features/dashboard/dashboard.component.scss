@@ -920,10 +920,17 @@
   min-height: 240px;
 }
 
-.daily-pick-badge {
+.daily-pick-header {
   position: absolute;
   top: 1rem;
   left: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.daily-pick-badge {
   background: rgba(0, 224, 84, 0.2);
   color: var(--color-primary);
   font-size: 0.75rem;
@@ -932,6 +939,35 @@
   border-radius: 0.375rem;
   backdrop-filter: blur(4px);
   border: 1px solid rgba(0, 224, 84, 0.3);
+}
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+
+  .fire-icon {
+    font-size: 1rem;
+    animation: flame 0.5s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes flame {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
 }
 
 .daily-pick-title {
@@ -999,6 +1035,16 @@
 
     &:hover {
       background: rgba(255, 255, 255, 0.3);
+    }
+
+    &.watched {
+      background: rgba(76, 175, 80, 0.3);
+      color: #4caf50;
+      cursor: default;
+
+      &:hover {
+        background: rgba(76, 175, 80, 0.3);
+      }
     }
   }
 }

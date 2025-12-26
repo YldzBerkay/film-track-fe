@@ -26,6 +26,13 @@ export interface DailyPick {
     genre: string;
     backdropUrl: string;
     overview: string;
+    watched: boolean;
+}
+
+export interface MemoryVerificationResult {
+    watched: boolean;
+    confidence: number;
+    reasoning: string;
 }
 
 @Injectable({
@@ -42,5 +49,13 @@ export class RecommendationService {
 
     getDailyPick(): Observable<ApiResponse<DailyPick>> {
         return this.http.get<ApiResponse<DailyPick>>(`${this.apiUrl}/daily`);
+    }
+
+    verifyMemory(filmTitle: string, filmOverview: string, userMemory: string): Observable<ApiResponse<MemoryVerificationResult>> {
+        return this.http.post<ApiResponse<MemoryVerificationResult>>('http://localhost:3000/api/ai/verify-memory', {
+            filmTitle,
+            filmOverview,
+            userMemory
+        });
     }
 }

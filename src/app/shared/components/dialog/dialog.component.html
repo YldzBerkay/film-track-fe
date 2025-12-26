@@ -1,0 +1,60 @@
+<div class="dialog-backdrop" *ngIf="isOpen" [@backdropAnimation] (click)="onBackdropClick($event)">
+    <div class="dialog-modal" [@modalAnimation] [ngClass]="type">
+        <div class="dialog-header">
+            <h3 class="dialog-title">{{ title }}</h3>
+            <button class="close-btn" (click)="onCancel()" *ngIf="!isLoading">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="loading-container">
+                <div class="spinner"></div>
+                <p class="loading-text">Analyzing your memory...</p>
+            </div>
+
+            <!-- Result State -->
+            <div *ngIf="resultData && !isLoading" class="result-container">
+                <div class="result-icon" [class.success]="resultData.success" [class.failure]="!resultData.success">
+                    <span class="material-symbols-outlined">
+                        {{ resultData.success ? 'check_circle' : 'cancel' }}
+                    </span>
+                </div>
+                <h4 class="result-title">{{ resultData.success ? 'You watched it!' : 'Not sure you watched it' }}</h4>
+                <p class="result-message">{{ resultData.message }}</p>
+                <div *ngIf="resultData.confidence !== undefined" class="confidence-bar">
+                    <div class="confidence-label">Confidence: {{ resultData.confidence }}%</div>
+                    <div class="confidence-track">
+                        <div class="confidence-fill" [style.width.%]="resultData.confidence"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input State -->
+            <div *ngIf="!isLoading && !resultData">
+                <p>{{ message }}</p>
+                <div *ngIf="showInput" class="dialog-input-container">
+                    <textarea [(ngModel)]="inputValue" [placeholder]="inputPlaceholder" class="dialog-textarea"
+                        rows="4"></textarea>
+                    <div class="char-count" [class.invalid]="inputValue.length < inputMinLength">
+                        {{ inputValue.length }} / {{ inputMinLength }} characters min
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-footer" *ngIf="!isLoading">
+            <button *ngIf="showCancel && !resultData" class="btn btn-secondary" (click)="onCancel()">
+                {{ cancelText }}
+            </button>
+            <button *ngIf="!resultData" class="btn btn-primary" [ngClass]="'btn-' + type" (click)="onConfirm()"
+                [disabled]="showInput && inputValue.length < inputMinLength">
+                {{ confirmText }}
+            </button>
+            <button *ngIf="resultData" class="btn btn-primary" (click)="onCancel()">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
