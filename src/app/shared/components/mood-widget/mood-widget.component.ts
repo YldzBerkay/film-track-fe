@@ -35,6 +35,7 @@ export class MoodWidgetComponent {
 
         return {
             ...this.getMoodConfig(maxKey),
+            key: maxKey,
             value: Math.round(maxValue)
         };
     });

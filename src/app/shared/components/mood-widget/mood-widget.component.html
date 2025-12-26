@@ -2,13 +2,13 @@
 <div class="mood-widget" [style.--mood-color]="mood.color">
     <div class="pulse-ring"></div>
     <span class="material-symbols-outlined icon">{{ mood.icon }}</span>
-    <span class="label">{{ mood.label }}</span>
+    <span class="label">{{ 'mood.' + mood.key | translate }}</span>
     <div class="tooltip">
         <div class="tooltip-header">
-            <span class="tooltip-title">{{ mood.label }}</span>
+            <span class="tooltip-title">{{ 'mood.' + mood.key | translate }}</span>
             <span class="tooltip-score">{{ mood.value }}%</span>
         </div>
-        <p class="tooltip-desc">{{ mood.description }}</p>
+        <p class="tooltip-desc">{{ 'mood.' + mood.key + 'Desc' | translate }}</p>
         <p class="tooltip-sub">{{ 'mood.basedOnHistory' | translate }}</p>
     </div>
 </div>
