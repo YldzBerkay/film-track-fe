@@ -13,6 +13,16 @@ export interface MealtimeRecommendation {
     stillPath: string | null;
 }
 
+export interface FriendMealtimeRecommendation extends MealtimeRecommendation {
+    sharedWith: string[];
+}
+
+export interface Friend {
+    id: string;
+    username: string;
+    nickname: string;
+}
+
 interface ApiResponse<T> {
     success: boolean;
     data: T;
@@ -49,6 +59,16 @@ export class RecommendationService {
 
     getDailyPick(): Observable<ApiResponse<DailyPick>> {
         return this.http.get<ApiResponse<DailyPick>>(`${this.apiUrl}/daily`);
+    }
+
+    getFriends(): Observable<ApiResponse<Friend[]>> {
+        return this.http.get<ApiResponse<Friend[]>>(`${this.apiUrl}/friends`);
+    }
+
+    getFriendMealtimePick(friendIds: string[]): Observable<ApiResponse<FriendMealtimeRecommendation>> {
+        return this.http.post<ApiResponse<FriendMealtimeRecommendation>>(`${this.apiUrl}/mealtime/friends`, {
+            friendIds
+        });
     }
 
     verifyMemory(filmTitle: string, filmOverview: string, userMemory: string): Observable<ApiResponse<MemoryVerificationResult>> {

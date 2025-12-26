@@ -6,15 +6,16 @@ import { AuthService } from '../../core/services/auth.service';
 import { ActivityService, Activity } from '../../core/services/activity.service';
 import { TMDBService } from '../../core/services/tmdb.service';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
+import { HeaderComponent } from '../../layout/header/header.component';
 
 type FeedType = 'following' | 'friends' | 'global';
 
-import { RecommendationService, MealtimeRecommendation, DailyPick } from '../../core/services/recommendation.service';
+import { RecommendationService, MealtimeRecommendation, DailyPick, Friend, FriendMealtimeRecommendation } from '../../core/services/recommendation.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DialogComponent],
+  imports: [CommonModule, FormsModule, RouterModule, DialogComponent, HeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -46,6 +47,14 @@ export class DashboardComponent implements OnInit {
   memoryText = signal('');
   isDialogLoading = signal(false);
   dialogResult = signal<{ success: boolean; message: string; confidence?: number } | null>(null);
+
+  // Friend Mealtime Roulette state
+  showFriendDialog = signal(false);
+  friendsList = signal<Friend[]>([]);
+  selectedFriends = signal<Set<string>>(new Set());
+  isFriendPickLoading = signal(false);
+  friendPickResult = signal<FriendMealtimeRecommendation | null>(null);
+  isFriendsLoading = signal(false);
 
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
@@ -226,6 +235,70 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Friend Mealtime Roulette Methods
+  openFriendDialog(): void {
+    this.showFriendDialog.set(true);
+    this.friendPickResult.set(null);
+    this.selectedFriends.set(new Set());
+    this.loadFriends();
+  }
+
+  closeFriendDialog(): void {
+    this.showFriendDialog.set(false);
+    this.friendPickResult.set(null);
+    this.selectedFriends.set(new Set());
+    this.isFriendPickLoading.set(false);
+  }
+
+  loadFriends(): void {
+    this.isFriendsLoading.set(true);
+    this.recommendationService.getFriends().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.friendsList.set(response.data);
+        }
+        this.isFriendsLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load friends:', err);
+        this.isFriendsLoading.set(false);
+      }
+    });
+  }
+
+  toggleFriendSelection(friendId: string): void {
+    const current = new Set(this.selectedFriends());
+    if (current.has(friendId)) {
+      current.delete(friendId);
+    } else {
+      current.add(friendId);
+    }
+    this.selectedFriends.set(current);
+  }
+
+  isFriendSelected(friendId: string): boolean {
+    return this.selectedFriends().has(friendId);
+  }
+
+  submitFriendPick(): void {
+    const selected = Array.from(this.selectedFriends());
+    if (selected.length === 0) return;
+
+    this.isFriendPickLoading.set(true);
+    this.recommendationService.getFriendMealtimePick(selected).subscribe({
+      next: (response) => {
+        this.isFriendPickLoading.set(false);
+        if (response.success && response.data) {
+          this.friendPickResult.set(response.data);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to get friend mealtime pick:', err);
+        this.isFriendPickLoading.set(false);
+      }
+    });
+  }
+
   onSearch(): void {
     const query = this.searchQuery();
     if (query.trim()) {
@@ -237,6 +310,3 @@ export class DashboardComponent implements OnInit {
     this.authService.logout();
   }
 }
-
-
-

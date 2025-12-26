@@ -6,13 +6,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { TMDBService } from '../../core/services/tmdb.service';
 import { MoodService, MoodVector } from '../../core/services/mood.service';
 import { MoodChartComponent } from '../../shared/components/mood-chart/mood-chart.component';
+import { HeaderComponent } from '../../layout/header/header.component';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, MoodChartComponent],
+  imports: [CommonModule, RouterModule, MoodChartComponent, HeaderComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -36,7 +37,7 @@ export class ProfileComponent implements OnInit {
     const param = this.route.snapshot.paramMap.get('username');
     return param || '';
   });
-  
+
   readonly isOwnProfile = computed(() => {
     if (!this.username()) {
       return true; // No username means current user's profile

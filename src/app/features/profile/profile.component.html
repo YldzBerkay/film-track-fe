@@ -15,36 +15,7 @@
   <div class="floating-orb floating-orb--accent"></div>
   <div class="floating-orb floating-orb--secondary"></div>
 
-  <!-- Navigation Header -->
-  <nav class="nav-header">
-    <div class="nav-content">
-      <div class="nav-left">
-        <div class="logo-section" (click)="router.navigate(['/dashboard'])">
-          <div class="logo-icon">
-            <span class="material-symbols-outlined">movie_filter</span>
-          </div>
-          <h2 class="logo-text">CineTrack</h2>
-        </div>
-        <div class="nav-links">
-          <a class="nav-link" href="#">Movies</a>
-          <a class="nav-link" href="#">TV Shows</a>
-          <a class="nav-link" href="#">Community</a>
-          <a class="nav-link" href="#">Lists</a>
-        </div>
-      </div>
-      <div class="nav-right">
-        <div class="search-container">
-          <div class="search-icon">
-            <span class="material-symbols-outlined">search</span>
-          </div>
-          <input type="text" class="search-input" placeholder="Search movies, people..." />
-        </div>
-        <div class="profile-avatar-nav" (click)="router.navigate(['/profile'])">
-          <div class="avatar-image"></div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <app-header></app-header>
 
   <!-- Profile Hero Section -->
   <div class="profile-hero">
