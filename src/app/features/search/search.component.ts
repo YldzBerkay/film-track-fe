@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, inject, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TMDBService, TMDBMovie, TMDBTvShow } from '../../core/services/tmdb.service';
 import { UserService, UserSearchResults } from '../../core/services/user.service';
@@ -18,6 +18,7 @@ type SearchTab = 'movies' | 'tv' | 'people';
 export class SearchComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private location = inject(Location);
     private tmdbService = inject(TMDBService);
     private userService = inject(UserService);
 
@@ -87,5 +88,9 @@ export class SearchComponent implements OnInit {
     getAvatarUrl(user: UserSearchResults['users'][0]) {
         if (user.avatar) return user.avatar;
         return `https://ui-avatars.com/api/?name=${user.username}&background=random`;
+    }
+
+    goBack() {
+        this.location.back();
     }
 }

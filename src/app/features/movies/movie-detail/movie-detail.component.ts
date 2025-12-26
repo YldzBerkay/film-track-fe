@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TMDBService, TMDBMovieDetails } from '../../../core/services/tmdb.service';
 import { ActivityService } from '../../../core/services/activity.service';
@@ -19,6 +19,7 @@ export class MovieDetailComponent implements OnInit {
   tmdbService = inject(TMDBService);
   private activityService = inject(ActivityService);
   private authService = inject(AuthService);
+  private location = inject(Location);
 
   movie = signal<TMDBMovieDetails | null>(null);
   isLoading = signal(true);
@@ -101,6 +102,10 @@ export class MovieDetailComponent implements OnInit {
       return;
     }
     // TODO: Open add to list modal
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }
 
