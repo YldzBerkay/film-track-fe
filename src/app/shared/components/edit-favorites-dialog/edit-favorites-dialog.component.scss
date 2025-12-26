@@ -1,0 +1,322 @@
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-content {
+    background: var(--color-surface);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.dialog-header {
+    padding: 24px 24px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-border);
+
+    h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: var(--color-text-main);
+    }
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--color-text-main);
+    }
+}
+
+.dialog-tabs {
+    display: flex;
+    padding: 16px 24px 0;
+    gap: 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.tab-btn {
+    padding-bottom: 12px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        color: var(--color-text-main);
+    }
+
+    &.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+}
+
+.dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    min-height: 200px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.drag-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.drag-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    transition: all 0.2s;
+    cursor: grab;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(4px);
+    }
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.drag-handle {
+    color: var(--color-text-muted);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.item-poster {
+    width: 40px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #1a1f26;
+}
+
+.item-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.item-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba(255, 69, 58, 0.1);
+        color: #ff453a;
+    }
+}
+
+.dialog-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.cancel-btn {
+    padding: 10px 20px;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--color-text-main);
+    }
+}
+
+.save-btn {
+    padding: 10px 20px;
+    border-radius: 9999px;
+    border: none;
+    background: var(--color-primary);
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Drag Preview Styles */
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    background: #2a2f38; // Slightly lighter than background
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    color: #fff;
+    opacity: 0.9;
+    border: 1px solid var(--color-primary);
+
+    .preview-poster {
+        width: 40px;
+        height: 60px;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+
+    .preview-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    // Hide details in preview for cleaner look
+    .drag-handle,
+    .remove-btn,
+    .item-meta,
+    .item-info {
+        display: none; // Or selectively hide
+    }
+
+    .item-info {
+        display: none;
+    }
+}
+
+.cdk-drag-placeholder {
+    opacity: 0;
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drag-list.cdk-drop-list-dragging .drag-item:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

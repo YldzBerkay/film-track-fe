@@ -262,16 +262,19 @@
       }
     </div>
     }
-    <!-- Favorites Section -->
-    @if (profileData.user.favoriteMovies.length > 0 || profileData.user.favoriteTvShows.length > 0) {
+    <!-- Director's Cut (Movies) Section -->
+    @if (profileData.user.favoriteMovies.length > 0) {
     <div class="favorites-section">
       <div class="section-header">
         <h2 class="section-title">
-          <span class="material-symbols-outlined section-icon">favorite</span>
-          Director's Cut (Favorites)
+          <span class="material-symbols-outlined section-icon">movie</span>
+          Director's Movie Cut (Favorites)
         </h2>
         @if (isOwnProfile()) {
-        <button class="section-edit-btn">Edit</button>
+        <button class="section-edit-btn" (click)="openEditFavorites('movies')">
+          <span class="material-symbols-outlined">edit</span>
+          Edit
+        </button>
         }
       </div>
       <div class="favorites-grid">
@@ -283,6 +286,26 @@
           </div>
         </div>
         }
+      </div>
+    </div>
+    }
+
+    <!-- Director's Cut (TV Shows) Section -->
+    @if (profileData.user.favoriteTvShows.length > 0) {
+    <div class="favorites-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined section-icon">tv</span>
+          Director's TV Shows Cut (Favorites)
+        </h2>
+        @if (isOwnProfile()) {
+        <button class="section-edit-btn" (click)="openEditFavorites('tv')">
+          <span class="material-symbols-outlined">edit</span>
+          Edit
+        </button>
+        }
+      </div>
+      <div class="favorites-grid">
         @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
         <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
           <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="favorite-poster" />
@@ -422,25 +445,24 @@
       <!-- Banner Section -->
       <div class="form-group">
         <label>Banner Image</label>
-        <div class="avatar-input-wrapper">
-          <div class="banner-preview">
+        <div class="banner-upload-wrapper">
+          <input type="file" #bannerInput (change)="onBannerSelected($event)" accept="image/*" hidden>
+          <div class="banner-preview clickable" (click)="bannerInput.click()">
             @if (editBanner()) {
             <img [src]="editBanner()" alt="Banner preview" class="banner-preview-img"
               onError="this.style.display='none'">
+            <div class="banner-hover-overlay">
+              <span class="material-symbols-outlined">edit</span>
+              <span>Change Banner</span>
+            </div>
             } @else {
             <div class="banner-placeholder">
-              <span class="material-symbols-outlined">image</span>
+              <span class="material-symbols-outlined">add_photo_alternate</span>
+              <p>Click to select banner</p>
             </div>
             }
           </div>
-          <div class="avatar-upload-controls">
-            <input type="file" #bannerInput (change)="onBannerSelected($event)" accept="image/*" hidden>
-            <button class="upload-btn" (click)="bannerInput.click()" type="button">
-              <span class="material-symbols-outlined">upload_file</span>
-              {{ selectedBannerFile ? 'Change Banner' : 'Choose Banner' }}
-            </button>
-            <p class="help-text">Max size: 2MB. 1200x350px.</p>
-          </div>
+          <p class="help-text banner-help">Max size: 2MB. 1200x350px.</p>
         </div>
       </div>
 
@@ -464,17 +486,18 @@
         }
       </div>
 
-      <div class="dialog-actions">
-        <button class="cancel-btn" (click)="closeEditProfile()">Cancel</button>
-        <button class="save-btn" (click)="saveProfile()" [disabled]="isEditLoading()">
-          @if (isEditLoading()) {
-          <span class="spinner-small"></span>
-          Saving...
-          } @else {
-          Save Changes
-          }
-        </button>
-      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="cancel-btn" (click)="closeEditProfile()">Cancel</button>
+      <button class="save-btn" (click)="saveProfile()" [disabled]="isEditLoading()">
+        @if (isEditLoading()) {
+        <span class="spinner-small"></span>
+        Saving...
+        } @else {
+        Save Changes
+        }
+      </button>
     </div>
   </div>
 </div>
@@ -555,3 +578,11 @@
 <app-share-dialog [isOpen]="showShareDialog()" [profile]="profile()" [moodData]="moodData()" [badges]="badges()"
   [close]="closeShareDialog">
 </app-share-dialog>
+
+<!-- Edit Favorites Dialog -->
+@if (showEditFavoritesDialog() && profile(); as p) {
+<app-edit-favorites-dialog [isOpen]="showEditFavoritesDialog()" [initialMovies]="p.user.favoriteMovies"
+  [initialTvShows]="p.user.favoriteTvShows" [initialTab]="editFavoritesTab()" (close)="closeEditFavoritesDialog()"
+  (save)="saveFavorites($event)">
+</app-edit-favorites-dialog>
+}

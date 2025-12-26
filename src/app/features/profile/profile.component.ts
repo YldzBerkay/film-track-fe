@@ -11,13 +11,15 @@ import { MoodChartComponent } from '../../shared/components/mood-chart/mood-char
 import { MoodTimelineComponent } from '../../shared/components/mood-timeline/mood-timeline.component';
 import { HeaderComponent } from '../../layout/header/header.component';
 import { ShareDialogComponent } from '../../shared/components/share-dialog/share-dialog.component';
+import { EditFavoritesDialogComponent } from '../../shared/components/edit-favorites-dialog/edit-favorites-dialog.component';
+import { FavoritesService, FavoriteMovie, FavoriteTvShow } from '../../core/services/favorites.service';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +32,7 @@ export class ProfileComponent implements OnInit {
   tmdbService = inject(TMDBService);
   moodService = inject(MoodService);
   recommendationService = inject(RecommendationService);
+  favoritesService = inject(FavoritesService);
 
   profile = signal<UserProfile | null>(null);
   isLoading = signal(true);
@@ -76,6 +79,10 @@ export class ProfileComponent implements OnInit {
 
   // Share Dialog state
   showShareDialog = signal(false);
+
+  // Edit Favorites Dialog state
+  showEditFavoritesDialog = signal(false);
+  editFavoritesTab = signal<'movies' | 'tv'>('movies');
 
 
   readonly username = computed(() => {
@@ -656,6 +663,46 @@ export class ProfileComponent implements OnInit {
         console.error('Failed to update profile:', err);
         alert(err.error?.message || 'Failed to update profile');
         this.isEditLoading.set(false);
+      }
+    });
+  }
+
+  openEditFavorites(tab: 'movies' | 'tv' = 'movies'): void {
+    this.editFavoritesTab.set(tab);
+    this.showEditFavoritesDialog.set(true);
+  }
+
+  closeEditFavoritesDialog = () => {
+    this.showEditFavoritesDialog.set(false);
+  }
+
+  saveFavorites(data: { movies: FavoriteMovie[], tvShows: FavoriteTvShow[] }) {
+    this.favoritesService.saveFavorites({
+      favoriteMovies: data.movies,
+      favoriteTvShows: data.tvShows
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          // Update local profile directly to reflect changes immediately
+          this.profile.update(p => {
+            if (!p) return null;
+            return {
+              ...p,
+              user: {
+                ...p.user,
+                favoriteMovies: data.movies,
+                favoriteTvShows: data.tvShows
+              }
+            };
+          });
+          this.closeEditFavoritesDialog();
+        } else {
+          alert('Failed to save favorites');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to save favorites:', err);
+        alert('Failed to save favorites');
       }
     });
   }

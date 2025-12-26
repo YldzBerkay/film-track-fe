@@ -1,0 +1,94 @@
+@if (isOpen()) {
+<div class="dialog-overlay" (click)="closeDialog($event)">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+            <h2>Edit Director's Cut</h2>
+            <button class="close-btn" (click)="closeDialog()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="dialog-tabs">
+            <button class="tab-btn" [class.active]="activeTab() === 'movies'" (click)="activeTab.set('movies')">
+                Movies ({{ movies().length }})
+            </button>
+            <button class="tab-btn" [class.active]="activeTab() === 'tv'" (click)="activeTab.set('tv')">
+                TV Shows ({{ tvShows().length }})
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            @if (activeTab() === 'movies') {
+            @if (movies().length === 0) {
+            <div class="empty-state">No favorite movies yet.</div>
+            } @else {
+            <div class="drag-list" cdkDropList (cdkDropListDropped)="dropMovie($event)">
+                @for (movie of movies(); track movie.tmdbId) {
+                <div class="drag-item" cdkDrag>
+                    <div class="drag-handle" cdkDragHandle>
+                        <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w92')" class="item-poster" alt="poster">
+                    <div class="item-info">
+                        <div class="item-title">{{ movie.title }}</div>
+                        <div class="item-meta">{{ movie.releaseDate | date:'yyyy' }}</div>
+                    </div>
+                    <button class="remove-btn" (click)="removeMovie(movie.tmdbId)" title="Remove from favorites">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                    <!-- Drag Preview -->
+                    <div *cdkDragPreview class="drag-preview">
+                        <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w92')" class="preview-poster">
+                        <span class="preview-title">{{ movie.title }}</span>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+            } @else {
+            @if (tvShows().length === 0) {
+            <div class="empty-state">No favorite TV shows yet.</div>
+            } @else {
+            <div class="drag-list" cdkDropList (cdkDropListDropped)="dropTvShow($event)">
+                @for (show of tvShows(); track show.tmdbId) {
+                <div class="drag-item" cdkDrag>
+                    <div class="drag-handle" cdkDragHandle>
+                        <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w92')" class="item-poster" alt="poster">
+                    <div class="item-info">
+                        <div class="item-title">{{ show.name }}</div>
+                        <div class="item-meta">{{ show.firstAirDate | date:'yyyy' }}</div>
+                    </div>
+                    <button class="remove-btn" (click)="removeTvShow(show.tmdbId)" title="Remove from favorites">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                    <!-- Drag Preview -->
+                    <div *cdkDragPreview class="drag-preview">
+                        <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w92')" class="preview-poster">
+                        <span class="preview-title">{{ show.name }}</span>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+            }
+        </div>
+
+        <div class="dialog-footer">
+            <p class="help-text">Drag items to reorder</p>
+            <div class="actions">
+                <button class="cancel-btn" (click)="closeDialog()">Cancel</button>
+                <button class="save-btn" (click)="saveChanges()" [disabled]="isSaving()">
+                    @if (isSaving()) {
+                    <span class="spinner-small"></span>
+                    Saving...
+                    } @else {
+                    Save Changes
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}
