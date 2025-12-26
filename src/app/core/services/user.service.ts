@@ -43,6 +43,7 @@ export interface UserProfile {
     createdAt: string;
   }>;
   reviewCount: number;
+  isFollowedByMe?: boolean;
 }
 
 export interface ApiResponse<T> {
@@ -86,6 +87,26 @@ export class UserService {
     return this.http.get<ApiResponse<UserSearchResults>>(`${this.apiUrl}/search`, {
       params: { query, page: page.toString() }
     });
+  }
+
+  followUser(userId: string): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/${userId}/follow`, {});
+  }
+
+  unfollowUser(userId: string): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${userId}/follow`);
+  }
+
+  getFollowers(userId: string): Observable<ApiResponse<Array<{ id: string; username: string; nickname: string }>>> {
+    return this.http.get<ApiResponse<Array<{ id: string; username: string; nickname: string }>>>(`${this.apiUrl}/${userId}/followers`);
+  }
+
+  getFollowing(userId: string): Observable<ApiResponse<Array<{ id: string; username: string; nickname: string }>>> {
+    return this.http.get<ApiResponse<Array<{ id: string; username: string; nickname: string }>>>(`${this.apiUrl}/${userId}/following`);
+  }
+
+  removeFollower(userId: string): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${userId}/follower`);
   }
 }
 

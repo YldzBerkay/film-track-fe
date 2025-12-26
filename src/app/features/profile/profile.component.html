@@ -43,6 +43,18 @@
               <span class="material-symbols-outlined">edit</span>
               <span>Edit Profile</span>
             </button>
+            } @else {
+            @if (isFollowing()) {
+            <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
+              <span class="material-symbols-outlined">check</span>
+              <span>Following</span>
+            </button>
+            } @else {
+            <button class="follow-btn" (click)="followUser()" [disabled]="isFollowLoading()">
+              <span class="material-symbols-outlined">person_add</span>
+              <span>Follow</span>
+            </button>
+            }
             }
           </div>
         </div>
@@ -67,14 +79,14 @@
           <span>Reviews</span>
         </div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card stat-card--clickable" (click)="openFollowers()">
         <span class="stat-value">{{ formatNumber(profileData.user.followersCount) }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">group</span>
           <span>Followers</span>
         </div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card stat-card--clickable" (click)="openFollowing()">
         <span class="stat-value">{{ profileData.user.followingCount }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">person_add</span>
@@ -189,4 +201,52 @@
     }
   </div>
 </div>
+
+<!-- Followers/Following Dialog -->
+@if (showUserListDialog()) {
+<div class="user-list-dialog-backdrop" (click)="closeUserListDialog()">
+  <div class="user-list-dialog" (click)="$event.stopPropagation()">
+    <div class="user-list-dialog-header">
+      <h3>{{ userListType() === 'followers' ? 'Followers' : 'Following' }}</h3>
+      <button class="dialog-close" (click)="closeUserListDialog()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="user-list-dialog-body">
+      @if (isUserListLoading()) {
+      <div class="user-list-loading">
+        <div class="spinner"></div>
+      </div>
+      } @else if (userList().length === 0) {
+      <div class="user-list-empty">
+        <span class="material-symbols-outlined">person_off</span>
+        <p>{{ userListType() === 'followers' ? 'No followers yet' : 'Not following anyone yet' }}</p>
+      </div>
+      } @else {
+      <div class="user-list">
+        @for (user of userList(); track user.id) {
+        <div class="user-item">
+          <div class="user-item-info" (click)="router.navigate(['/profile', user.username]); closeUserListDialog()">
+            <div class="user-avatar">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            <div class="user-info">
+              <span class="user-nickname">{{ user.nickname || user.username }}</span>
+              <span class="user-username">@{{ user.username }}</span>
+            </div>
+          </div>
+          @if (isOwnProfile()) {
+          <button class="user-action-btn"
+            (click)="userListType() === 'followers' ? removeFromList(user.id) : unfollowFromList(user.id)">
+            {{ userListType() === 'followers' ? 'Remove' : 'Unfollow' }}
+          </button>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}
 }

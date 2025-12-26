@@ -23,9 +23,48 @@
                 <span class="material-symbols-outlined">add</span>
                 Log
             </button>
-            <button class="icon-btn">
-                <span class="material-symbols-outlined">notifications</span>
-            </button>
+            <div class="notification-wrapper">
+                <button class="icon-btn" (click)="toggleNotificationMenu()">
+                    <span class="material-symbols-outlined">notifications</span>
+                    @if (socketService.unreadCount() > 0) {
+                    <span class="notification-badge">{{ socketService.unreadCount() }}</span>
+                    }
+                </button>
+                @if (showNotificationMenu()) {
+                <div class="notification-menu">
+                    <div class="notification-menu-header">
+                        <span>Notifications</span>
+                    </div>
+                    <div class="notification-menu-body">
+                        @if (socketService.notifications().length === 0) {
+                        <div class="no-notifications">
+                            <span class="material-symbols-outlined">notifications_off</span>
+                            <p>No notifications yet</p>
+                        </div>
+                        } @else {
+                        @for (notification of socketService.notifications(); track notification.id) {
+                        <div class="notification-item" (click)="navigateToUser(notification.fromUser.username)">
+                            <div class="notification-icon">
+                                @switch (notification.type) {
+                                @case ('follow') {
+                                <span class="material-symbols-outlined">person_add</span>
+                                }
+                                @default {
+                                <span class="material-symbols-outlined">notifications</span>
+                                }
+                                }
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-message">{{ notification.message }}</p>
+                                <span class="notification-time">Just now</span>
+                            </div>
+                        </div>
+                        }
+                        }
+                    </div>
+                </div>
+                }
+            </div>
             <div class="profile-avatar" (click)="router.navigate(['/profile'])">
                 <div class="avatar-image"></div>
             </div>

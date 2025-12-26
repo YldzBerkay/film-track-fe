@@ -33,6 +33,16 @@ export class ProfileComponent implements OnInit {
   moodData = signal<MoodVector | null>(null);
   isLoadingMood = signal(false);
 
+  // Follow state
+  isFollowing = signal(false);
+  isFollowLoading = signal(false);
+
+  // Followers/Following dialog state
+  showUserListDialog = signal(false);
+  userListType = signal<'followers' | 'following'>('followers');
+  userList = signal<Array<{ id: string; username: string; nickname: string }>>([]);
+  isUserListLoading = signal(false);
+
   readonly username = computed(() => {
     const param = this.route.snapshot.paramMap.get('username');
     return param || '';
@@ -69,6 +79,10 @@ export class ProfileComponent implements OnInit {
       next: (response) => {
         if (response.success && response.data) {
           this.profile.set(response.data);
+          // Set follow status from API response
+          if (response.data.isFollowedByMe !== undefined) {
+            this.isFollowing.set(response.data.isFollowedByMe);
+          }
         } else {
           this.error.set('Profile not found');
         }
@@ -97,6 +111,62 @@ export class ProfileComponent implements OnInit {
       error: (err) => {
         this.error.set(err.error?.message || 'Failed to load profile');
         this.isLoading.set(false);
+      }
+    });
+  }
+
+  checkFollowStatus(targetUserId: string): void {
+    // We need to check via the current user's following list
+    // For now, we'll rely on backend to tell us via profile API extension
+    // Simplified: assume not following initially, adjusted in follow/unfollow actions
+  }
+
+  followUser(): void {
+    const profileData = this.profile();
+    if (!profileData) return;
+
+    this.isFollowLoading.set(true);
+    this.userService.followUser(profileData.user.id).subscribe({
+      next: () => {
+        this.isFollowing.set(true);
+        // Update follower count locally
+        this.profile.set({
+          ...profileData,
+          user: {
+            ...profileData.user,
+            followersCount: profileData.user.followersCount + 1
+          }
+        });
+        this.isFollowLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to follow:', err);
+        this.isFollowLoading.set(false);
+      }
+    });
+  }
+
+  unfollowUser(): void {
+    const profileData = this.profile();
+    if (!profileData) return;
+
+    this.isFollowLoading.set(true);
+    this.userService.unfollowUser(profileData.user.id).subscribe({
+      next: () => {
+        this.isFollowing.set(false);
+        // Update follower count locally
+        this.profile.set({
+          ...profileData,
+          user: {
+            ...profileData.user,
+            followersCount: Math.max(profileData.user.followersCount - 1, 0)
+          }
+        });
+        this.isFollowLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to unfollow:', err);
+        this.isFollowLoading.set(false);
       }
     });
   }
@@ -148,6 +218,97 @@ export class ProfileComponent implements OnInit {
       error: () => {
         this.isLoadingMood.set(false);
       }
+    });
+  }
+
+  openFollowers(): void {
+    const profileData = this.profile();
+    if (!profileData) return;
+
+    this.userListType.set('followers');
+    this.showUserListDialog.set(true);
+    this.isUserListLoading.set(true);
+    this.userList.set([]);
+
+    this.userService.getFollowers(profileData.user.id).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.userList.set(response.data);
+        }
+        this.isUserListLoading.set(false);
+      },
+      error: () => {
+        this.isUserListLoading.set(false);
+      }
+    });
+  }
+
+  openFollowing(): void {
+    const profileData = this.profile();
+    if (!profileData) return;
+
+    this.userListType.set('following');
+    this.showUserListDialog.set(true);
+    this.isUserListLoading.set(true);
+    this.userList.set([]);
+
+    this.userService.getFollowing(profileData.user.id).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.userList.set(response.data);
+        }
+        this.isUserListLoading.set(false);
+      },
+      error: () => {
+        this.isUserListLoading.set(false);
+      }
+    });
+  }
+
+  closeUserListDialog(): void {
+    this.showUserListDialog.set(false);
+    this.userList.set([]);
+  }
+
+  removeFromList(userId: string): void {
+    this.userService.removeFollower(userId).subscribe({
+      next: () => {
+        // Remove from local list
+        this.userList.update(list => list.filter(u => u.id !== userId));
+        // Update follower count
+        const profileData = this.profile();
+        if (profileData) {
+          this.profile.set({
+            ...profileData,
+            user: {
+              ...profileData.user,
+              followersCount: Math.max(profileData.user.followersCount - 1, 0)
+            }
+          });
+        }
+      },
+      error: (err) => console.error('Failed to remove follower:', err)
+    });
+  }
+
+  unfollowFromList(userId: string): void {
+    this.userService.unfollowUser(userId).subscribe({
+      next: () => {
+        // Remove from local list
+        this.userList.update(list => list.filter(u => u.id !== userId));
+        // Update following count
+        const profileData = this.profile();
+        if (profileData) {
+          this.profile.set({
+            ...profileData,
+            user: {
+              ...profileData.user,
+              followingCount: Math.max(profileData.user.followingCount - 1, 0)
+            }
+          });
+        }
+      },
+      error: (err) => console.error('Failed to unfollow:', err)
     });
   }
 }
