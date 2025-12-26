@@ -230,7 +230,10 @@ export class DashboardComponent implements OnInit {
   }
 
   onSearch(): void {
-    // TODO: Implement search
+    const query = this.searchQuery();
+    if (query.trim()) {
+      this.router.navigate(['/search'], { queryParams: { q: query } });
+    }
   }
 
   onLogout(): void {

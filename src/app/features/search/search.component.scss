@@ -1,0 +1,219 @@
+.search-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    color: #fff;
+}
+
+
+
+.search-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 99px; // Pill shape
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        .material-symbols-outlined {
+            font-size: 1.1rem;
+            transition: transform 0.2s ease;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+
+            .material-symbols-outlined {
+                transform: translateX(-3px);
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+}
+
+.search-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem; // Space for scrollbar
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+
+    // Show scrollbar but make it subtle
+    &::-webkit-scrollbar {
+        height: 4px;
+        display: block; // Ensure visible
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
+}
+
+.tab-btn {
+    flex-shrink: 0; // Prevent shrinking on mobile
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:hover {
+        color: #fff;
+    }
+
+    &.active {
+        color: #fff;
+        border-bottom-color: var(--primary, #00e054);
+    }
+
+    .count {
+        font-size: 0.8rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2rem;
+}
+
+.result-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .poster-wrapper {
+        aspect-ratio: 2/3;
+        width: 100%;
+        background: #2a2a2a;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .card-info {
+        padding: 1rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .year,
+        .department {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    }
+}
+
+.people-grid {
+    .poster-wrapper {
+        // keeping same aspect ratio for consistency, or we could change it
+    }
+
+    .poster-wrapper img {
+        // Profile pics often cover differently, but 'cover' is usually fine
+    }
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 4rem;
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--primary, #00e054);
+        animation: spin 1s linear infinite;
+    }
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.2rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

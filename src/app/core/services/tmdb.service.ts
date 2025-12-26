@@ -20,12 +20,26 @@ export interface TMDBTvShow {
   backdrop_path: string | null;
 }
 
+export interface TMDBPerson {
+  id: number;
+  name: string;
+  original_name: string;
+  media_type: 'person';
+  adult: boolean;
+  popularity: number;
+  gender: number;
+  known_for_department: string;
+  profile_path: string | null;
+  known_for: Array<TMDBMovie | TMDBTvShow>;
+}
+
 export interface TMDBSearchResponse<T> {
   results: T[];
   total_results: number;
   total_pages: number;
   page: number;
 }
+
 
 export interface TMDBMovieDetails extends TMDBMovie {
   runtime?: number;
@@ -138,7 +152,7 @@ export class TMDBService {
   private readonly apiUrl = 'http://localhost:3000/api/tmdb';
   private readonly imageBaseUrl = 'https://image.tmdb.org/t/p';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   searchMovies(query: string, page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBMovie>>> {
     const params = new HttpParams()
@@ -164,6 +178,14 @@ export class TMDBService {
   getPopularTvShows(page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBTvShow>>> {
     const params = new HttpParams().set('page', page.toString());
     return this.http.get<ApiResponse<TMDBSearchResponse<TMDBTvShow>>>(`${this.apiUrl}/tv/popular`, { params });
+  }
+
+  searchPeople(query: string, page: number = 1): Observable<ApiResponse<TMDBSearchResponse<TMDBPerson>>> {
+    const params = new HttpParams()
+      .set('query', query)
+      .set('page', page.toString());
+
+    return this.http.get<ApiResponse<TMDBSearchResponse<TMDBPerson>>>(`${this.apiUrl}/people/search`, { params });
   }
 
   getPosterUrl(posterPath: string | null, size: string = 'w500'): string {

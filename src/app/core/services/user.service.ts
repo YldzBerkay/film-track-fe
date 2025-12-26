@@ -47,6 +47,21 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface UserSearchResults {
+  users: Array<{
+    id: string;
+    username: string;
+    nickname: string;
+    avatar: string | null;
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -61,6 +76,12 @@ export class UserService {
 
   getCurrentProfile(): Observable<ApiResponse<UserProfile>> {
     return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/profile/me`);
+  }
+
+  searchUsers(query: string, page: number = 1): Observable<ApiResponse<UserSearchResults>> {
+    return this.http.get<ApiResponse<UserSearchResults>>(`${this.apiUrl}/search`, {
+      params: { query, page: page.toString() }
+    });
   }
 }
 
