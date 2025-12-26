@@ -887,7 +887,6 @@
   border-radius: 12px;
   border: 1px solid var(--color-border);
   overflow: hidden;
-  margin-bottom: 32px;
   min-height: 240px;
 }
 
@@ -1476,7 +1475,6 @@
 
 // Mood-Based Recommendations
 .mood-recs-section {
-  margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--color-border);
 }
@@ -1672,16 +1670,6 @@
   background: rgba(0, 224, 84, 0.15);
   border-color: var(--color-primary);
   color: var(--color-primary);
-}
-
-.recommendations-section {
-  .daily-pick-card {
-
-    // Target the content wrapper, then its last child
-    .daily-pick-content> :last-child {
-      margin-bottom: 0;
-    }
-  }
 }
 
 // Mood Recs Slider

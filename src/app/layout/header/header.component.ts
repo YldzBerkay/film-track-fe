@@ -1,4 +1,4 @@
-import { Component, inject, signal, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,12 +17,25 @@ export class HeaderComponent {
     router = inject(Router);
     socketService = inject(SocketService);
     authService = inject(AuthService);
+    elementRef = inject(ElementRef);
     user = this.authService.user;
 
     searchQuery = signal<string>('');
     showNotificationMenu = signal(false);
+    showProfileMenu = signal(false);
 
     @Output() logClick = new EventEmitter<void>();
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        const target = event.target as HTMLElement;
+        const isClickInside = this.elementRef.nativeElement.contains(target);
+
+        if (!isClickInside) {
+            this.showNotificationMenu.set(false);
+            this.showProfileMenu.set(false);
+        }
+    }
 
     onSearch(): void {
         const query = this.searchQuery();
@@ -35,7 +48,9 @@ export class HeaderComponent {
         this.logClick.emit();
     }
 
-    toggleNotificationMenu(): void {
+    toggleNotificationMenu(event: MouseEvent): void {
+        event.stopPropagation();
+        this.showProfileMenu.set(false);
         this.showNotificationMenu.update(v => !v);
         if (this.showNotificationMenu()) {
             this.socketService.markAllAsRead();
@@ -44,6 +59,21 @@ export class HeaderComponent {
 
     closeNotificationMenu(): void {
         this.showNotificationMenu.set(false);
+    }
+
+    toggleProfileMenu(event: MouseEvent): void {
+        event.stopPropagation();
+        this.showNotificationMenu.set(false);
+        this.showProfileMenu.update(v => !v);
+    }
+
+    closeProfileMenu(): void {
+        this.showProfileMenu.set(false);
+    }
+
+    onLogout(): void {
+        this.authService.logout();
+        this.closeProfileMenu();
     }
 
     navigateToUser(username: string): void {

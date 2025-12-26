@@ -243,7 +243,7 @@
     color: var(--color-primary);
     font-size: 12px;
     font-weight: 500;
-    cursor: pointer;
+    cursor: padding;
     padding: 4px 8px;
     border-radius: 4px;
     transition: background 0.2s;
@@ -321,4 +321,61 @@
 .notification-time {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.4);
+}
+
+// Profile styles
+.profile-wrapper {
+    position: relative;
+}
+
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 180px;
+    background: rgba(20, 24, 28, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    overflow: hidden;
+    animation: slideDown 0.2s ease;
+}
+
+.profile-menu-body {
+    padding: 6px;
+}
+
+.profile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    color: rgba(255, 255, 255, 0.8);
+
+    .material-symbols-outlined {
+        font-size: 20px;
+    }
+
+    span {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+    }
+
+    &.logout {
+        color: #ff4757;
+
+        &:hover {
+            background: rgba(255, 71, 87, 0.1);
+        }
+    }
 }

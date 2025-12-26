@@ -27,7 +27,7 @@
                 Log
             </button>
             <div class="notification-wrapper">
-                <button class="icon-btn" (click)="toggleNotificationMenu()">
+                <button class="icon-btn" (click)="toggleNotificationMenu($event)">
                     <span class="material-symbols-outlined">notifications</span>
                     @if (socketService.unreadCount() > 0) {
                     <span class="notification-badge">{{ socketService.unreadCount() }}</span>
@@ -71,12 +71,29 @@
                 </div>
                 }
             </div>
-            @let currentUser = user();
-            <div class="profile-avatar" (click)="router.navigate(['/profile'])">
-                @if (currentUser?.avatar) {
-                <img [src]="currentUser!.avatar" alt="Avatar" class="header-avatar-img">
-                } @else {
-                <div class="avatar-image"></div>
+            <div class="profile-wrapper">
+                @let currentUser = user();
+                <div class="profile-avatar" (click)="toggleProfileMenu($event)">
+                    @if (currentUser?.avatar) {
+                    <img [src]="currentUser!.avatar" alt="Avatar" class="header-avatar-img">
+                    } @else {
+                    <div class="avatar-image"></div>
+                    }
+                </div>
+
+                @if (showProfileMenu()) {
+                <div class="profile-menu">
+                    <div class="profile-menu-body">
+                        <div class="profile-menu-item" (click)="router.navigate(['/profile']); closeProfileMenu()">
+                            <span class="material-symbols-outlined">person</span>
+                            <span>Profile</span>
+                        </div>
+                        <div class="profile-menu-item" (click)="onLogout()">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
                 }
             </div>
         </div>
