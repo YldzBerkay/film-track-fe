@@ -34,6 +34,9 @@
                 <div class="notification-menu">
                     <div class="notification-menu-header">
                         <span>Notifications</span>
+                        @if (socketService.notifications().length > 0) {
+                        <button class="clear-all-btn" (click)="clearAllNotifications()">Clear all</button>
+                        }
                     </div>
                     <div class="notification-menu-body">
                         @if (socketService.notifications().length === 0) {
@@ -56,7 +59,7 @@
                             </div>
                             <div class="notification-content">
                                 <p class="notification-message">{{ notification.message }}</p>
-                                <span class="notification-time">Just now</span>
+                                <span class="notification-time">{{ formatTimeAgo(notification.createdAt) }}</span>
                             </div>
                         </div>
                         }

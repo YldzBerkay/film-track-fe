@@ -1,4 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { io, Socket } from 'socket.io-client';
 import { AuthService } from './auth.service';
 
@@ -15,20 +16,31 @@ export interface Notification {
     read?: boolean;
 }
 
+interface NotificationsResponse {
+    success: boolean;
+    data: {
+        notifications: Notification[];
+        unreadCount: number;
+    };
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class SocketService {
     private socket: Socket | null = null;
     private authService = inject(AuthService);
+    private http = inject(HttpClient);
+    private readonly apiUrl = 'http://localhost:3000/api/notifications';
 
     // Signals for reactive state
     notifications = signal<Notification[]>([]);
     unreadCount = signal<number>(0);
     isConnected = signal<boolean>(false);
+    newNotification = signal<Notification | null>(null); // For toast display
 
     /**
-     * Connect to WebSocket server
+     * Connect to WebSocket server and load existing notifications
      */
     connect(): void {
         const token = this.authService.getAccessToken();
@@ -36,6 +48,9 @@ export class SocketService {
             console.log('No auth token, skipping socket connection');
             return;
         }
+
+        // Load existing notifications from API
+        this.loadNotifications();
 
         if (this.socket?.connected) {
             console.log('Socket already connected');
@@ -62,10 +77,27 @@ export class SocketService {
             // Add to notifications list
             this.notifications.update(current => [data, ...current]);
             this.unreadCount.update(count => count + 1);
+            // Signal for toast display (only real-time notifications)
+            this.newNotification.set(data);
         });
 
         this.socket.on('connect_error', (error) => {
             console.error('Socket connection error:', error);
+        });
+    }
+
+    /**
+     * Load notifications from API
+     */
+    private loadNotifications(): void {
+        this.http.get<NotificationsResponse>(this.apiUrl).subscribe({
+            next: (response) => {
+                if (response.success && response.data) {
+                    this.notifications.set(response.data.notifications);
+                    this.unreadCount.set(response.data.unreadCount);
+                }
+            },
+            error: (err) => console.error('Failed to load notifications:', err)
         });
     }
 
@@ -89,18 +121,44 @@ export class SocketService {
     }
 
     /**
-     * Clear a notification from the list
+     * Delete a notification
      */
-    clearNotification(id: string): void {
-        this.notifications.update(current =>
-            current.filter(n => n.id !== id)
-        );
+    deleteNotification(id: string): void {
+        this.http.delete(`${this.apiUrl}/${id}`).subscribe({
+            next: () => {
+                this.notifications.update(current =>
+                    current.filter(n => n.id !== id)
+                );
+            },
+            error: (err) => console.error('Failed to delete notification:', err)
+        });
     }
 
     /**
-     * Mark all as read
+     * Mark all as read (calls backend API)
      */
     markAllAsRead(): void {
-        this.unreadCount.set(0);
+        this.http.post(`${this.apiUrl}/read`, {}).subscribe({
+            next: () => {
+                this.unreadCount.set(0);
+                this.notifications.update(current =>
+                    current.map(n => ({ ...n, read: true }))
+                );
+            },
+            error: (err) => console.error('Failed to mark as read:', err)
+        });
+    }
+
+    /**
+     * Clear all notifications (calls backend API)
+     */
+    clearAllNotifications(): void {
+        this.http.delete(`${this.apiUrl}/all`).subscribe({
+            next: () => {
+                this.notifications.set([]);
+                this.unreadCount.set(0);
+            },
+            error: (err) => console.error('Failed to clear notifications:', err)
+        });
     }
 }

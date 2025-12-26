@@ -221,11 +221,30 @@
 }
 
 .notification-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 14px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 14px;
     font-weight: 600;
     color: #fff;
+}
+
+.clear-all-btn {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: rgba(0, 224, 84, 0.1);
+    }
 }
 
 .notification-menu-body {

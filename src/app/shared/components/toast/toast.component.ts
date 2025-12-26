@@ -139,24 +139,18 @@ export class ToastComponent {
 
   currentToast = signal<Notification | null>(null);
   private toastTimeout: any;
-  private lastShownId: string | null = null;
 
   constructor() {
-    // React to new notifications
+    // React to NEW real-time notifications only (not ones loaded from DB)
     effect(() => {
-      const notifications = this.socketService.notifications();
-      if (notifications.length > 0) {
-        const latest = notifications[0];
-        // Only show if it's a new notification
-        if (this.lastShownId !== latest.id) {
-          this.showToast(latest);
-        }
+      const newNotification = this.socketService.newNotification();
+      if (newNotification) {
+        this.showToast(newNotification);
       }
     });
   }
 
   showToast(notification: Notification): void {
-    this.lastShownId = notification.id;
     this.currentToast.set(notification);
 
     // Auto-dismiss after 5 seconds
