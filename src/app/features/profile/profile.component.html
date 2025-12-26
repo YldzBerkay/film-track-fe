@@ -59,32 +59,34 @@
               <h1 class="profile-username">{{ profileData.user.name || profileData.user.username }}</h1>
               <p class="profile-bio">@{{ profileData.user.username }}</p>
             </div>
-            @if (isOwnProfile()) {
-            <button class="edit-profile-btn" (click)="openEditProfile()">
-              <span class="material-symbols-outlined">edit</span>
-              <span>Edit Profile</span>
-            </button>
-            <button class="share-profile-btn" (click)="openShareDialog()">
-              <span class="material-symbols-outlined">share</span>
-              <span>Share</span>
-            </button>
-            } @else {
-            @if (isFollowing()) {
-            <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
-              <span class="material-symbols-outlined">check</span>
-              <span>Following</span>
-            </button>
-            } @else {
-            <button class="follow-btn" (click)="followUser()" [disabled]="isFollowLoading()">
-              <span class="material-symbols-outlined">person_add</span>
-              <span>Follow</span>
-            </button>
-            }
-            <button class="compare-mood-btn" (click)="openMoodComparison()">
-              <span class="material-symbols-outlined">compare</span>
-              <span>Compare Mood</span>
-            </button>
-            }
+            <div class="profile-buttons">
+              @if (isOwnProfile()) {
+              <button class="edit-profile-btn" (click)="openEditProfile()">
+                <span class="material-symbols-outlined">edit</span>
+                <span>Edit Profile</span>
+              </button>
+              <button class="share-profile-btn" (click)="openShareDialog()">
+                <span class="material-symbols-outlined">share</span>
+                <span>Share</span>
+              </button>
+              } @else {
+              @if (isFollowing()) {
+              <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
+                <span class="material-symbols-outlined">check</span>
+                <span>Following</span>
+              </button>
+              } @else {
+              <button class="follow-btn" (click)="followUser()" [disabled]="isFollowLoading()">
+                <span class="material-symbols-outlined">person_add</span>
+                <span>Follow</span>
+              </button>
+              }
+              <button class="compare-mood-btn" (click)="openMoodComparison()">
+                <span class="material-symbols-outlined">compare</span>
+                <span>Compare Mood</span>
+              </button>
+              }
+            </div>
           </div>
         </div>
       </div>

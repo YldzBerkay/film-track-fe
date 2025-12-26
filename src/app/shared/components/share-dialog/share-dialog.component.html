@@ -43,12 +43,16 @@
             </div>
 
             <div class="card-footer">
-                <span>Generated on {{ 0 | date:'mediumDate' }}</span>
-                <!-- Hack for current date if no date pipe usage? actually new Date() in template is bad, user pipe in component logic or just simple timestamp -->
+                <span class="footer-link">cinetrack.com/u/{{ profile()?.user?.username }}</span>
+                <span class="footer-date">Generated on {{ currentDate | date:'mediumDate' }}</span>
             </div>
         </div>
 
         <div class="actions">
+            <button class="action-btn secondary" (click)="shareProfile()">
+                <span class="material-symbols-outlined">ios_share</span>
+                Share Link
+            </button>
             <button class="action-btn primary" (click)="downloadImage()" [disabled]="isGenerating()">
                 <span class="material-symbols-outlined">download</span>
                 {{ isGenerating() ? 'Generating...' : 'Download Image' }}

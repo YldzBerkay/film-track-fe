@@ -22,6 +22,7 @@ export class ShareDialogComponent {
 
     @ViewChild('captureArea') captureArea!: ElementRef<HTMLDivElement>;
     isGenerating = signal(false);
+    currentDate = new Date();
 
     closeDialog(e?: Event) {
         if (e) e.stopPropagation();
@@ -49,6 +50,30 @@ export class ShareDialogComponent {
             console.error('Failed to generate image', err);
         } finally {
             this.isGenerating.set(false);
+        }
+    }
+
+    async shareProfile() {
+        const profile = this.profile();
+        if (!profile) return;
+
+        const url = `${window.location.origin}/u/${profile.user.username}`;
+        const text = `Check out my movie mood on CineTrack! My current vibe is ${this.primaryMood}. 🎬✨`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'My CineTrack Mood',
+                    text: text,
+                    url: url
+                });
+            } catch (err) {
+                console.error('Error sharing:', err);
+            }
+        } else {
+            // Fallback to clipboard
+            await navigator.clipboard.writeText(`${text} ${url}`);
+            alert('Link copied to clipboard!');
         }
     }
 
