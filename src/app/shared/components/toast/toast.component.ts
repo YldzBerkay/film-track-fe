@@ -139,6 +139,7 @@ export class ToastComponent {
 
   currentToast = signal<Notification | null>(null);
   private toastTimeout: any;
+  private lastShownId: string | null = null;
 
   constructor() {
     // React to new notifications
@@ -147,7 +148,7 @@ export class ToastComponent {
       if (notifications.length > 0) {
         const latest = notifications[0];
         // Only show if it's a new notification
-        if (!this.currentToast() || this.currentToast()!.id !== latest.id) {
+        if (this.lastShownId !== latest.id) {
           this.showToast(latest);
         }
       }
@@ -155,6 +156,7 @@ export class ToastComponent {
   }
 
   showToast(notification: Notification): void {
+    this.lastShownId = notification.id;
     this.currentToast.set(notification);
 
     // Auto-dismiss after 5 seconds
