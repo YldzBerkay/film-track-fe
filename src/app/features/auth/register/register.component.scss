@@ -1,0 +1,17 @@
+@use '../login/login.component.scss' as *;
+
+// Register-specific styles
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+
+    @media (min-width: 480px) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+// Adjust card width for more fields
+.auth-card {
+    max-width: 480px;
+}

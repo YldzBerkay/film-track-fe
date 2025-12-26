@@ -1,0 +1,190 @@
+<div class="community-page">
+    <!-- Floating Ambient Orbs -->
+    <div class="floating-orb floating-orb--primary"></div>
+    <div class="floating-orb floating-orb--accent"></div>
+    <div class="floating-orb floating-orb--secondary"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a class="logo-section" routerLink="/">
+                <div class="logo-icon">
+                    <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd"
+                            d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+                            fill="currentColor" fill-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <span class="logo-text">FilmTrack</span>
+            </a>
+            <nav class="header-nav">
+                <a class="nav-link" routerLink="/features">Features</a>
+                <a class="nav-link active" routerLink="/community">Community</a>
+                <a class="nav-link" routerLink="/login">Sign In</a>
+                <a class="btn btn-primary" routerLink="/register">
+                    <span>Get Started</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="hero-badge">Community</span>
+                <h1 class="hero-title">Join the film<br><span class="gradient-text">conversation</span></h1>
+                <p class="hero-subtitle">
+                    Connect with passionate cinephiles, discover new favorites, and share your unique perspective on
+                    cinema.
+                </p>
+            </div>
+
+            <!-- Community Stats -->
+            <div class="stats-grid">
+                @for (stat of stats; track stat.label) {
+                <div class="stat-card">
+                    <span class="stat-value">{{ stat.value }}</span>
+                    <span class="stat-label">{{ stat.label }}</span>
+                </div>
+                }
+            </div>
+        </section>
+
+        <!-- Two Column Layout -->
+        <div class="community-grid">
+            <!-- Activity Feed -->
+            <section class="activity-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-symbols-outlined">rss_feed</span>
+                        Recent Activity
+                    </h2>
+                    <a class="view-all-link" routerLink="/register">View all</a>
+                </div>
+
+                <div class="activity-feed">
+                    @for (activity of activities; track activity.user.username + activity.media.title; let i = $index) {
+                    <div class="activity-card" [style.animation-delay.ms]="i * 80">
+                        <div class="activity-user">
+                            <img [src]="activity.user.avatar" [alt]="activity.user.name" class="user-avatar">
+                            <div class="user-info">
+                                <span class="user-name">{{ activity.user.name }}</span>
+                                <span class="activity-meta">{{ getActionText(activity) }} • {{ activity.timeAgo
+                                    }}</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-content">
+                            <div class="media-card">
+                                <img [src]="activity.media.poster" [alt]="activity.media.title" class="media-poster">
+                                <div class="media-info">
+                                    <h4 class="media-title">{{ activity.media.title }}</h4>
+                                    <span class="media-year">{{ activity.media.year }} • {{ activity.media.type === 'tv'
+                                        ? 'TV Series' : 'Movie' }}</span>
+
+                                    @if (activity.rating) {
+                                    <div class="rating-display">
+                                        @for (star of getStars(activity.rating); track $index) {
+                                        <span class="material-symbols-outlined star" [class.filled]="star === 1"
+                                            [class.half]="star === 0.5">
+                                            {{ star === 1 ? 'star' : star === 0.5 ? 'star_half' : 'star' }}
+                                        </span>
+                                        }
+                                    </div>
+                                    }
+
+                                    @if (activity.reviewSnippet) {
+                                    <p class="review-snippet">"{{ activity.reviewSnippet }}"</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Trending This Week -->
+                <section class="trending-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <span class="material-symbols-outlined">trending_up</span>
+                            Trending This Week
+                        </h3>
+                    </div>
+
+                    <div class="trending-list">
+                        @for (item of trending; track item.title; let i = $index) {
+                        <div class="trending-item" [style.animation-delay.ms]="i * 60">
+                            <span class="trending-rank">{{ i + 1 }}</span>
+                            <img [src]="item.poster" [alt]="item.title" class="trending-poster">
+                            <div class="trending-info">
+                                <h4 class="trending-title">{{ item.title }}</h4>
+                                <div class="trending-meta">
+                                    <span class="trending-rating">
+                                        <span class="material-symbols-outlined star filled">star</span>
+                                        {{ item.rating }}
+                                    </span>
+                                    <span class="trending-watches">{{ formatNumber(item.watchCount) }} watches</span>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </section>
+
+                <!-- Top Reviewers -->
+                <section class="reviewers-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <span class="material-symbols-outlined">workspace_premium</span>
+                            Top Reviewers
+                        </h3>
+                    </div>
+
+                    <div class="reviewers-list">
+                        @for (reviewer of topReviewers; track reviewer.username; let i = $index) {
+                        <div class="reviewer-card" [style.animation-delay.ms]="i * 80">
+                            <div class="reviewer-rank badge-{{ reviewer.badge }}">
+                                <span class="material-symbols-outlined">{{ reviewer.badge === 'gold' ? 'trophy' :
+                                    reviewer.badge === 'silver' ? 'military_tech' : 'stars' }}</span>
+                            </div>
+                            <img [src]="reviewer.avatar" [alt]="reviewer.name" class="reviewer-avatar">
+                            <div class="reviewer-info">
+                                <h4 class="reviewer-name">{{ reviewer.name }}</h4>
+                                <span class="reviewer-stats">{{ reviewer.reviewCount }} reviews • {{
+                                    formatNumber(reviewer.followers) }} followers</span>
+                            </div>
+                            <button class="follow-btn">Follow</button>
+                        </div>
+                        }
+                    </div>
+                </section>
+            </aside>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-card">
+                <h2 class="cta-title">Ready to join the community?</h2>
+                <p class="cta-description">Start sharing your film journey with thousands of passionate cinephiles.</p>
+                <div class="cta-actions">
+                    <a class="btn btn-primary btn-large" routerLink="/register">
+                        <span>Create Free Account</span>
+                    </a>
+                    <a class="btn btn-secondary btn-large" routerLink="/features">
+                        <span>Learn More</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 FilmTrack. All rights reserved.</p>
+    </footer>
+</div>

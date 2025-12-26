@@ -1,0 +1,23 @@
+<div class="mood-chart-container">
+  <h3 class="chart-title">Sinematik Ruh Halin</h3>
+  @if (isLoading()) {
+    <div class="chart-loading">
+      <div class="loading-spinner"></div>
+      <p>Mood analizi yükleniyor...</p>
+    </div>
+  } @else if (moodData()) {
+    <div class="chart-wrapper">
+      <canvas
+        baseChart
+        [data]="chartData()"
+        [options]="chartOptions"
+        [type]="chartType"
+      ></canvas>
+    </div>
+  } @else {
+    <div class="chart-empty">
+      <p>Henüz yeterli veri yok. Film izlemeye başladığınızda mood grafiğiniz oluşacak.</p>
+    </div>
+  }
+</div>
+

@@ -1,0 +1,186 @@
+<div class="favorites-container">
+  <!-- Floating Ambient Orbs -->
+  <div class="floating-orb floating-orb--primary"></div>
+  <div class="floating-orb floating-orb--accent"></div>
+  <div class="floating-orb floating-orb--secondary"></div>
+
+  <header class="header">
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path clip-rule="evenodd"
+              d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+              fill="currentColor" fill-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h2 class="logo-text">FilmTrack</h2>
+      </div>
+      <button class="skip-btn" (click)="onSkip()">
+        Skip for now
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="header-section">
+      <h1 class="title">Let's get to know your taste</h1>
+      <p class="subtitle">
+        Select your favorite content to help us personalize your recommendations.
+      </p>
+
+      <!-- Info Card -->
+      <div class="info-card">
+        <span class="material-symbols-outlined info-icon">info</span>
+        <div class="info-content">
+          <p class="info-text">
+            To continue, select <strong>5 movies</strong> and <strong>5 TV shows</strong> you love.
+          </p>
+          <div class="info-progress">
+            <span class="progress-item" [class.complete]="selectedMoviesCount() >= 5">
+              <span class="material-symbols-outlined">{{ selectedMoviesCount() >= 5 ? 'check_circle' : 'movie' }}</span>
+              {{ selectedMoviesCount() }}/5 Movies
+            </span>
+            <span class="progress-item" [class.complete]="selectedTvShowsCount() >= 5">
+              <span class="material-symbols-outlined">{{ selectedTvShowsCount() >= 5 ? 'check_circle' : 'tv' }}</span>
+              {{ selectedTvShowsCount() }}/5 TV Shows
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-container">
+        <div class="search-icon">
+          <span class="material-symbols-outlined">search</span>
+        </div>
+        <input type="text" class="search-input" [value]="searchQuery()"
+          (input)="onSearchChange($any($event.target).value)"
+          placeholder="Search for a {{ activeTab() === 'movies' ? 'movie' : 'TV show' }}..." />
+      </div>
+
+      <div class="tabs">
+        <button class="tab" [class.active]="activeTab() === 'movies'" (click)="onTabChange('movies')">
+          Movies
+          @if (selectedMoviesCount() > 0) {
+          <span class="tab-badge">{{ selectedMoviesCount() }}</span>
+          }
+        </button>
+        <button class="tab" [class.active]="activeTab() === 'tv'" (click)="onTabChange('tv')">
+          TV Shows
+          @if (selectedTvShowsCount() > 0) {
+          <span class="tab-badge">{{ selectedTvShowsCount() }}</span>
+          }
+        </button>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Progress</span>
+          <span class="progress-count">
+            {{ activeTab() === 'movies' ? selectedMoviesCount() : selectedTvShowsCount() }}/5 Selected
+          </span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progressPercentage()"></div>
+        </div>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="error-message">
+      {{ errorMessage() }}
+    </div>
+    }
+
+    <div class="grid-container">
+      @if (activeTab() === 'movies') {
+      @if (isLoading() && movies().length === 0) {
+      <div class="loading">Loading movies...</div>
+      } @else {
+      @for (movie of movies(); track movie.id) {
+      <div class="card" [class.selected]="isMovieSelected(movie.id)" (click)="toggleMovieSelection(movie)">
+        <div class="card-background"
+          [style.background-image]="'url(' + tmdbService.getPosterUrl(movie.poster_path) + ')'"></div>
+        <div class="card-overlay"></div>
+        @if (isMovieSelected(movie.id)) {
+        <div class="selected-badge">
+          <span class="material-symbols-outlined">check</span>
+        </div>
+        } @else {
+        <div class="add-overlay">
+          <span class="material-symbols-outlined">add_circle</span>
+        </div>
+        }
+        <div class="card-info">
+          <p class="card-title">{{ movie.title }}</p>
+          <p class="card-year">{{ movie.release_date ? movie.release_date.split('-')[0] : 'N/A' }}</p>
+        </div>
+      </div>
+      }
+      }
+      } @else {
+      @if (isLoading() && tvShows().length === 0) {
+      <div class="loading">Loading TV shows...</div>
+      } @else {
+      @for (tvShow of tvShows(); track tvShow.id) {
+      <div class="card" [class.selected]="isTvShowSelected(tvShow.id)" (click)="toggleTvShowSelection(tvShow)">
+        <div class="card-background"
+          [style.background-image]="'url(' + tmdbService.getPosterUrl(tvShow.poster_path) + ')'"></div>
+        <div class="card-overlay"></div>
+        @if (isTvShowSelected(tvShow.id)) {
+        <div class="selected-badge">
+          <span class="material-symbols-outlined">check</span>
+        </div>
+        } @else {
+        <div class="add-overlay">
+          <span class="material-symbols-outlined">add_circle</span>
+        </div>
+        }
+        <div class="card-info">
+          <p class="card-title">{{ tvShow.name }}</p>
+          <p class="card-year">{{ tvShow.first_air_date ? tvShow.first_air_date.split('-')[0] : 'N/A' }}</p>
+        </div>
+      </div>
+      }
+      }
+      }
+    </div>
+
+    @if (hasMoreResults() && !isLoading()) {
+    <div class="load-more-section">
+      <p>Don't see your favorites?</p>
+      <button class="load-more-btn" (click)="loadMore()" [disabled]="isLoadingMore()">
+        @if (isLoadingMore()) {
+        Loading...
+        } @else {
+        Load more recommendations
+        }
+      </button>
+    </div>
+    }
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <span class="footer-count">
+          {{ totalSelected() }} of 10 selected
+        </span>
+        <span class="footer-hint">
+          @if (selectedMoviesCount() < 5) { Pick {{ 5 - selectedMoviesCount() }} more {{ activeTab()==='movies'
+            ? 'movies' : 'TV shows' }} to continue } @else if (selectedTvShowsCount() < 5) { Pick {{ 5 -
+            selectedTvShowsCount() }} more TV shows to continue } @else { Ready to continue! } </span>
+      </div>
+      <button class="continue-btn" [class.disabled]="!canContinue()" [disabled]="!canContinue() || isLoading()"
+        (click)="onContinue()">
+        @if (isLoading()) {
+        Saving...
+        } @else {
+        Continue
+        }
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </footer>
+</div>

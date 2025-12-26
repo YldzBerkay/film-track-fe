@@ -1,0 +1,338 @@
+<div class="dashboard-container">
+  <!-- Floating Ambient Orbs -->
+  <div class="floating-orb floating-orb--primary"></div>
+  <div class="floating-orb floating-orb--accent"></div>
+  <div class="floating-orb floating-orb--secondary"></div>
+
+  <header class="header">
+    <div class="header-content">
+      <a class="logo-section" routerLink="/dashboard">
+        <div class="logo-icon">
+          <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path clip-rule="evenodd"
+              d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+              fill="currentColor" fill-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h1 class="logo-text">FilmTrack</h1>
+      </a>
+
+      <div class="search-container">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" class="search-input" [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)" (keyup.enter)="onSearch()"
+          placeholder="Search films, shows, people..." />
+      </div>
+
+      <div class="header-actions">
+        <button class="log-btn" (click)="onLogClick()">
+          <span class="material-symbols-outlined">add</span>
+          Log
+        </button>
+        <button class="icon-btn">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <div class="profile-avatar" (click)="router.navigate(['/profile'])">
+          <div class="avatar-image"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="dashboard-grid">
+      <aside class="sidebar">
+
+        <nav class="sidebar-nav">
+          <a class="nav-item active" routerLink="/dashboard">
+            <span class="material-symbols-outlined">home</span>
+            Home
+          </a>
+          <a class="nav-item" routerLink="/movies">
+            <span class="material-symbols-outlined">movie</span>
+            Films
+          </a>
+          <a class="nav-item" routerLink="/tv-shows">
+            <span class="material-symbols-outlined">tv</span>
+            TV Shows
+          </a>
+          <a class="nav-item" routerLink="/lists">
+            <span class="material-symbols-outlined">list</span>
+            Lists
+          </a>
+          <a class="nav-item" routerLink="/journal">
+            <span class="material-symbols-outlined">edit_note</span>
+            Journal
+          </a>
+          <a class="nav-item" routerLink="/profile">
+            <span class="material-symbols-outlined">person</span>
+            My Profile
+          </a>
+        </nav>
+
+        <div class="lists-section">
+          <div class="lists-header">
+            <h3 class="lists-title">My Lists</h3>
+            <button class="lists-add-btn">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+          </div>
+          <div class="lists-items">
+            <a class="list-item" href="#">
+              <div class="list-cover"></div>
+              <div class="list-info">
+                <p class="list-name">Watchlist</p>
+                <p class="list-count">0 films</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <div class="feed-section">
+        <div class="feed-tabs">
+          <button class="feed-tab" [class.active]="activeFeedType() === 'following'"
+            (click)="onFeedTypeChange('following')">
+            Following
+          </button>
+          <button class="feed-tab" [class.active]="activeFeedType() === 'friends'"
+            (click)="onFeedTypeChange('friends')">
+            Friends
+          </button>
+          <button class="feed-tab" [class.active]="activeFeedType() === 'global'" (click)="onFeedTypeChange('global')">
+            Global
+          </button>
+        </div>
+
+        <div class="feed-content">
+          @if (isLoading() && activities().length === 0) {
+          <div class="loading">Loading feed...</div>
+          } @else if (activities().length === 0) {
+          <div class="empty-state">
+            <p>No activities yet. Start following people to see their updates!</p>
+          </div>
+          } @else {
+          @for (activity of activities(); track activity._id) {
+          <article class="activity-card">
+            <div class="activity-header">
+              <div class="activity-user">
+                <div class="user-avatar-small"></div>
+                <div class="activity-meta">
+                  <p class="activity-text">
+                    <span class="user-name">{{ activity.userId.nickname || activity.userId.username }}</span>
+                    @if (activity.type === 'movie_watched') {
+                    watched
+                    } @else if (activity.type === 'tv_episode_watched') {
+                    watched episode
+                    } @else if (activity.type === 'tv_show_watched') {
+                    watched
+                    }
+                  </p>
+                  <p class="activity-time">{{ getTimeAgo(activity.createdAt) }}</p>
+                </div>
+              </div>
+              @if (activity.rating) {
+              <div class="activity-rating">
+                @for (star of getStars(activity.rating); track $index) {
+                @if (star === 1) {
+                <span class="material-symbols-outlined star-filled">star</span>
+                } @else if (star === 0.5) {
+                <span class="material-symbols-outlined star-half">star_half</span>
+                } @else {
+                <span class="material-symbols-outlined star-empty">star</span>
+                }
+                }
+              </div>
+              }
+            </div>
+
+            <div class="activity-content">
+              @if (activity.type === 'tv_episode_watched' && activity.episodeNumber) {
+              <div class="episodes-grid">
+                <div class="episode-card">
+                  <div class="episode-poster"
+                    [style.background-image]="'url(' + tmdbService.getPosterUrl(activity.mediaPosterPath) + ')'"></div>
+                  <p class="episode-title">
+                    S{{ activity.seasonNumber }}:E{{ activity.episodeNumber }}
+                    @if (activity.episodeTitle) {
+                    "{{ activity.episodeTitle }}"
+                    }
+                  </p>
+                  @if (activity.rating) {
+                  <div class="episode-rating">
+                    @for (star of getStars(activity.rating); track $index) {
+                    @if (star === 1) {
+                    <span class="material-symbols-outlined star-filled">star</span>
+                    } @else if (star === 0.5) {
+                    <span class="material-symbols-outlined star-half">star_half</span>
+                    } @else {
+                    <span class="material-symbols-outlined star-empty">star</span>
+                    }
+                    }
+                  </div>
+                  }
+                </div>
+              </div>
+              } @else {
+              <div class="media-content">
+                <div class="media-poster"
+                  [style.background-image]="'url(' + tmdbService.getPosterUrl(activity.mediaPosterPath) + ')'"></div>
+                <div class="media-info">
+                  <h3 class="media-title">
+                    {{ activity.mediaTitle }}
+                    @if (activity.mediaType === 'movie' && activity.createdAt) {
+                    <span class="media-year">({{ getYear(activity.createdAt) }})</span>
+                    }
+                  </h3>
+                  @if (activity.reviewText) {
+                  <p class="media-review">{{ activity.reviewText }}</p>
+                  }
+                  @if (activity.genres && activity.genres.length > 0) {
+                  <div class="media-genres">
+                    @for (genre of activity.genres; track genre) {
+                    <span class="genre-tag">{{ genre }}</span>
+                    }
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+
+            <div class="activity-actions">
+              <button class="action-btn">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>0</span>
+              </button>
+              <button class="action-btn">
+                <span class="material-symbols-outlined">chat_bubble</span>
+                <span>0 comments</span>
+              </button>
+              <button class="action-btn bookmark-btn">
+                <span class="material-symbols-outlined">bookmark_add</span>
+              </button>
+            </div>
+          </article>
+          }
+          }
+
+          @if (hasMore() && !isLoading()) {
+          <button class="load-more-btn" (click)="loadMore()">
+            Load more
+          </button>
+          }
+        </div>
+      </div>
+
+      <aside class="right-sidebar">
+        <div class="recommendations-section">
+          <div class="section-header">
+            <span class="material-symbols-outlined section-icon">auto_awesome</span>
+            <h3 class="section-title">For You</h3>
+          </div>
+          @if (isDailyPickLoading()) {
+          <div class="daily-pick-card skeleton-card">
+            <div class="daily-pick-content">
+              <div class="skeleton-badge"></div>
+              <div class="skeleton-text title"></div>
+              <div class="skeleton-text meta"></div>
+              <div class="daily-pick-actions">
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn small"></div>
+              </div>
+            </div>
+          </div>
+          } @else if (dailyPick(); as pick) {
+          <div class="daily-pick-card">
+            <div class="daily-pick-content">
+              <div class="daily-pick-badge">Daily Pick</div>
+              <h4 class="daily-pick-title" [title]="pick.title">{{ pick.title }}</h4>
+              <div class="daily-pick-meta" [title]="pick.year + ' • ' + pick.genre">
+                <span>{{ pick.year }}</span>
+                <span class="separator">•</span>
+                <span>{{ pick.genre }}</span>
+              </div>
+              <div class="daily-pick-actions">
+                <button class="daily-pick-btn primary">
+                  <span class="material-symbols-outlined">play_arrow</span>
+                  Watch
+                </button>
+                <button class="daily-pick-btn secondary">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+              </div>
+            </div>
+            <div class="daily-pick-backdrop" [style.background-image]="'url(' + pick.backdropUrl + ')'"></div>
+          </div>
+          }
+
+          @if (isMealtimePickLoading()) {
+          <div class="daily-pick-card skeleton-card" style="margin-top: 16px;">
+            <div class="daily-pick-content">
+              <div class="skeleton-badge"></div>
+              <div class="skeleton-text title"></div>
+              <div class="skeleton-text meta"></div>
+              <div class="daily-pick-actions">
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn small"></div>
+              </div>
+            </div>
+          </div>
+          } @else if (mealtimePick(); as meal) {
+          <div class="daily-pick-card mealtime-card" style="margin-top: 16px;">
+            <div class="daily-pick-content">
+              <div class="daily-pick-badge mealtime-badge">Mealtime Roulette 🍕</div>
+              <h4 class="daily-pick-title" [title]="meal.showTitle">{{ meal.showTitle }}</h4>
+              <div class="daily-pick-meta" [title]="meal.episodeTitle">
+                <span>{{ meal.episodeTitle }}</span>
+              </div>
+              <div class="daily-pick-meta"
+                [title]="'S' + meal.seasonNumber + ' E' + meal.episodeNumber + ' • ' + (meal.runtime | number:'1.0-0') + 'm'">
+                <span>S{{ meal.seasonNumber }} E{{ meal.episodeNumber }}</span>
+                <span class="separator">•</span>
+                <span>{{ meal.runtime | number:'1.0-0' }}m</span>
+              </div>
+              <div class="daily-pick-actions">
+                <button class="daily-pick-btn primary">
+                  <span class="material-symbols-outlined">play_arrow</span>
+                  Watch
+                </button>
+                <button class="daily-pick-btn secondary" (click)="loadMealtimePick()">
+                  <span class="material-symbols-outlined">refresh</span>
+                </button>
+              </div>
+            </div>
+            <div class="daily-pick-backdrop"
+              [style.background-image]="'url(' + (meal.stillPath || meal.showPoster) + ')'"></div>
+          </div>
+          }
+        </div>
+
+        <div class="trending-section">
+          <div class="section-header">
+            <span class="material-symbols-outlined section-icon">trending_up</span>
+            <h3 class="section-title">Trending Now</h3>
+          </div>
+          <div class="trending-card">
+            <div class="trending-tags">
+              <a class="trending-tag" href="#">#Barbenheimer</a>
+              <a class="trending-tag" href="#">#HorrorSeason</a>
+              <a class="trending-tag" href="#">#A24</a>
+              <a class="trending-tag" href="#">#SuccessionFinale</a>
+              <a class="trending-tag" href="#">#Cannes2024</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <a class="footer-link" href="#">About</a>
+          <a class="footer-link" href="#">News</a>
+          <a class="footer-link" href="#">Pro</a>
+          <a class="footer-link" href="#">Apps</a>
+          <a class="footer-link" href="#">Podcast</a>
+          <span class="footer-copyright">© CineTrack 2024</span>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>

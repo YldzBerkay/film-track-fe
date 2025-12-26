@@ -1,0 +1,113 @@
+import { Component, ChangeDetectionStrategy, input, computed, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartType } from 'chart.js';
+import { MoodService, MoodVector } from '../../../core/services/mood.service';
+
+@Component({
+  selector: 'app-mood-chart',
+  standalone: true,
+  imports: [CommonModule, BaseChartDirective],
+  templateUrl: './mood-chart.component.html',
+  styleUrl: './mood-chart.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class MoodChartComponent {
+  moodData = input<MoodVector | null>(null);
+  isLoading = input<boolean>(false);
+
+  chartData = computed(() => {
+    const data = this.moodData();
+    if (!data) {
+      return {
+        labels: ['Adrenalin', 'Melankoli', 'Neşe', 'Gerilim', 'Zeka'],
+        datasets: [
+          {
+            data: [50, 50, 50, 50, 50],
+            borderColor: '#00E054',
+            backgroundColor: 'rgba(0, 224, 84, 0.2)',
+            pointBackgroundColor: '#F1F1F1',
+            pointBorderColor: '#00E054',
+            pointHoverBackgroundColor: '#00E054',
+            pointHoverBorderColor: '#F1F1F1'
+          }
+        ]
+      };
+    }
+
+    return {
+      labels: ['Adrenalin', 'Melankoli', 'Neşe', 'Gerilim', 'Zeka'],
+      datasets: [
+        {
+          data: [
+            data.adrenaline,
+            data.melancholy,
+            data.joy,
+            data.tension,
+            data.intellect
+          ],
+          borderColor: '#00E054',
+          backgroundColor: 'rgba(0, 224, 84, 0.2)',
+          pointBackgroundColor: '#F1F1F1',
+          pointBorderColor: '#00E054',
+          pointHoverBackgroundColor: '#00E054',
+          pointHoverBorderColor: '#F1F1F1',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }
+      ]
+    };
+  });
+
+  chartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: 'rgba(20, 24, 28, 0.9)',
+        titleColor: '#F1F1F1',
+        bodyColor: '#F1F1F1',
+        borderColor: '#00E054',
+        borderWidth: 1,
+        padding: 12,
+        callbacks: {
+          label: (context) => {
+            return `${context.label}: ${context.parsed.r}%`;
+          }
+        }
+      }
+    },
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        min: 0,
+        ticks: {
+          stepSize: 20,
+          color: '#9ca3af',
+          font: {
+            size: 12
+          },
+          backdropColor: 'transparent'
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        },
+        pointLabels: {
+          color: '#F1F1F1',
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
+        }
+      }
+    }
+  };
+
+  chartType: ChartType = 'radar';
+}
+
