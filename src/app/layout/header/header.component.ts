@@ -4,11 +4,12 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../../core/services/socket.service';
 import { AuthService } from '../../core/services/auth.service';
+import { MoodWidgetComponent } from '../../shared/components/mood-widget/mood-widget.component';
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, MoodWidgetComponent],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })

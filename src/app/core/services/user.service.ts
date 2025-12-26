@@ -71,11 +71,22 @@ export interface UserSearchResults {
   };
 }
 
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  earnedAt?: string;
+  progress?: number;
+  threshold?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private readonly apiUrl = 'http://localhost:3000/api/users';
+  private readonly badgeApiUrl = 'http://localhost:3000/api/badges';
 
   constructor(private http: HttpClient) { }
 
@@ -115,6 +126,12 @@ export class UserService {
 
   updateProfile(data: FormData): Observable<ApiResponse<void>> {
     return this.http.put<ApiResponse<void>>(`${this.apiUrl}/profile/me`, data);
+  }
+
+  getBadges(showAll: boolean = false): Observable<ApiResponse<Badge[]>> {
+    return this.http.get<ApiResponse<Badge[]>>(this.badgeApiUrl, {
+      params: { all: showAll.toString() }
+    });
   }
 }
 

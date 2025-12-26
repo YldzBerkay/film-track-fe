@@ -875,6 +875,9 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 // Daily Pick Card
@@ -1469,4 +1472,291 @@
   display: flex;
   gap: 12px;
   justify-content: center;
+}
+
+// Mood-Based Recommendations
+.mood-recs-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.mood-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+
+  .material-symbols-outlined {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-main);
+    border-color: var(--color-primary);
+  }
+}
+
+.mood-recs-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 8px 0 16px;
+}
+
+.mood-recs-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.mood-recs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  &.single-item {
+    grid-template-columns: 1fr;
+    height: auto;
+    width: 100%;
+
+    a {
+      width: 100%;
+    }
+  }
+}
+
+.clickable-header {
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+
+    .arrow-icon {
+      transform: translateX(4px);
+      color: var(--color-primary);
+    }
+  }
+
+  .arrow-icon {
+    transition: all 0.2s;
+    color: var(--color-text-muted);
+  }
+}
+
+.mood-rec-card.featured {
+  .mood-rec-poster-wrapper {
+    aspect-ratio: 2/3; // Maintain poster ratio
+  }
+
+  .mood-rec-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+
+  .mood-match-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 224, 84, 0.9);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .material-symbols-outlined {
+      font-size: 14px;
+    }
+  }
+}
+
+.mood-rec-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 224, 84, 0.15);
+
+    .mood-rec-poster {
+      opacity: 1;
+    }
+  }
+}
+
+.mood-rec-poster {
+  aspect-ratio: 2 / 3;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-border);
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.mood-rec-info {
+  padding: 8px;
+}
+
+.mood-rec-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mood-rec-match {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  color: var(--color-primary);
+  font-weight: 500;
+
+  .material-symbols-outlined {
+    font-size: 12px;
+  }
+}
+
+.mood-recs-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+// Mood controls container
+.mood-controls {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.mood-toggle-btn.active {
+  background: rgba(0, 224, 84, 0.15);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.recommendations-section {
+  .daily-pick-card {
+
+    // Target the content wrapper, then its last child
+    .daily-pick-content> :last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Mood Recs Slider
+.mood-recs-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.mood-recs-slider {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 4px;
+  flex: 1;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mood-rec-card {
+  min-width: 140px; // Fixed width for slider items
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 224, 84, 0.15);
+
+    .mood-rec-poster {
+      opacity: 1;
+    }
+  }
+}
+
+.slider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  z-index: 2;
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+  }
+
+  &.prev {
+    margin-right: -4px;
+  }
+
+  &.next {
+    margin-left: -4px;
+  }
 }

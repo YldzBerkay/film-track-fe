@@ -1,20 +1,23 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { UserService, UserProfile } from '../../core/services/user.service';
+import { UserService, UserProfile, Badge } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
 import { TMDBService } from '../../core/services/tmdb.service';
-import { MoodService, MoodVector } from '../../core/services/mood.service';
+import { MoodService, MoodVector, MoodTimelineEntry, MoodComparison } from '../../core/services/mood.service';
+import { RecommendationService, MoodRecommendation } from '../../core/services/recommendation.service';
 import { MoodChartComponent } from '../../shared/components/mood-chart/mood-chart.component';
+import { MoodTimelineComponent } from '../../shared/components/mood-timeline/mood-timeline.component';
 import { HeaderComponent } from '../../layout/header/header.component';
+import { ShareDialogComponent } from '../../shared/components/share-dialog/share-dialog.component';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, HeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,6 +29,7 @@ export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
   tmdbService = inject(TMDBService);
   moodService = inject(MoodService);
+  recommendationService = inject(RecommendationService);
 
   profile = signal<UserProfile | null>(null);
   isLoading = signal(true);
@@ -33,6 +37,14 @@ export class ProfileComponent implements OnInit {
   activeTab = signal<TabType>('profile');
   moodData = signal<MoodVector | null>(null);
   isLoadingMood = signal(false);
+  moodTimeline = signal<MoodTimelineEntry[]>([]);
+  isLoadingTimeline = signal(false);
+  badges = signal<Badge[]>([]);
+  isLoadingBadges = signal(false);
+  moodRecommendations = signal<MoodRecommendation[]>([]);
+  isLoadingRecommendations = signal(false);
+  moodRecsMode = signal<'match' | 'shift'>('match');
+  includeWatched = signal(false);
 
   // Follow state
   isFollowing = signal(false);
@@ -53,8 +65,17 @@ export class ProfileComponent implements OnInit {
   selectedFile: File | null = null;
   selectedBannerFile: File | null = null;
   isEditLoading = signal(false);
+  isBannerLoading = signal(false);
   canChangeUsername = signal(true);
   canChangeUsernameAt = signal<string | null>(null);
+
+  // Mood Comparison state
+  showComparisonDialog = signal(false);
+  moodComparison = signal<MoodComparison | null>(null);
+  isLoadingComparison = signal(false);
+
+  // Share Dialog state
+  showShareDialog = signal(false);
 
 
   readonly username = computed(() => {
@@ -81,7 +102,9 @@ export class ProfileComponent implements OnInit {
 
     // Load mood data if viewing own profile
     if (this.isOwnProfile()) {
-      this.loadMood();
+      this.loadMoodTimeline();
+      this.loadBadges();
+      this.loadMoodRecommendations();
     }
   }
 
@@ -248,6 +271,146 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  loadMoodTimeline(): void {
+    this.isLoadingTimeline.set(true);
+    this.moodService.getMoodTimeline(30).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.moodTimeline.set(response.data);
+        }
+        this.isLoadingTimeline.set(false);
+      },
+      error: () => {
+        this.isLoadingTimeline.set(false);
+      }
+    });
+  }
+
+  loadBadges(): void {
+    this.isLoadingBadges.set(true);
+    this.userService.getBadges(true).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.badges.set(response.data);
+        }
+        this.isLoadingBadges.set(false);
+      },
+      error: () => {
+        this.isLoadingBadges.set(false);
+      }
+    });
+  }
+
+  @ViewChild('badgesContainer') badgesContainer!: ElementRef<HTMLDivElement>;
+
+  scrollBadges(direction: 'left' | 'right'): void {
+    if (!this.badgesContainer) return;
+
+    const container = this.badgesContainer.nativeElement;
+    const scrollAmount = 300; // Adjust scroll distance
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  loadMoodRecommendations(): void {
+    this.isLoadingRecommendations.set(true);
+    // Use signal values for mode and includeWatched
+    this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 10, this.includeWatched()).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const recommendations = response.data.map(rec => ({
+            ...rec,
+            score: Math.round(rec.moodSimilarity * 100)
+          }));
+          this.moodRecommendations.set(recommendations);
+        }
+        this.isLoadingRecommendations.set(false);
+      },
+      error: () => {
+        this.isLoadingRecommendations.set(false);
+      }
+    });
+  }
+
+  toggleMoodRecsMode(): void {
+    const newMode = this.moodRecsMode() === 'match' ? 'shift' : 'match';
+    this.moodRecsMode.set(newMode);
+    this.loadMoodRecommendations();
+  }
+
+  toggleIncludeWatched(): void {
+    this.includeWatched.set(!this.includeWatched());
+    this.loadMoodRecommendations();
+  }
+
+  @ViewChild('recommendationsContainer') recommendationsContainer!: ElementRef<HTMLDivElement>;
+
+  scrollRecommendations(direction: 'left' | 'right'): void {
+    if (!this.recommendationsContainer) return;
+
+    const container = this.recommendationsContainer.nativeElement;
+    const scrollAmount = 300; // Adjust scroll distance
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  openMoodComparison(): void {
+    const profileData = this.profile();
+    if (!profileData || this.isOwnProfile()) return;
+
+    this.showComparisonDialog.set(true);
+    this.isLoadingComparison.set(true);
+    this.moodComparison.set(null);
+
+    this.moodService.getMoodComparison(profileData.user.id).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.moodComparison.set(response.data);
+        }
+        this.isLoadingComparison.set(false);
+      },
+      error: () => {
+        this.isLoadingComparison.set(false);
+      }
+    });
+  }
+
+  closeComparisonDialog(): void {
+    this.showComparisonDialog.set(false);
+  }
+
+  openShareDialog(): void {
+    this.showShareDialog.set(true);
+  }
+
+  closeShareDialog = () => {
+    this.showShareDialog.set(false);
+  };
+
+  getDimensionLabel(dim: string): string {
+    const labels: Record<string, string> = {
+      adrenaline: 'Adrenaline',
+      melancholy: 'Melancholy',
+      joy: 'Joy',
+      tension: 'Tension',
+      intellect: 'Intellect',
+      romance: 'Romance',
+      wonder: 'Wonder',
+      nostalgia: 'Nostalgia',
+      darkness: 'Darkness',
+      inspiration: 'Inspiration'
+    };
+    return labels[dim] || dim;
+  }
+
   openFollowers(): void {
     const profileData = this.profile();
     if (!profileData) return;
@@ -383,6 +546,38 @@ export class ProfileComponent implements OnInit {
         this.editBanner.set(e.target.result);
       };
       reader.readAsDataURL(file);
+    }
+  }
+
+
+  onBannerQuickUpload(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size exceeds 2MB limit');
+        return;
+      }
+
+      this.isBannerLoading.set(true);
+      const formData = new FormData();
+      formData.append('banner', file);
+
+      this.userService.updateProfile(formData).subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Reload profile or update signal
+            this.loadCurrentProfile();
+          } else {
+            alert(response.message || 'Failed to update banner');
+          }
+          this.isBannerLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Failed to update banner:', err);
+          alert(err.error?.message || 'Failed to update banner');
+          this.isBannerLoading.set(false);
+        }
+      });
     }
   }
 

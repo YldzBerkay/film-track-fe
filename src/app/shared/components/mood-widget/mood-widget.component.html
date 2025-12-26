@@ -1,0 +1,15 @@
+@if (dominantMoodInfo(); as mood) {
+<div class="mood-widget" [style.--mood-color]="mood.color">
+    <div class="pulse-ring"></div>
+    <span class="material-symbols-outlined icon">{{ mood.icon }}</span>
+    <span class="label">{{ mood.label }}</span>
+    <div class="tooltip">
+        <div class="tooltip-header">
+            <span class="tooltip-title">{{ mood.label }}</span>
+            <span class="tooltip-score">{{ mood.value }}%</span>
+        </div>
+        <p class="tooltip-desc">{{ mood.description }}</p>
+        <p class="tooltip-sub">Based on your viewing history</p>
+    </div>
+</div>
+}

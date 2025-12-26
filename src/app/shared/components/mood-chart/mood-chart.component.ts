@@ -18,12 +18,17 @@ export class MoodChartComponent {
 
   chartData = computed(() => {
     const data = this.moodData();
+    const labels = [
+      'Adrenaline', 'Joy', 'Romance', 'Wonder', 'Inspiration',
+      'Intellect', 'Nostalgia', 'Melancholy', 'Darkness', 'Tension'
+    ];
+
     if (!data) {
       return {
-        labels: ['Adrenalin', 'Melankoli', 'Neşe', 'Gerilim', 'Zeka'],
+        labels,
         datasets: [
           {
-            data: [50, 50, 50, 50, 50],
+            data: [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
             borderColor: '#00E054',
             backgroundColor: 'rgba(0, 224, 84, 0.2)',
             pointBackgroundColor: '#F1F1F1',
@@ -36,15 +41,20 @@ export class MoodChartComponent {
     }
 
     return {
-      labels: ['Adrenalin', 'Melankoli', 'Neşe', 'Gerilim', 'Zeka'],
+      labels,
       datasets: [
         {
           data: [
             data.adrenaline,
-            data.melancholy,
             data.joy,
-            data.tension,
-            data.intellect
+            data.romance || 0,
+            data.wonder || 0,
+            data.inspiration || 0,
+            data.intellect,
+            data.nostalgia || 0,
+            data.melancholy,
+            data.darkness || 0,
+            data.tension
           ],
           borderColor: '#00E054',
           backgroundColor: 'rgba(0, 224, 84, 0.2)',

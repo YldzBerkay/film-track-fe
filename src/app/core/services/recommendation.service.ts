@@ -45,6 +45,27 @@ export interface MemoryVerificationResult {
     reasoning: string;
 }
 
+export interface MoodVector {
+    adrenaline: number;
+    melancholy: number;
+    joy: number;
+    tension: number;
+    intellect: number;
+}
+
+export interface MoodRecommendation {
+    tmdbId: number;
+    title: string;
+    posterPath: string;
+    backdropPath: string;
+    overview: string;
+    releaseDate: string;
+    moodVector: MoodVector;
+    moodSimilarity: number;
+    moodMatchType: 'match' | 'shift';
+    score?: number;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -76,6 +97,16 @@ export class RecommendationService {
             filmTitle,
             filmOverview,
             userMemory
+        });
+    }
+
+    getMoodBasedRecommendations(
+        mode: 'match' | 'shift' = 'match',
+        limit: number = 10,
+        includeWatched: boolean = false
+    ): Observable<ApiResponse<MoodRecommendation[]>> {
+        return this.http.get<ApiResponse<MoodRecommendation[]>>(`${this.apiUrl}/mood-based`, {
+            params: { mode, limit: limit.toString(), includeWatched: includeWatched.toString() }
         });
     }
 }

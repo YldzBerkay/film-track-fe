@@ -1,0 +1,59 @@
+@if (isOpen()) {
+<div class="dialog-overlay" (click)="closeDialog($event)">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeDialog()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <h2>Share Your CineTrack Mood</h2>
+
+        <div class="capture-container" #captureArea>
+            <div class="card-header">
+                <div class="user-info">
+                    <img [src]="profile()?.user?.avatar || 'assets/default-avatar.png'" class="avatar"
+                        crossorigin="anonymous">
+                    <div class="names">
+                        <span class="name">{{ profile()?.user?.name }}</span>
+                        <span class="username">@{{ profile()?.user?.username }}</span>
+                    </div>
+                </div>
+                <div class="app-logo">
+                    <span class="logo-text">CineTrack</span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="chart-section">
+                    <app-mood-chart [moodData]="moodData()" [isLoading]="false"></app-mood-chart>
+                </div>
+
+                <div class="identity-section">
+                    <span class="identity-label">Mood Identity</span>
+                    <h3 class="identity-value">{{ primaryMood }}</h3>
+                </div>
+
+                <div class="badges-row">
+                    @for (badge of topBadges; track badge.id) {
+                    <div class="badge-mini">
+                        <span class="material-symbols-outlined">{{ badge.icon }}</span>
+                        <span class="badge-name">{{ badge.name }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <span>Generated on {{ 0 | date:'mediumDate' }}</span>
+                <!-- Hack for current date if no date pipe usage? actually new Date() in template is bad, user pipe in component logic or just simple timestamp -->
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn primary" (click)="downloadImage()" [disabled]="isGenerating()">
+                <span class="material-symbols-outlined">download</span>
+                {{ isGenerating() ? 'Generating...' : 'Download Image' }}
+            </button>
+        </div>
+    </div>
+</div>
+}

@@ -20,7 +20,23 @@
   <!-- Profile Hero Section -->
   <div class="profile-hero">
     <div class="hero-banner"
-      [style.background-image]="profileData.user.banner ? 'url(' + profileData.user.banner + ')' : 'none'"></div>
+      [style.background-image]="profileData.user.banner ? 'url(' + profileData.user.banner + ')' : 'none'"
+      [class.hero-banner--editable]="isOwnProfile()" (click)="isOwnProfile() && quickBannerInput.click()">
+
+      @if (isOwnProfile()) {
+      <div class="banner-edit-overlay">
+        <div class="overlay-content">
+          @if (isBannerLoading()) {
+          <div class="spinner-small"></div>
+          } @else {
+          <span class="material-symbols-outlined">photo_camera</span>
+          <span>Change Banner</span>
+          }
+        </div>
+      </div>
+      }
+      <input type="file" #quickBannerInput (change)="onBannerQuickUpload($event)" accept="image/*" hidden>
+    </div>
     <div class="hero-content">
       <div class="profile-header">
         <div class="profile-avatar-section">
@@ -48,6 +64,10 @@
               <span class="material-symbols-outlined">edit</span>
               <span>Edit Profile</span>
             </button>
+            <button class="share-profile-btn" (click)="openShareDialog()">
+              <span class="material-symbols-outlined">share</span>
+              <span>Share</span>
+            </button>
             } @else {
             @if (isFollowing()) {
             <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
@@ -60,6 +80,10 @@
               <span>Follow</span>
             </button>
             }
+            <button class="compare-mood-btn" (click)="openMoodComparison()">
+              <span class="material-symbols-outlined">compare</span>
+              <span>Compare Mood</span>
+            </button>
             }
           </div>
         </div>
@@ -128,10 +152,112 @@
   <!-- Content Section -->
   <div class="content-section">
     @if (activeTab() === 'profile') {
-    <!-- Mood Chart Section -->
+    <!-- Mood Charts Section -->
     @if (isOwnProfile()) {
     <div class="mood-section">
-      <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
+      <div class="mood-charts-grid">
+        <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
+        <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
+      </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="badges-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined section-icon">workspace_premium</span>
+          Mood Badges
+        </h2>
+      </div>
+      @if (isLoadingBadges()) {
+      <div class="badges-loading">
+        <div class="spinner"></div>
+      </div>
+      } @else if (badges().length > 0) {
+      <div class="badges-slider-container">
+        <button class="slider-btn prev" (click)="scrollBadges('left')">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+
+        <div class="badges-slider" #badgesContainer>
+          @for (badge of badges(); track badge.id) {
+          <div class="badge-item" [class.earned]="badge.earnedAt" [title]="badge.description">
+            <span class="badge-icon">{{ badge.icon }}</span>
+            <span class="badge-name">{{ badge.name }}</span>
+            @if (!badge.earnedAt && badge.progress !== undefined && badge.threshold) {
+            <div class="badge-progress">
+              <div class="badge-progress-bar" [style.width.%]="(badge.progress / badge.threshold) * 100"></div>
+            </div>
+            <span class="badge-progress-text">{{ badge.progress }}/{{ badge.threshold }}</span>
+            }
+          </div>
+          }
+        </div>
+
+        <button class="slider-btn next" (click)="scrollBadges('right')">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+      } @else {
+      <div class="badges-empty">
+        <p>Watch and rate movies to earn badges!</p>
+      </div>
+      }
+    </div>
+
+    <!-- Mood Recommendations Section -->
+    <div class="badges-section recommendations-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined section-icon">movie_filter</span>
+          For Your Mood
+        </h2>
+
+        <!-- Controls -->
+        <div class="mood-controls">
+          <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()">
+            <span class="material-symbols-outlined">{{ moodRecsMode() === 'match' ? 'favorite' : 'swap_horiz' }}</span>
+            {{ moodRecsMode() === 'match' ? 'Match' : 'Shift' }}
+          </button>
+          <button class="mood-toggle-btn" [class.active]="includeWatched()" (click)="toggleIncludeWatched()">
+            <span class="material-symbols-outlined">{{ includeWatched() ? 'visibility' : 'visibility_off' }}</span>
+            {{ includeWatched() ? 'All' : 'Unwatched' }}
+          </button>
+        </div>
+      </div>
+      @if (isLoadingRecommendations()) {
+      <div class="badges-loading">
+        <div class="spinner"></div>
+      </div>
+      } @else if (moodRecommendations().length > 0) {
+      <div class="badges-slider-container">
+        <button class="slider-btn prev" (click)="scrollRecommendations('left')">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+
+        <div class="badges-slider" #recommendationsContainer>
+          @for (rec of moodRecommendations(); track rec.tmdbId) {
+          <div class="recommendation-card" (click)="router.navigate(['/movies', rec.tmdbId])">
+            <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="rec-poster" />
+            <div class="rec-overlay">
+              <span class="material-symbols-outlined">play_circle</span>
+            </div>
+            <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
+              {{ rec.score }}%
+            </div>
+          </div>
+          }
+        </div>
+
+        <button class="slider-btn next" (click)="scrollRecommendations('right')">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+      } @else {
+      <div class="badges-empty">
+        <p>No mood recommendations available right now.</p>
+      </div>
+      }
     </div>
     }
     <!-- Favorites Section -->
@@ -350,5 +476,80 @@
     </div>
   </div>
 </div>
+
+<!-- Mood Comparison Dialog -->
+@if (showComparisonDialog()) {
+<div class="dialog-overlay" (click)="closeComparisonDialog()">
+  <div class="comparison-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h2><span class="material-symbols-outlined">compare</span> Mood Comparison</h2>
+      <button class="close-btn" (click)="closeComparisonDialog()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="dialog-body">
+      @if (isLoadingComparison()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Comparing mood profiles...</p>
+      </div>
+      } @else if (moodComparison()) {
+      <div class="comparison-content">
+        <div class="similarity-section">
+          <div class="similarity-circle" [class.high]="moodComparison()!.similarity >= 75">
+            <span class="similarity-value">{{ moodComparison()!.similarity }}%</span>
+            <span class="similarity-label">Match</span>
+          </div>
+          <p class="similarity-text">
+            @if (moodComparison()!.similarity >= 80) { You're cinematic soulmates! 🎬💕 }
+            @else if (moodComparison()!.similarity >= 60) { You have similar movie vibes! 🎥 }
+            @else if (moodComparison()!.similarity >= 40) { Some overlap in your tastes 🎞️ }
+            @else { Different perspectives, different movies! 🌈 }
+          </p>
+        </div>
+        <div class="dimension-comparison">
+          <h3>Dimension Breakdown</h3>
+          <div class="dimensions-list">
+            @for (dim of moodComparison()!.dimensionComparison; track dim.dimension) {
+            <div class="dimension-row">
+              <span class="dim-label">{{ getDimensionLabel(dim.dimension) }}</span>
+              <div class="dim-bars">
+                <div class="bar-container you">
+                  <div class="bar" [style.width.%]="dim.user1Value"></div><span class="bar-value">{{ dim.user1Value
+                    }}</span>
+                </div>
+                <div class="bar-container them">
+                  <div class="bar" [style.width.%]="dim.user2Value"></div><span class="bar-value">{{ dim.user2Value
+                    }}</span>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          <div class="legend">
+            <span class="legend-item you"><span class="dot"></span> You</span>
+            <span class="legend-item them"><span class="dot"></span> {{ profile()?.user?.name ||
+              profile()?.user?.username }}</span>
+          </div>
+        </div>
+        @if (moodComparison()!.commonStrengths.length > 0) {
+        <div class="strengths-section">
+          <h3>Shared Strengths</h3>
+          <div class="strength-tags">
+            @for (s of moodComparison()!.commonStrengths; track s) {
+            <span class="strength-tag common">{{ getDimensionLabel(s) }}</span>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>
 }
 }
+}
+<app-share-dialog [isOpen]="showShareDialog()" [profile]="profile()" [moodData]="moodData()" [badges]="badges()"
+  [close]="closeShareDialog">
+</app-share-dialog>

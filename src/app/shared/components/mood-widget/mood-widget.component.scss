@@ -1,0 +1,150 @@
+.mood-widget {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(25, 25, 25, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: visible; // Allow pulse to spill slightly if needed, though hidden is cleaner for pill
+    transition: all 0.3s ease;
+    user-select: none;
+    cursor: default;
+
+    &:hover {
+        background: rgba(40, 40, 40, 0.8);
+        border-color: var(--mood-color);
+        box-shadow: 0 0 15px var(--mood-color-glow, rgba(0, 0, 0, 0));
+    }
+}
+
+.icon {
+    font-size: 18px;
+    color: var(--mood-color);
+    position: relative;
+    z-index: 1;
+}
+
+.label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    position: relative;
+    z-index: 1;
+}
+
+.pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 15px; // Approx center of icon
+    width: 20px;
+    height: 20px;
+    background: var(--mood-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    opacity: 0;
+    filter: blur(4px);
+    animation: pulse 3s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
+
+.tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 12px;
+    border-radius: 12px;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin-top: 12px;
+    min-width: 200px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid rgba(255, 255, 255, 0.15);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid rgba(20, 20, 20, 0.95);
+    }
+}
+
+.tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.tooltip-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-primary);
+}
+
+.tooltip-score {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.tooltip-desc {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    color: #e0e0e0;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.tooltip-sub {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+    font-style: italic;
+}
+
+.mood-widget:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}

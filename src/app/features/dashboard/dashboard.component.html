@@ -287,6 +287,57 @@
           }
         </div>
 
+        <!-- Mood-Based Recommendations -->
+        <section class="mood-recs-section">
+          <div class="section-header clickable-header" (click)="router.navigate(['/profile'])" style="cursor: pointer;">
+            <h3 class="section-title">
+              <span class="material-symbols-outlined section-icon">movie_filter</span>
+              For Your Mood
+              <span class="material-symbols-outlined arrow-icon" style="font-size: 18px;">arrow_forward</span>
+            </h3>
+          </div>
+
+          @if (isMoodRecsLoading()) {
+          <div class="mood-recs-loading">
+            <div class="spinner-small"></div>
+          </div>
+          } @else if (moodRecommendations().length > 0) {
+          <div class="mood-recs-grid single-item">
+            @for (rec of moodRecommendations().slice(0, 1); track rec.tmdbId) {
+            <div class="daily-pick-card" style="margin-bottom: 0;">
+              <div class="daily-pick-content">
+                <div class="daily-pick-header">
+                  <div class="daily-pick-badge"
+                    style="background: rgba(108, 92, 231, 0.2); border-color: rgba(108, 92, 231, 0.3); color: #a29bfe;">
+                    Mood Match: {{ rec.score }}%
+                  </div>
+                </div>
+                <h4 class="daily-pick-title">{{ rec.title }}</h4>
+                <div class="daily-pick-meta">
+                  <span>{{ rec.releaseDate | date:'yyyy' }}</span>
+                  <span class="separator">•</span>
+                  <span class="mood-badge" style="color: #a29bfe;">{{ rec.moodMatchType | titlecase }}</span>
+                </div>
+                <div class="daily-pick-actions">
+                  <a class="daily-pick-btn primary" [routerLink]="['/movie', rec.tmdbId]"
+                    style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                    <span class="material-symbols-outlined">play_arrow</span>
+                    Watch
+                  </a>
+                </div>
+              </div>
+              <div class="daily-pick-backdrop"
+                [style.background-image]="'url(' + getPosterUrl(rec.backdropPath || rec.posterPath) + ')'"></div>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="empty-state">
+            <p>Log movies to get recommendations</p>
+          </div>
+          }
+        </section>
+
         <div class="trending-section">
           <div class="section-header">
             <span class="material-symbols-outlined section-icon">trending_up</span>

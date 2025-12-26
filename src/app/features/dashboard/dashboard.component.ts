@@ -10,7 +10,7 @@ import { HeaderComponent } from '../../layout/header/header.component';
 
 type FeedType = 'following' | 'friends' | 'global';
 
-import { RecommendationService, MealtimeRecommendation, DailyPick, Friend, FriendMealtimeRecommendation } from '../../core/services/recommendation.service';
+import { RecommendationService, MealtimeRecommendation, DailyPick, Friend, FriendMealtimeRecommendation, MoodRecommendation } from '../../core/services/recommendation.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -56,6 +56,12 @@ export class DashboardComponent implements OnInit {
   friendPickResult = signal<FriendMealtimeRecommendation | null>(null);
   isFriendsLoading = signal(false);
 
+  // Mood Recommendations state
+  moodRecommendations = signal<MoodRecommendation[]>([]);
+  isMoodRecsLoading = signal(false);
+  moodRecsMode = signal<'match' | 'shift'>('match');
+  includeWatched = signal(false);
+
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/login']);
@@ -64,6 +70,7 @@ export class DashboardComponent implements OnInit {
     this.loadFeed();
     this.loadDailyPick();
     this.loadMealtimePick();
+    this.loadMoodRecommendations();
   }
 
   loadMealtimePick(): void {
@@ -308,5 +315,37 @@ export class DashboardComponent implements OnInit {
 
   onLogout(): void {
     this.authService.logout();
+  }
+
+  loadMoodRecommendations(): void {
+    this.isMoodRecsLoading.set(true);
+    this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 6, this.includeWatched()).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.moodRecommendations.set(response.data);
+        }
+        this.isMoodRecsLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load mood recommendations:', err);
+        this.isMoodRecsLoading.set(false);
+      }
+    });
+  }
+
+  toggleMoodRecsMode(): void {
+    const newMode = this.moodRecsMode() === 'match' ? 'shift' : 'match';
+    this.moodRecsMode.set(newMode);
+    this.loadMoodRecommendations();
+  }
+
+  toggleIncludeWatched(): void {
+    this.includeWatched.set(!this.includeWatched());
+    this.loadMoodRecommendations();
+  }
+
+  getPosterUrl(path: string): string {
+    if (!path) return '';
+    return `https://image.tmdb.org/t/p/w300${path}`;
   }
 }

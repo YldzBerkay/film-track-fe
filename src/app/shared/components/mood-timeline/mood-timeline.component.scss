@@ -1,0 +1,74 @@
+.mood-timeline-container {
+    position: relative;
+    width: 100%;
+    min-height: 256px;
+    background-color: var(--color-surface);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--color-border);
+}
+
+.chart-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin: 0 0 16px 0;
+
+    .material-symbols-outlined {
+        font-size: 22px;
+        color: var(--color-primary);
+    }
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 256px;
+    position: relative;
+}
+
+.chart-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 256px;
+    gap: 16px;
+    color: var(--color-text-secondary);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.chart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 256px;
+    padding: 24px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    gap: 12px;
+
+    .material-symbols-outlined {
+        font-size: 48px;
+        color: var(--color-text-muted);
+        opacity: 0.5;
+    }
+}
