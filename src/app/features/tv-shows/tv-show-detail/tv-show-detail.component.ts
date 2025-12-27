@@ -50,6 +50,7 @@ export class TvShowDetailComponent implements OnInit {
   isAddToListOpen = signal(false);
   isRateDialogOpen = signal(false);
   isSpecialsDialogOpen = signal(false);
+  pendingRating = signal<number | null>(null);
 
   // Episode ratings (keyed by episode number for current season)
   episodeRatings = signal<Record<number, number>>({});
@@ -66,6 +67,8 @@ export class TvShowDetailComponent implements OnInit {
   episodePublicStats = signal<Record<number, { count: number; averageRating: number }>>({});
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
+  readonly hasSpecials = computed(() => this.tvShow()?.seasons.some(s => s.season_number === 0) || false);
+  readonly specialsEpisodeCount = computed(() => this.tvShow()?.seasons.find(s => s.season_number === 0)?.episode_count || 0);
 
   ngOnInit(): void {
     this.isLoggedIn.set(this.authService.isAuthenticated());
@@ -109,32 +112,35 @@ export class TvShowDetailComponent implements OnInit {
   onRate(rating: number): void {
     if (this.isRating()) return;
 
-    this.isRating.set(true);
     const show = this.tvShow();
     if (!show) return;
 
-    this.watchedListService.addItem({
-      tmdbId: show.id,
-      mediaType: 'tv',
-      title: show.name,
-      posterPath: show.poster_path || undefined,
-      runtime: this.calculateTotalRuntime(show),
-      rating: rating,
-      watchedAt: new Date().toISOString()
-    }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.userRating.set(rating);
-          this.isWatched.set(true);
-          this.loadPublicStats(show.id);
+    if (this.isWatched()) {
+      // Just update the rating
+      this.isRating.set(true);
+      this.watchedListService.updateRating(show.id, 'tv', rating).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.userRating.set(rating);
+            this.loadPublicStats(show.id);
+          }
+          this.isRating.set(false);
+          this.closeRateDialog();
+        },
+        error: () => {
+          this.isRating.set(false);
         }
-        this.isRating.set(false);
-        this.closeRateDialog();
-      },
-      error: () => {
-        this.isRating.set(false);
+      });
+    } else {
+      // Not watched yet, marks as watched. Check for specials.
+      this.pendingRating.set(rating);
+      if (this.hasSpecials()) {
+        this.isSpecialsDialogOpen.set(true);
+      } else {
+        this.finishToggleWatched(false, rating);
       }
-    });
+      this.closeRateDialog();
+    }
   }
 
   loadTvShowDetails(id: string): void {
@@ -353,10 +359,11 @@ export class TvShowDetailComponent implements OnInit {
 
   onSpecialsConfirm(includeSpecials: boolean): void {
     this.isSpecialsDialogOpen.set(false);
-    this.finishToggleWatched(includeSpecials);
+    this.finishToggleWatched(includeSpecials, this.pendingRating());
+    this.pendingRating.set(null);
   }
 
-  finishToggleWatched(includeSpecials: boolean): void {
+  finishToggleWatched(includeSpecials: boolean, rating: number | null = null): void {
     const show = this.tvShow();
     if (!show) return;
 
@@ -367,11 +374,15 @@ export class TvShowDetailComponent implements OnInit {
       title: show.name,
       posterPath: show.poster_path || undefined,
       runtime: this.calculateTotalRuntime(show, includeSpecials),
+      numberOfEpisodes: includeSpecials ? show.number_of_episodes + (show.seasons.find(s => s.season_number === 0)?.episode_count || 0) : show.number_of_episodes,
+      numberOfSeasons: includeSpecials ? show.number_of_seasons + 1 : show.number_of_seasons,
+      rating: rating !== null ? rating : undefined,
       watchedAt: new Date().toISOString()
     }).subscribe({
       next: (res) => {
         if (res.success) {
           this.isWatched.set(true);
+          if (rating !== null) this.userRating.set(rating);
           this.loadPublicStats(show.id);
         }
         this.isLogging.set(false);

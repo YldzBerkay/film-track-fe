@@ -35,6 +35,19 @@
             </div>
             }
 
+            @if (mediaType === 'tv' && hasSpecials) {
+            <div class="specials-toggle-section">
+                <label class="toggle-label">
+                    <div class="toggle-switch">
+                        <input type="checkbox" [checked]="includeSpecials()"
+                            (change)="includeSpecials.set(!includeSpecials())" />
+                        <span class="slider"></span>
+                    </div>
+                    <span>{{ 'watched.includeSpecials' | translate }}</span>
+                </label>
+            </div>
+            }
+
             <div class="create-list-section">
                 <div class="input-group">
                     <input type="text" [(ngModel)]="newListName" placeholder="Create new list..."

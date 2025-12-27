@@ -331,8 +331,10 @@
 
 @if (tvShow()) {
 <app-add-to-list-dialog [isOpen]="isAddToListOpen()" [tmdbId]="tvShow()!.id" mediaType="tv" [title]="tvShow()!.name"
-  [posterPath]="tvShow()!.poster_path || undefined" [runtime]="0" [releaseDate]="tvShow()!.first_air_date || undefined"
-  (close)="closeAddToList()"></app-add-to-list-dialog>
+  [posterPath]="tvShow()!.poster_path || undefined" [runtime]="calculateTotalRuntime(tvShow()!, false)"
+  [releaseDate]="tvShow()!.first_air_date || undefined" [numberOfEpisodes]="tvShow()!.number_of_episodes"
+  [numberOfSeasons]="tvShow()!.number_of_seasons" [hasSpecials]="hasSpecials()"
+  [specialsEpisodeCount]="specialsEpisodeCount()" (close)="closeAddToList()"></app-add-to-list-dialog>
 
 <app-rate-dialog [isOpen]="isRateDialogOpen()" [title]="tvShow()!.name" [initialRating]="userRating()"
   (close)="closeRateDialog()" (save)="onRate($event)">

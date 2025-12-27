@@ -7,6 +7,8 @@ export interface WatchlistItem {
     mediaType: 'movie' | 'tv';
     title: string;
     posterPath?: string;
+    numberOfEpisodes?: number;
+    numberOfSeasons?: number;
     addedAt: string;
 }
 
@@ -89,6 +91,8 @@ export class WatchlistService {
             mediaType: 'movie' | 'tv';
             title: string;
             posterPath?: string;
+            numberOfEpisodes?: number;
+            numberOfSeasons?: number;
         }
     ): Observable<WatchlistResponse> {
         return this.http.post<WatchlistResponse>(

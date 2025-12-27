@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, signal, inject, OnInit, OnChang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { WatchlistService, Watchlist } from '../../../core/services/watchlist.service';
 import { WatchedListService, WatchedList } from '../../../core/services/watched-list.service';
 import { forkJoin } from 'rxjs';
@@ -20,7 +21,7 @@ interface ListItem {
 @Component({
     selector: 'app-add-to-list-dialog',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TranslatePipe],
     templateUrl: './add-to-list-dialog.component.html',
     styleUrls: ['./add-to-list-dialog.component.scss'],
     animations: [
@@ -52,6 +53,10 @@ export class AddToListDialogComponent implements OnChanges {
     @Input() posterPath?: string;
     @Input() runtime = 0;
     @Input() releaseDate?: string;
+    @Input() numberOfEpisodes?: number;
+    @Input() numberOfSeasons?: number;
+    @Input() hasSpecials = false;
+    @Input() specialsEpisodeCount = 0;
 
     @Output() close = new EventEmitter<void>();
 
@@ -62,6 +67,7 @@ export class AddToListDialogComponent implements OnChanges {
     isLoading = signal(true);
     newListName = signal('');
     isCreatingList = signal(false);
+    includeSpecials = signal(false);
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
@@ -205,19 +211,31 @@ export class AddToListDialogComponent implements OnChanges {
     }
 
     private addItemToList(list: ListItem) {
+        let runtime = this.runtime;
+        let episodes = this.numberOfEpisodes;
+        let seasons = this.numberOfSeasons;
+
+        if (this.mediaType === 'tv' && this.hasSpecials && this.includeSpecials()) {
+            // Add specials if included
+            const avgRuntime = this.runtime / (this.numberOfEpisodes || 1);
+            runtime = this.runtime + (avgRuntime * this.specialsEpisodeCount);
+            episodes = (this.numberOfEpisodes || 0) + this.specialsEpisodeCount;
+            seasons = (this.numberOfSeasons || 0) + 1;
+        }
+
         const itemData = {
             tmdbId: Number(this.tmdbId),
             mediaType: this.mediaType,
             title: this.title,
-            posterPath: this.posterPath
-            // Note: Runtime/Rating handling for Watched List might need a separate flow or defaults
-            // For now we add with defaults (0 runtime, no rating)
+            posterPath: this.posterPath,
+            numberOfEpisodes: this.mediaType === 'tv' ? episodes : undefined,
+            numberOfSeasons: this.mediaType === 'tv' ? seasons : undefined
         };
 
         if (list.type === 'watched') {
             return this.watchedListService.addItem({
                 ...itemData,
-                runtime: this.runtime || 0
+                runtime: runtime || 0
             });
         } else {
             return this.watchlistService.addItem(list.id, itemData);

@@ -8,6 +8,8 @@ export interface WatchedItem {
     title: string;
     posterPath?: string;
     runtime: number;
+    numberOfEpisodes?: number;
+    numberOfSeasons?: number;
     rating?: number;
     watchedAt: string;
     addedAt: string;
@@ -83,6 +85,8 @@ export class WatchedListService {
         title: string;
         posterPath?: string;
         runtime: number;
+        numberOfEpisodes?: number;
+        numberOfSeasons?: number;
         rating?: number;
         watchedAt?: string;
     }): Observable<WatchedListResponse> {
