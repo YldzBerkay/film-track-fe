@@ -4,12 +4,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TMDBService, TMDBMovieDetails } from '../../../core/services/tmdb.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { WatchedListService } from '../../../core/services/watched-list.service';
 import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
+import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate-dialog.component';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,6 +22,7 @@ export class MovieDetailComponent implements OnInit {
   tmdbService = inject(TMDBService);
   private activityService = inject(ActivityService);
   private authService = inject(AuthService);
+  private watchedListService = inject(WatchedListService);
   private location = inject(Location);
 
   movie = signal<TMDBMovieDetails | null>(null);
@@ -27,7 +30,15 @@ export class MovieDetailComponent implements OnInit {
   error = signal<string | null>(null);
   isLoggedIn = signal(false);
 
+  // Rating & Watched state
+  userRating = signal<number | null>(null);
+  isWatched = signal(false);
+  isRating = signal(false);
+  isLogging = signal(false);
+  publicStats = signal<{ count: number; averageRating: number } | null>(null);
+
   isAddToListOpen = signal(false);
+  isRateDialogOpen = signal(false);
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
 
@@ -39,6 +50,55 @@ export class MovieDetailComponent implements OnInit {
       return;
     }
     this.loadMovieDetails(id);
+    this.loadPublicStats(Number(id));
+    if (this.isLoggedIn()) {
+      this.checkUserStatus(Number(id));
+    }
+  }
+
+  // ... (rest of methods)
+
+  openRateDialog(): void {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.isRateDialogOpen.set(true);
+  }
+
+  closeRateDialog(): void {
+    this.isRateDialogOpen.set(false);
+  }
+
+  onRate(rating: number): void {
+    if (this.isRating()) return;
+
+    this.isRating.set(true);
+    const movie = this.movie();
+    if (!movie) return;
+
+    this.watchedListService.addItem({
+      tmdbId: movie.id,
+      mediaType: 'movie',
+      title: movie.title,
+      posterPath: movie.poster_path || undefined,
+      runtime: movie.runtime || 0,
+      rating: rating,
+      watchedAt: new Date().toISOString()
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.userRating.set(rating);
+          this.isWatched.set(true);
+          this.loadPublicStats(movie.id);
+        }
+        this.isRating.set(false);
+        this.closeRateDialog();
+      },
+      error: () => {
+        this.isRating.set(false);
+      }
+    });
   }
 
   loadMovieDetails(id: string): void {
@@ -57,6 +117,28 @@ export class MovieDetailComponent implements OnInit {
       error: (err) => {
         this.error.set(err.error?.message || 'Failed to load movie details');
         this.isLoading.set(false);
+      }
+    });
+  }
+
+  checkUserStatus(tmdbId: number): void {
+    // Check watched status/rating
+    this.watchedListService.checkItem(tmdbId, 'movie').subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.isWatched.set(res.data.isWatched);
+          this.userRating.set(res.data.rating || null);
+        }
+      }
+    });
+  }
+
+  loadPublicStats(tmdbId: number): void {
+    this.watchedListService.getPublicStats(tmdbId, 'movie').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.publicStats.set(res.data);
+        }
       }
     });
   }
@@ -96,7 +178,58 @@ export class MovieDetailComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    // TODO: Open log modal
+  }
+
+  toggleWatched(): void {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.isLogging()) return;
+
+    const movie = this.movie();
+    if (!movie) return;
+
+    this.isLogging.set(true);
+
+    if (this.isWatched()) {
+      // Remove from watched
+      this.watchedListService.removeItem(movie.id, 'movie').subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.isWatched.set(false);
+            this.userRating.set(null);
+            this.loadPublicStats(movie.id);
+          }
+          this.isLogging.set(false);
+        },
+        error: () => {
+          this.isLogging.set(false);
+        }
+      });
+    } else {
+      // Add to watched
+      this.watchedListService.addItem({
+        tmdbId: movie.id,
+        mediaType: 'movie',
+        title: movie.title,
+        posterPath: movie.poster_path || undefined,
+        runtime: movie.runtime || 0,
+        watchedAt: new Date().toISOString()
+      }).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.isWatched.set(true);
+            this.loadPublicStats(movie.id);
+          }
+          this.isLogging.set(false);
+        },
+        error: () => {
+          this.isLogging.set(false);
+        }
+      });
+    }
   }
 
   onAddToList(): void {

@@ -52,6 +52,14 @@ export interface WatchedStatsResponse {
     };
 }
 
+export interface PublicStatsResponse {
+    success: boolean;
+    data: {
+        count: number;
+        averageRating: number;
+    };
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -153,5 +161,12 @@ export class WatchedListService {
             `${this.apiUrl}/reorder`,
             { orderedTmdbIds }
         );
+    }
+
+    /**
+     * Get public aggregated rating stats
+     */
+    getPublicStats(tmdbId: number, mediaType: 'movie' | 'tv'): Observable<PublicStatsResponse> {
+        return this.http.get<PublicStatsResponse>(`${this.apiUrl}/public/stats/${mediaType}/${tmdbId}`);
     }
 }

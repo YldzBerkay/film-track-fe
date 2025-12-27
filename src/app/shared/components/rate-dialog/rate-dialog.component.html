@@ -1,0 +1,31 @@
+@if (isOpen) {
+<div class="dialog-overlay" (click)="onClose()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="onClose()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="featured-star">
+            <span class="material-symbols-outlined star-icon">star</span>
+            <span class="star-rating">{{ (hoverRating() || selectedRating()) || '?' }}</span>
+        </div>
+
+        <div class="dialog-body">
+            <div class="rate-this-label">RATE THIS</div>
+            <h2 class="media-title">{{ title }}</h2>
+
+            <div class="rating-stars interactive">
+                @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
+                <span class="material-symbols-outlined" [class.filled]="(selectedRating() || 0) >= star"
+                    [class.hovered]="(hoverRating() || 0) >= star" (mouseenter)="hoverRating.set(star)"
+                    (mouseleave)="hoverRating.set(0)" (click)="onRate(star)">
+                    {{ (selectedRating() || 0) >= star || (hoverRating() || 0) >= star ? 'star' : 'star_outline' }}
+                </span>
+                }
+            </div>
+
+            <button class="btn-rate" [disabled]="selectedRating() === 0" (click)="onSave()">Rate</button>
+        </div>
+    </div>
+</div>
+}

@@ -42,34 +42,41 @@
             <span class="meta-item">{{ movieData.genres[0].name }}</span>
             }
           </div>
-          @if (movieData.vote_average) {
-          <div class="rating-section">
-            <div class="rating-stars">
-              @for (star of getStars(movieData.vote_average); track $index) {
-              @if (star === 1) {
-              <span class="material-symbols-outlined star-filled">star</span>
-              } @else if (star === 0.5) {
-              <span class="material-symbols-outlined star-half">star_half</span>
-              } @else {
-              <span class="material-symbols-outlined star-empty">star</span>
-              }
-              }
+          @if (publicStats()) {
+          <div class="rating-section internal-rating">
+            <span class="rating-label">CineTrack</span>
+            <div class="rating-content">
+              <span class="rating-value">{{ publicStats()!.count > 0 ? publicStats()!.averageRating.toFixed(1) : '?'
+                }}</span>
+              <span class="rating-count">({{ publicStats()!.count }} votes)</span>
             </div>
-            <span class="rating-value">{{ movieData.vote_average.toFixed(1) }}/10</span>
-            <span class="rating-count">({{ movieData.vote_count }} votes)</span>
           </div>
           }
+          @if (movieData.vote_average) {
+          <div class="rating-section tmdb-rating">
+            <span class="rating-label">TMDB</span>
+            <div class="rating-content">
+              <span class="rating-value">{{ movieData.vote_average.toFixed(1) }}</span>
+              @if (movieData.vote_count) {
+              <span class="rating-count">({{ movieData.vote_count | number }} votes)</span>
+              }
+            </div>
+          </div>
+          }
+
           <div class="action-buttons">
-            <button class="btn-primary" (click)="onLogClick()">
-              <span class="material-symbols-outlined">add</span>
-              Log
+            <button [class]="isWatched() ? 'btn-secondary' : 'btn-primary'" (click)="toggleWatched()"
+              [disabled]="isLogging()">
+              <span class="material-symbols-outlined">{{ isWatched() ? 'done' : 'add' }}</span>
+              {{ isWatched() ? 'Watched' : 'Log' }}
+            </button>
+            <button class="btn-secondary" [class.rated]="userRating()" (click)="openRateDialog()">
+              <span class="material-symbols-outlined">{{ userRating() ? 'star' : 'star_rate' }}</span>
+              {{ userRating() ? 'Rated ' + userRating() : 'Rate' }}
             </button>
             <button class="btn-secondary" (click)="onAddToList()">
               <span class="material-symbols-outlined">bookmark_add</span>
               Add to List
-            </button>
-            <button class="btn-icon">
-              <span class="material-symbols-outlined">favorite</span>
             </button>
             <button class="btn-icon">
               <span class="material-symbols-outlined">share</span>
@@ -236,4 +243,8 @@
 <app-add-to-list-dialog [isOpen]="isAddToListOpen()" [tmdbId]="movie()!.id" mediaType="movie" [title]="movie()!.title"
   [posterPath]="movie()!.poster_path || undefined" [runtime]="movie()!.runtime || 0"
   [releaseDate]="movie()!.release_date || undefined" (close)="closeAddToList()"></app-add-to-list-dialog>
+
+<app-rate-dialog [isOpen]="isRateDialogOpen()" [title]="movie()!.title" [initialRating]="userRating()"
+  (close)="closeRateDialog()" (save)="onRate($event)">
+</app-rate-dialog>
 }
