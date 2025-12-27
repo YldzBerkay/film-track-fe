@@ -241,7 +241,8 @@
 @if (movie()) {
 <app-add-to-list-dialog [isOpen]="isAddToListOpen()" [tmdbId]="movie()!.id" mediaType="movie" [title]="movie()!.title"
   [posterPath]="movie()!.poster_path || undefined" [runtime]="movie()!.runtime || 0"
-  [releaseDate]="movie()!.release_date || undefined" (close)="closeAddToList()"></app-add-to-list-dialog>
+  [releaseDate]="movie()!.release_date || undefined" [genres]="getGenreNames(movie()!.genres)"
+  (close)="closeAddToList()"></app-add-to-list-dialog>
 
 <app-rate-dialog [isOpen]="isRateDialogOpen()" [title]="movie()!.title" [initialRating]="userRating()"
   (close)="closeRateDialog()" (save)="onRate($event)">

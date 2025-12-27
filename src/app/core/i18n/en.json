@@ -343,5 +343,21 @@
         "seasonsCount": "{{count}} Seasons",
         "episodesCount": "{{count}} Episodes",
         "seasonEpisodes": "{{count}} episodes"
+    },
+    "reports": {
+        "title": "Watching Report",
+        "movies": "Movies",
+        "series": "Series",
+        "movie": "Movie",
+        "tvShow": "TV Show",
+        "totalTime": "Total Time",
+        "ratings": "Ratings",
+        "fromRatings": "from {{count}} ratings",
+        "topGenres": "Top Genres",
+        "noGenreData": "No genre data available",
+        "recentRatings": "Rated Recently",
+        "noRatings": "No ratings yet",
+        "generating": "Generating report...",
+        "failedToLoad": "Failed to load report"
     }
 }

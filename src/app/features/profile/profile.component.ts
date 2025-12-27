@@ -18,13 +18,14 @@ import { TranslationService, TranslatePipe } from '../../core/i18n';
 import { WatchedListService, WatchedList } from '../../core/services/watched-list.service';
 import { WatchlistService, Watchlist } from '../../core/services/watchlist.service';
 import { EditListDialogComponent, ListItem } from '../../shared/components/edit-list-dialog/edit-list-dialog.component';
+import { WatchedReportsDialogComponent } from '../../shared/components/watched-reports-dialog/watched-reports-dialog.component';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, WatchedReportsDialogComponent, TranslatePipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -99,6 +100,10 @@ export class ProfileComponent implements OnInit {
 
   // Share Dialog state
   showShareDialog = signal(false);
+  shareUrl = signal('');
+
+  // Watched Reports state
+  showReportsDialog = signal(false);
 
   // Edit Favorites Dialog state
   showEditFavoritesDialog = signal(false);
@@ -581,7 +586,7 @@ export class ProfileComponent implements OnInit {
 
   openMoodComparison(): void {
     const profileData = this.profile();
-    if (!profileData || this.isOwnProfile()) return;
+    if (!profileData) return;
 
     this.showComparisonDialog.set(true);
     this.isLoadingComparison.set(true);
@@ -598,6 +603,10 @@ export class ProfileComponent implements OnInit {
         this.isLoadingComparison.set(false);
       }
     });
+  }
+
+  openReports(): void {
+    this.showReportsDialog.set(true);
   }
 
   closeComparisonDialog(): void {

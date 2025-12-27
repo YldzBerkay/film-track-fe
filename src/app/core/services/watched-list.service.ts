@@ -62,6 +62,23 @@ export interface PublicStatsResponse {
     };
 }
 
+export interface WatchedReportsResponse {
+    success: boolean;
+    data: {
+        totalEpisodes: number;
+        totalSeasons: number;
+        totalTvSeries: number;
+        totalFilms: number;
+        totalTvSeriesRuntime: number;
+        totalFilmsRuntime: number;
+        totalRuntime: number;
+        genreCounts: Record<string, number>;
+        totalRatingCount: number;
+        averageRating: number | null;
+        ratings: Array<{ tmdbId: number; mediaType: 'movie' | 'tv'; title: string; rating: number }>;
+    };
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -87,6 +104,7 @@ export class WatchedListService {
         runtime: number;
         numberOfEpisodes?: number;
         numberOfSeasons?: number;
+        genres?: string[];
         rating?: number;
         watchedAt?: string;
     }): Observable<WatchedListResponse> {
@@ -172,5 +190,12 @@ export class WatchedListService {
      */
     getPublicStats(tmdbId: number, mediaType: 'movie' | 'tv'): Observable<PublicStatsResponse> {
         return this.http.get<PublicStatsResponse>(`${this.apiUrl}/public/stats/${mediaType}/${tmdbId}`);
+    }
+
+    /**
+     * Get detailed watched reports
+     */
+    getReports(): Observable<WatchedReportsResponse> {
+        return this.http.get<WatchedReportsResponse>(`${this.apiUrl}/reports`);
     }
 }

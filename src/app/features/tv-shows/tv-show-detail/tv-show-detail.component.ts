@@ -301,6 +301,10 @@ export class TvShowDetailComponent implements OnInit {
     return date.getFullYear().toString();
   }
 
+  getGenreNames(genres: any[] | undefined): string[] {
+    return genres?.map(g => g.name) || [];
+  }
+
   onSeasonSelect(seasonNumber: number): void {
     if (this.selectedSeason() === seasonNumber) {
       this.selectedSeason.set(null); // Collapse if already selected
@@ -374,6 +378,7 @@ export class TvShowDetailComponent implements OnInit {
       title: show.name,
       posterPath: show.poster_path || undefined,
       runtime: this.calculateTotalRuntime(show, includeSpecials),
+      genres: show.genres?.map(g => g.name),
       numberOfEpisodes: includeSpecials ? show.number_of_episodes + (show.seasons.find(s => s.season_number === 0)?.episode_count || 0) : show.number_of_episodes,
       numberOfSeasons: includeSpecials ? show.number_of_seasons + 1 : show.number_of_seasons,
       rating: rating !== null ? rating : undefined,

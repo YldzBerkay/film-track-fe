@@ -85,6 +85,7 @@ export class MovieDetailComponent implements OnInit {
       title: movie.title,
       posterPath: movie.poster_path || undefined,
       runtime: movie.runtime || 0,
+      genres: movie.genres?.map(g => g.name),
       rating: rating,
       watchedAt: new Date().toISOString()
     }).subscribe({
@@ -143,6 +144,10 @@ export class MovieDetailComponent implements OnInit {
         }
       }
     });
+  }
+
+  getGenreNames(genres: any[] | undefined): string[] {
+    return genres?.map(g => g.name) || [];
   }
 
   getStars(rating: number): number[] {

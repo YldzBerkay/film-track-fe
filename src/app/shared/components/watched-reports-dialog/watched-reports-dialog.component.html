@@ -1,0 +1,111 @@
+@if (isOpen) {
+<div class="dialog-backdrop" (click)="closeDialog()" @backdropAnimation>
+    <div class="dialog-content" (click)="$event.stopPropagation()" @modalAnimation>
+        <div class="dialog-header">
+            <h2 class="dialog-title">{{ 'reports.title' | translate }}</h2>
+            <button class="close-btn" (click)="closeDialog()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            @if (isLoading()) {
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>{{ 'reports.generating' | translate }}</p>
+            </div>
+            } @else if (reports(); as data) {
+            <div class="report-sections">
+                <!-- Summary Section -->
+                <div class="summary-section">
+                    <div class="stat-card">
+                        <span class="stat-value">{{ data.totalFilms }}</span>
+                        <span class="stat-label">{{ 'reports.movies' | translate }}</span>
+                        <span class="stat-sub">{{ formatRuntime(data.totalFilmsRuntime) }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">{{ data.totalTvSeries }}</span>
+                        <span class="stat-label">{{ 'reports.series' | translate }}</span>
+                        <span class="stat-sub">{{ data.totalEpisodes }} ep / {{ data.totalSeasons }} seasons</span>
+                    </div>
+                    <div class="stat-card primary">
+                        <span class="stat-value">{{ formatRuntime(data.totalRuntime) }}</span>
+                        <span class="stat-label">{{ 'reports.totalTime' | translate }}</span>
+                    </div>
+                </div>
+
+                <div class="grid-section">
+                    <!-- Rating Stats -->
+                    <div class="report-card">
+                        <div class="card-header">
+                            <span class="material-symbols-outlined">star</span>
+                            <h3>{{ 'reports.ratings' | translate }}</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="rating-summary">
+                                <span class="avg-rating">{{ data.averageRating || 'N/A' }}</span>
+                                <span class="rating-count">{{ 'reports.fromRatings' | translate: { count:
+                                    data.totalRatingCount } }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Genre Stats -->
+                    <div class="report-card">
+                        <div class="card-header">
+                            <span class="material-symbols-outlined">category</span>
+                            <h3>{{ 'reports.topGenres' | translate }}</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="genre-list">
+                                @for (genre of getSortedGenres().slice(0, 5); track genre.name) {
+                                <div class="genre-item">
+                                    <span class="genre-name">{{ genre.name }}</span>
+                                    <span class="genre-count">{{ genre.count }}</span>
+                                </div>
+                                } @empty {
+                                <p class="empty-msg">{{ 'reports.noGenreData' | translate }}</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Ratings List -->
+                <div class="report-card full-width">
+                    <div class="card-header">
+                        <span class="material-symbols-outlined">history</span>
+                        <h3>{{ 'reports.recentRatings' | translate }}</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="recent-list">
+                            @for (item of data.ratings.slice(0, 10); track item.tmdbId) {
+                            <div class="recent-item">
+                                <div class="item-info">
+                                    <span class="item-title">{{ item.title }}</span>
+                                    <span class="item-type">{{ item.mediaType === 'movie' ? ('reports.movie' |
+                                        translate) : ('reports.tvShow' | translate)
+                                        }}</span>
+                                </div>
+                                <div class="item-rating">
+                                    <span class="material-symbols-outlined">star</span>
+                                    <span>{{ item.rating }}</span>
+                                </div>
+                            </div>
+                            } @empty {
+                            <p class="empty-msg">{{ 'reports.noRatings' | translate }}</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            } @else {
+            <div class="error-state">
+                <span class="material-symbols-outlined">error</span>
+                <p>{{ 'reports.failedToLoad' | translate }}</p>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+}

@@ -55,6 +55,7 @@ export class AddToListDialogComponent implements OnChanges {
     @Input() releaseDate?: string;
     @Input() numberOfEpisodes?: number;
     @Input() numberOfSeasons?: number;
+    @Input() genres?: string[];
     @Input() hasSpecials = false;
     @Input() specialsEpisodeCount = 0;
 
@@ -228,6 +229,7 @@ export class AddToListDialogComponent implements OnChanges {
             mediaType: this.mediaType,
             title: this.title,
             posterPath: this.posterPath,
+            genres: this.genres,
             numberOfEpisodes: this.mediaType === 'tv' ? episodes : undefined,
             numberOfSeasons: this.mediaType === 'tv' ? seasons : undefined
         };

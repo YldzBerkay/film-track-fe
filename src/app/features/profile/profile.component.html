@@ -70,6 +70,10 @@
                 <span class="material-symbols-outlined">share</span>
                 <span>{{ 'profile.share' | translate }}</span>
               </button>
+              <button class="report-btn" (click)="openReports()">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Report</span>
+              </button>
               } @else {
               @if (isFollowing()) {
               <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
@@ -914,3 +918,6 @@
   [listIcon]="selectedListForEdit()?.icon || 'list'" [initialItems]="getEditListItems(selectedListForEdit())"
   [isDefault]="false" (close)="showEditListDialog.set(false)" (save)="saveCustomList($event)">
 </app-edit-list-dialog>
+
+<app-watched-reports-dialog [isOpen]="showReportsDialog()" (close)="showReportsDialog.set(false)">
+</app-watched-reports-dialog>
