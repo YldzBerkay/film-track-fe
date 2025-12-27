@@ -1,11 +1,11 @@
 @if (isLoading()) {
 <div class="loading-container">
-  <div class="loading">Loading movie details...</div>
+  <div class="loading">{{ 'details.loadingMovie' | translate }}</div>
 </div>
 } @else if (error()) {
 <div class="error-container">
   <div class="error-message">{{ error() }}</div>
-  <button class="back-btn" (click)="router.navigate(['/'])" type="button">Go Back</button>
+  <button class="back-btn" (click)="router.navigate(['/'])" type="button">{{ 'details.goBack' | translate }}</button>
 </div>
 } @else if (movie()) {
 @let movieData = movie()!;
@@ -17,7 +17,7 @@
     <div class="hero-content">
       <button class="back-button" (click)="goBack()" type="button">
         <span class="material-symbols-outlined">arrow_back</span>
-        Back
+        {{ 'details.back' | translate }}
       </button>
       <div class="hero-info">
         <div class="hero-poster">
@@ -48,7 +48,7 @@
             <div class="rating-content">
               <span class="rating-value">{{ publicStats()!.count > 0 ? publicStats()!.averageRating.toFixed(1) : '?'
                 }}</span>
-              <span class="rating-count">({{ publicStats()!.count }} votes)</span>
+              <span class="rating-count">({{ publicStats()!.count }} {{ 'details.votes' | translate }})</span>
             </div>
           </div>
           }
@@ -58,7 +58,7 @@
             <div class="rating-content">
               <span class="rating-value">{{ movieData.vote_average.toFixed(1) }}</span>
               @if (movieData.vote_count) {
-              <span class="rating-count">({{ movieData.vote_count | number }} votes)</span>
+              <span class="rating-count">({{ movieData.vote_count | number }} {{ 'details.votes' | translate }})</span>
               }
             </div>
           </div>
@@ -68,15 +68,15 @@
             <button [class]="isWatched() ? 'btn-secondary' : 'btn-primary'" (click)="toggleWatched()"
               [disabled]="isLogging()">
               <span class="material-symbols-outlined">{{ isWatched() ? 'done' : 'add' }}</span>
-              {{ isWatched() ? 'Watched' : 'Log' }}
+              {{ isWatched() ? ('details.watched' | translate) : ('details.log' | translate) }}
             </button>
             <button class="btn-secondary" [class.rated]="userRating()" (click)="openRateDialog()">
               <span class="material-symbols-outlined">{{ userRating() ? 'star' : 'star_rate' }}</span>
-              {{ userRating() ? 'Rated ' + userRating() : 'Rate' }}
+              {{ userRating() ? ('details.rated' | translate:{rating: userRating()!}) : ('details.rate' | translate) }}
             </button>
             <button class="btn-secondary" (click)="onAddToList()">
               <span class="material-symbols-outlined">bookmark_add</span>
-              Add to List
+              {{ 'details.addToList' | translate }}
             </button>
             <button class="btn-icon">
               <span class="material-symbols-outlined">share</span>
@@ -95,7 +95,7 @@
         <!-- Overview -->
         @if (movieData.overview) {
         <section class="section">
-          <h2 class="section-title">Overview</h2>
+          <h2 class="section-title">{{ 'details.overview' | translate }}</h2>
           <p class="overview-text">{{ movieData.overview }}</p>
         </section>
         }
@@ -103,7 +103,7 @@
         <!-- Cast -->
         @if (movieData.credits && movieData.credits.cast && movieData.credits.cast.length > 0) {
         <section class="section">
-          <h2 class="section-title">Cast</h2>
+          <h2 class="section-title">{{ 'details.cast' | translate }}</h2>
           <div class="cast-grid">
             @for (actor of movieData.credits.cast.slice(0, 12); track actor.id) {
             <div class="cast-item">
@@ -129,7 +129,7 @@
         <!-- Similar Movies -->
         @if (movieData.similar && movieData.similar.results && movieData.similar.results.length > 0) {
         <section class="section">
-          <h2 class="section-title">Similar Movies</h2>
+          <h2 class="section-title">{{ 'details.similarMovies' | translate }}</h2>
           <div class="similar-grid">
             @for (similar of movieData.similar.results.slice(0, 6); track similar.id) {
             <div class="similar-item" (click)="router.navigate(['/movies', similar.id])">
@@ -153,35 +153,35 @@
       <aside class="sidebar">
         <!-- Info Box -->
         <div class="info-box">
-          <h3 class="info-title">Movie Info</h3>
+          <h3 class="info-title">{{ 'details.movieInfo' | translate }}</h3>
           <div class="info-list">
             @if (movieData.release_date) {
             <div class="info-item">
-              <span class="info-label">Release Date</span>
+              <span class="info-label">{{ 'details.releaseDate' | translate }}</span>
               <span class="info-value">{{ movieData.release_date | date: 'longDate' }}</span>
             </div>
             }
             @if (movieData.runtime) {
             <div class="info-item">
-              <span class="info-label">Runtime</span>
+              <span class="info-label">{{ 'details.runtime' | translate }}</span>
               <span class="info-value">{{ formatRuntime(movieData.runtime) }}</span>
             </div>
             }
             @if (movieData.budget && movieData.budget > 0) {
             <div class="info-item">
-              <span class="info-label">Budget</span>
+              <span class="info-label">{{ 'details.budget' | translate }}</span>
               <span class="info-value">${{ movieData.budget | number }}</span>
             </div>
             }
             @if (movieData.revenue && movieData.revenue > 0) {
             <div class="info-item">
-              <span class="info-label">Revenue</span>
+              <span class="info-label">{{ 'details.revenue' | translate }}</span>
               <span class="info-value">${{ movieData.revenue | number }}</span>
             </div>
             }
             @if (movieData.status) {
             <div class="info-item">
-              <span class="info-label">Status</span>
+              <span class="info-label">{{ 'details.status' | translate }}</span>
               <span class="info-value">{{ movieData.status }}</span>
             </div>
             }
@@ -191,7 +191,7 @@
         <!-- Genres -->
         @if (movieData.genres && movieData.genres.length > 0) {
         <div class="info-box">
-          <h3 class="info-title">Genres</h3>
+          <h3 class="info-title">{{ 'details.genres' | translate }}</h3>
           <div class="genres-list">
             @for (genre of movieData.genres; track genre.id) {
             <span class="genre-tag">{{ genre.name }}</span>
@@ -203,7 +203,7 @@
         <!-- Production Companies -->
         @if (movieData.production_companies && movieData.production_companies.length > 0) {
         <div class="info-box">
-          <h3 class="info-title">Production</h3>
+          <h3 class="info-title">{{ 'details.production' | translate }}</h3>
           <div class="production-list">
             @for (company of movieData.production_companies; track company.id) {
             <div class="production-item">
@@ -222,7 +222,7 @@
         <!-- Crew -->
         @if (movieData.credits && movieData.credits.crew && movieData.credits.crew.length > 0) {
         <div class="info-box">
-          <h3 class="info-title">Crew</h3>
+          <h3 class="info-title">{{ 'details.crew' | translate }}</h3>
           <div class="crew-list">
             @for (member of movieData.credits.crew.slice(0, 5); track member.id) {
             <div class="crew-item">

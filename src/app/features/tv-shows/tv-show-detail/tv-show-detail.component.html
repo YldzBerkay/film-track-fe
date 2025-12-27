@@ -1,11 +1,11 @@
 @if (isLoading()) {
 <div class="loading-container">
-  <div class="loading">Loading TV show details...</div>
+  <div class="loading">{{ 'details.loadingTv' | translate }}</div>
 </div>
 } @else if (error()) {
 <div class="error-container">
   <div class="error-message">{{ error() }}</div>
-  <button class="back-btn" (click)="router.navigate(['/'])" type="button">Go Back</button>
+  <button class="back-btn" (click)="router.navigate(['/'])" type="button">{{ 'details.goBack' | translate }}</button>
 </div>
 } @else if (tvShow()) {
 @let showData = tvShow()!;
@@ -17,7 +17,7 @@
     <div class="hero-content">
       <button class="back-button" (click)="router.navigate(['/dashboard'])" type="button">
         <span class="material-symbols-outlined">arrow_back</span>
-        Back
+        {{ 'details.back' | translate }}
       </button>
       <div class="hero-info">
         <div class="hero-poster">
@@ -37,11 +37,12 @@
             }
             @if (showData.number_of_seasons) {
             <span class="meta-separator">•</span>
-            <span class="meta-item">{{ showData.number_of_seasons }} Seasons</span>
+            <span class="meta-item">{{ 'details.seasonsCount' | translate:{count: showData.number_of_seasons} }}</span>
             }
             @if (showData.number_of_episodes) {
             <span class="meta-separator">•</span>
-            <span class="meta-item">{{ showData.number_of_episodes }} Episodes</span>
+            <span class="meta-item">{{ 'details.episodesCount' | translate:{count: showData.number_of_episodes}
+              }}</span>
             }
             @if (showData.genres && showData.genres.length > 0) {
             <span class="meta-separator">•</span>
@@ -54,7 +55,7 @@
             <div class="rating-content">
               <span class="rating-value">{{ publicStats()!.count > 0 ? publicStats()!.averageRating.toFixed(1) : '?'
                 }}</span>
-              <span class="rating-count">({{ publicStats()!.count }} votes)</span>
+              <span class="rating-count">({{ publicStats()!.count }} {{ 'details.votes' | translate }})</span>
             </div>
           </div>
           }
@@ -64,7 +65,7 @@
             <div class="rating-content">
               <span class="rating-value">{{ showData.vote_average.toFixed(1) }}</span>
               @if (showData.vote_count) {
-              <span class="rating-count">({{ showData.vote_count | number }} votes)</span>
+              <span class="rating-count">({{ showData.vote_count | number }} {{ 'details.votes' | translate }})</span>
               }
             </div>
           </div>
@@ -74,15 +75,15 @@
             <button [class]="isWatched() ? 'btn-secondary' : 'btn-primary'" (click)="toggleWatched()"
               [disabled]="isLogging()">
               <span class="material-symbols-outlined">{{ isWatched() ? 'done' : 'add' }}</span>
-              {{ isWatched() ? 'Watched' : 'Log' }}
+              {{ isWatched() ? ('details.watched' | translate) : ('details.log' | translate) }}
             </button>
             <button class="btn-secondary" [class.rated]="userRating()" (click)="openRateDialog()">
               <span class="material-symbols-outlined">{{ userRating() ? 'star' : 'star_rate' }}</span>
-              {{ userRating() ? 'Rated ' + userRating() : 'Rate' }}
+              {{ userRating() ? ('details.rated' | translate:{rating: userRating()!}) : ('details.rate' | translate) }}
             </button>
             <button class="btn-secondary" (click)="onAddToList()">
               <span class="material-symbols-outlined">bookmark_add</span>
-              Add to List
+              {{ 'details.addToList' | translate }}
             </button>
             <button class="btn-icon">
               <span class="material-symbols-outlined">share</span>
@@ -101,7 +102,7 @@
         <!-- Overview -->
         @if (showData.overview) {
         <section class="section">
-          <h2 class="section-title">Overview</h2>
+          <h2 class="section-title">{{ 'details.overview' | translate }}</h2>
           <p class="overview-text">{{ showData.overview }}</p>
         </section>
         }
@@ -109,7 +110,7 @@
         <!-- Seasons -->
         @if (showData.seasons && showData.seasons.length > 0) {
         <section class="section">
-          <h2 class="section-title">Seasons</h2>
+          <h2 class="section-title">{{ 'details.seasons' | translate }}</h2>
           <div class="seasons-tabs">
             @for (season of showData.seasons; track season.id) {
             <button class="season-tab" [class.active]="selectedSeason() === season.season_number"
@@ -118,7 +119,8 @@
               @if (season.name) {
               <span class="season-name">{{ season.name }}</span>
               }
-              <span class="season-episodes">{{ season.episode_count }} episodes</span>
+              <span class="season-episodes">{{ 'details.seasonEpisodes' | translate:{count: season.episode_count}
+                }}</span>
             </button>
             }
           </div>
@@ -128,7 +130,7 @@
         <!-- Cast -->
         @if (showData.credits && showData.credits.cast && showData.credits.cast.length > 0) {
         <section class="section">
-          <h2 class="section-title">Cast</h2>
+          <h2 class="section-title">{{ 'details.cast' | translate }}</h2>
           <div class="cast-grid">
             @for (actor of showData.credits.cast.slice(0, 12); track actor.id) {
             <div class="cast-item">
@@ -156,29 +158,29 @@
       <aside class="sidebar">
         <!-- Info Box -->
         <div class="info-box">
-          <h3 class="info-title">Show Info</h3>
+          <h3 class="info-title">{{ 'details.showInfo' | translate }}</h3>
           <div class="info-list">
             @if (showData.first_air_date) {
             <div class="info-item">
-              <span class="info-label">First Air Date</span>
+              <span class="info-label">{{ 'details.firstAirDate' | translate }}</span>
               <span class="info-value">{{ showData.first_air_date | date: 'longDate' }}</span>
             </div>
             }
             @if (showData.number_of_seasons) {
             <div class="info-item">
-              <span class="info-label">Seasons</span>
+              <span class="info-label">{{ 'details.seasons' | translate }}</span>
               <span class="info-value">{{ showData.number_of_seasons }}</span>
             </div>
             }
             @if (showData.number_of_episodes) {
             <div class="info-item">
-              <span class="info-label">Episodes</span>
+              <span class="info-label">{{ 'details.episodes' | translate }}</span>
               <span class="info-value">{{ showData.number_of_episodes }}</span>
             </div>
             }
             @if (showData.status) {
             <div class="info-item">
-              <span class="info-label">Status</span>
+              <span class="info-label">{{ 'details.status' | translate }}</span>
               <span class="info-value">{{ showData.status }}</span>
             </div>
             }
@@ -188,7 +190,7 @@
         <!-- Genres -->
         @if (showData.genres && showData.genres.length > 0) {
         <div class="info-box">
-          <h3 class="info-title">Genres</h3>
+          <h3 class="info-title">{{ 'details.genres' | translate }}</h3>
           <div class="genres-list">
             @for (genre of showData.genres; track genre.id) {
             <span class="genre-tag">{{ genre.name }}</span>
@@ -200,7 +202,7 @@
         <!-- Production Companies -->
         @if (showData.production_companies && showData.production_companies.length > 0) {
         <div class="info-box">
-          <h3 class="info-title">Production</h3>
+          <h3 class="info-title">{{ 'details.production' | translate }}</h3>
           <div class="production-list">
             @for (company of showData.production_companies; track company.id) {
             <div class="production-item">
@@ -219,7 +221,7 @@
         <!-- Crew -->
         @if (showData.credits && showData.credits.crew && showData.credits.crew.length > 0) {
         <div class="info-box">
-          <h3 class="info-title">Crew</h3>
+          <h3 class="info-title">{{ 'details.crew' | translate }}</h3>
           <div class="crew-list">
             @for (member of showData.credits.crew.slice(0, 5); track member.id) {
             <div class="crew-item">

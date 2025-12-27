@@ -308,5 +308,36 @@
             "name": "Film Kurdu",
             "description": "100+ film izlendi"
         }
+    },
+    "details": {
+        "loadingMovie": "Film detayları yükleniyor...",
+        "loadingTv": "Dizi detayları yükleniyor...",
+        "goBack": "Geri Dön",
+        "back": "Geri",
+        "votes": "oy",
+        "watched": "İzlendi",
+        "log": "Ekle",
+        "rated": "Puanladı {{rating}}",
+        "rate": "Puanla",
+        "addToList": "Listeye Ekle",
+        "overview": "Özet",
+        "cast": "Oyuncular",
+        "similarMovies": "Benzer Filmler",
+        "movieInfo": "Film Bilgileri",
+        "showInfo": "Dizi Bilgileri",
+        "releaseDate": "Yayın Tarihi",
+        "firstAirDate": "İlk Yayın Tarihi",
+        "runtime": "Süre",
+        "budget": "Bütçe",
+        "revenue": "Hasılat",
+        "status": "Durum",
+        "genres": "Türler",
+        "production": "Yapım",
+        "crew": "Ekip",
+        "seasons": "Sezonlar",
+        "episodes": "Bölümler",
+        "seasonsCount": "{{count}} Sezon",
+        "episodesCount": "{{count}} Bölüm",
+        "seasonEpisodes": "{{count}} bölüm"
     }
 }

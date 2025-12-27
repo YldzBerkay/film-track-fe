@@ -8,10 +8,12 @@ import { WatchedListService } from '../../../core/services/watched-list.service'
 import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
 import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate-dialog.component';
 
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, TranslatePipe],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

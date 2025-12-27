@@ -308,5 +308,36 @@
             "name": "Movie Buff",
             "description": "Watched 100+ movies"
         }
+    },
+    "details": {
+        "loadingMovie": "Loading movie details...",
+        "loadingTv": "Loading TV show details...",
+        "goBack": "Go Back",
+        "back": "Back",
+        "votes": "votes",
+        "watched": "Watched",
+        "log": "Log",
+        "rated": "Rated {{rating}}",
+        "rate": "Rate",
+        "addToList": "Add to List",
+        "overview": "Overview",
+        "cast": "Cast",
+        "similarMovies": "Similar Movies",
+        "movieInfo": "Movie Info",
+        "showInfo": "Show Info",
+        "releaseDate": "Release Date",
+        "firstAirDate": "First Air Date",
+        "runtime": "Runtime",
+        "budget": "Budget",
+        "revenue": "Revenue",
+        "status": "Status",
+        "genres": "Genres",
+        "production": "Production",
+        "crew": "Crew",
+        "seasons": "Seasons",
+        "episodes": "Episodes",
+        "seasonsCount": "{{count}} Seasons",
+        "episodesCount": "{{count}} Episodes",
+        "seasonEpisodes": "{{count}} episodes"
     }
 }
