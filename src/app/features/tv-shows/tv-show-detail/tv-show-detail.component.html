@@ -1,246 +1,236 @@
 @if (isLoading()) {
-  <div class="loading-container">
-    <div class="loading">Loading TV show details...</div>
-  </div>
+<div class="loading-container">
+  <div class="loading">Loading TV show details...</div>
+</div>
 } @else if (error()) {
-  <div class="error-container">
-    <div class="error-message">{{ error() }}</div>
-    <button class="back-btn" (click)="router.navigate(['/'])" type="button">Go Back</button>
-  </div>
+<div class="error-container">
+  <div class="error-message">{{ error() }}</div>
+  <button class="back-btn" (click)="router.navigate(['/'])" type="button">Go Back</button>
+</div>
 } @else if (tvShow()) {
-  @let showData = tvShow()!;
-  <div class="tv-show-detail-container">
-    <!-- Hero Section with Backdrop -->
-    <div
-      class="hero-section"
-      [style.background-image]="'url(' + tmdbService.getBackdropUrl(showData.backdrop_path) + ')'"
-    >
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <button class="back-button" (click)="router.navigate(['/dashboard'])" type="button">
-          <span class="material-symbols-outlined">arrow_back</span>
-          Back
-        </button>
-        <div class="hero-info">
-          <div class="hero-poster">
-            <img
-              [src]="tmdbService.getPosterUrl(showData.poster_path, 'w500')"
-              [alt]="showData.name"
-              class="poster-image"
-            />
-          </div>
-          <div class="hero-details">
-            <h1 class="show-title">
-              {{ showData.name }}
-              @if (showData.first_air_date) {
-                <span class="show-year">({{ formatDate(showData.first_air_date) }})</span>
-              }
-            </h1>
-            <div class="show-meta">
-              @if (showData.first_air_date) {
-                <span class="meta-item">{{ formatDate(showData.first_air_date) }}</span>
-              }
-              @if (showData.number_of_seasons) {
-                <span class="meta-separator">•</span>
-                <span class="meta-item">{{ showData.number_of_seasons }} Seasons</span>
-              }
-              @if (showData.number_of_episodes) {
-                <span class="meta-separator">•</span>
-                <span class="meta-item">{{ showData.number_of_episodes }} Episodes</span>
-              }
-              @if (showData.genres && showData.genres.length > 0) {
-                <span class="meta-separator">•</span>
-                <span class="meta-item">{{ showData.genres[0].name }}</span>
-              }
-            </div>
-            @if (showData.vote_average) {
-              <div class="rating-section">
-                <div class="rating-stars">
-                  @for (star of getStars(showData.vote_average); track $index) {
-                    @if (star === 1) {
-                      <span class="material-symbols-outlined star-filled">star</span>
-                    } @else if (star === 0.5) {
-                      <span class="material-symbols-outlined star-half">star_half</span>
-                    } @else {
-                      <span class="material-symbols-outlined star-empty">star</span>
-                    }
-                  }
-                </div>
-                <span class="rating-value">{{ showData.vote_average.toFixed(1) }}/10</span>
-                <span class="rating-count">({{ showData.vote_count || 0 }} votes)</span>
-              </div>
+@let showData = tvShow()!;
+<div class="tv-show-detail-container">
+  <!-- Hero Section with Backdrop -->
+  <div class="hero-section"
+    [style.background-image]="'url(' + tmdbService.getBackdropUrl(showData.backdrop_path) + ')'">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <button class="back-button" (click)="router.navigate(['/dashboard'])" type="button">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back
+      </button>
+      <div class="hero-info">
+        <div class="hero-poster">
+          <img [src]="tmdbService.getPosterUrl(showData.poster_path, 'w500')" [alt]="showData.name"
+            class="poster-image" />
+        </div>
+        <div class="hero-details">
+          <h1 class="show-title">
+            {{ showData.name }}
+            @if (showData.first_air_date) {
+            <span class="show-year">({{ formatDate(showData.first_air_date) }})</span>
             }
-            <div class="action-buttons">
-              <button class="btn-primary" (click)="onLogClick()">
-                <span class="material-symbols-outlined">add</span>
-                Log
-              </button>
-              <button class="btn-secondary" (click)="onAddToList()">
-                <span class="material-symbols-outlined">bookmark_add</span>
-                Add to List
-              </button>
-              <button class="btn-icon">
-                <span class="material-symbols-outlined">favorite</span>
-              </button>
-              <button class="btn-icon">
-                <span class="material-symbols-outlined">share</span>
-              </button>
+          </h1>
+          <div class="show-meta">
+            @if (showData.first_air_date) {
+            <span class="meta-item">{{ formatDate(showData.first_air_date) }}</span>
+            }
+            @if (showData.number_of_seasons) {
+            <span class="meta-separator">•</span>
+            <span class="meta-item">{{ showData.number_of_seasons }} Seasons</span>
+            }
+            @if (showData.number_of_episodes) {
+            <span class="meta-separator">•</span>
+            <span class="meta-item">{{ showData.number_of_episodes }} Episodes</span>
+            }
+            @if (showData.genres && showData.genres.length > 0) {
+            <span class="meta-separator">•</span>
+            <span class="meta-item">{{ showData.genres[0].name }}</span>
+            }
+          </div>
+          @if (showData.vote_average) {
+          <div class="rating-section">
+            <div class="rating-stars">
+              @for (star of getStars(showData.vote_average); track $index) {
+              @if (star === 1) {
+              <span class="material-symbols-outlined star-filled">star</span>
+              } @else if (star === 0.5) {
+              <span class="material-symbols-outlined star-half">star_half</span>
+              } @else {
+              <span class="material-symbols-outlined star-empty">star</span>
+              }
+              }
             </div>
+            <span class="rating-value">{{ showData.vote_average.toFixed(1) }}/10</span>
+            <span class="rating-count">({{ showData.vote_count || 0 }} votes)</span>
+          </div>
+          }
+          <div class="action-buttons">
+            <button class="btn-primary" (click)="onLogClick()">
+              <span class="material-symbols-outlined">add</span>
+              Log
+            </button>
+            <button class="btn-secondary" (click)="onAddToList()">
+              <span class="material-symbols-outlined">bookmark_add</span>
+              Add to List
+            </button>
+            <button class="btn-icon">
+              <span class="material-symbols-outlined">favorite</span>
+            </button>
+            <button class="btn-icon">
+              <span class="material-symbols-outlined">share</span>
+            </button>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-      <div class="content-grid">
-        <!-- Left Column -->
-        <div class="content-main">
-          <!-- Overview -->
-          @if (showData.overview) {
-            <section class="section">
-              <h2 class="section-title">Overview</h2>
-              <p class="overview-text">{{ showData.overview }}</p>
-            </section>
-          }
-
-          <!-- Seasons -->
-          @if (showData.seasons && showData.seasons.length > 0) {
-            <section class="section">
-              <h2 class="section-title">Seasons</h2>
-              <div class="seasons-tabs">
-                @for (season of showData.seasons; track season.id) {
-                  <button
-                    class="season-tab"
-                    [class.active]="selectedSeason() === season.season_number"
-                    (click)="onSeasonSelect(season.season_number)"
-                    type="button"
-                  >
-                    <span class="season-number">S{{ season.season_number }}</span>
-                    @if (season.name) {
-                      <span class="season-name">{{ season.name }}</span>
-                    }
-                    <span class="season-episodes">{{ season.episode_count }} episodes</span>
-                  </button>
-                }
-              </div>
-            </section>
-          }
-
-          <!-- Cast -->
-          @if (showData.credits && showData.credits.cast && showData.credits.cast.length > 0) {
-            <section class="section">
-              <h2 class="section-title">Cast</h2>
-              <div class="cast-grid">
-                @for (actor of showData.credits.cast.slice(0, 12); track actor.id) {
-                  <div class="cast-item">
-                    <div class="cast-image">
-                      @if (actor.profile_path) {
-                        <img
-                          [src]="tmdbService.getPosterUrl(actor.profile_path, 'w185')"
-                          [alt]="actor.name"
-                        />
-                      } @else {
-                        <div class="cast-placeholder">
-                          <span class="material-symbols-outlined">person</span>
-                        </div>
-                      }
-                    </div>
-                    <div class="cast-info">
-                      <p class="cast-name">{{ actor.name }}</p>
-                      <p class="cast-character">{{ actor.character }}</p>
-                    </div>
-                  </div>
-                }
-              </div>
-            </section>
-          }
-        </div>
-
-        <!-- Right Sidebar -->
-        <aside class="sidebar">
-          <!-- Info Box -->
-          <div class="info-box">
-            <h3 class="info-title">Show Info</h3>
-            <div class="info-list">
-              @if (showData.first_air_date) {
-                <div class="info-item">
-                  <span class="info-label">First Air Date</span>
-                  <span class="info-value">{{ showData.first_air_date | date: 'longDate' }}</span>
-                </div>
-              }
-              @if (showData.number_of_seasons) {
-                <div class="info-item">
-                  <span class="info-label">Seasons</span>
-                  <span class="info-value">{{ showData.number_of_seasons }}</span>
-                </div>
-              }
-              @if (showData.number_of_episodes) {
-                <div class="info-item">
-                  <span class="info-label">Episodes</span>
-                  <span class="info-value">{{ showData.number_of_episodes }}</span>
-                </div>
-              }
-              @if (showData.status) {
-                <div class="info-item">
-                  <span class="info-label">Status</span>
-                  <span class="info-value">{{ showData.status }}</span>
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Genres -->
-          @if (showData.genres && showData.genres.length > 0) {
-            <div class="info-box">
-              <h3 class="info-title">Genres</h3>
-              <div class="genres-list">
-                @for (genre of showData.genres; track genre.id) {
-                  <span class="genre-tag">{{ genre.name }}</span>
-                }
-              </div>
-            </div>
-          }
-
-          <!-- Production Companies -->
-          @if (showData.production_companies && showData.production_companies.length > 0) {
-            <div class="info-box">
-              <h3 class="info-title">Production</h3>
-              <div class="production-list">
-                @for (company of showData.production_companies; track company.id) {
-                  <div class="production-item">
-                    @if (company.logo_path) {
-                      <img
-                        [src]="tmdbService.getPosterUrl(company.logo_path, 'w92')"
-                        [alt]="company.name"
-                        class="production-logo"
-                      />
-                    } @else {
-                      <span class="production-name">{{ company.name }}</span>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-          }
-
-          <!-- Crew -->
-          @if (showData.credits && showData.credits.crew && showData.credits.crew.length > 0) {
-            <div class="info-box">
-              <h3 class="info-title">Crew</h3>
-              <div class="crew-list">
-                @for (member of showData.credits.crew.slice(0, 5); track member.id) {
-                  <div class="crew-item">
-                    <span class="crew-name">{{ member.name }}</span>
-                    <span class="crew-job">{{ member.job }}</span>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-        </aside>
       </div>
     </div>
   </div>
-}
 
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="content-grid">
+      <!-- Left Column -->
+      <div class="content-main">
+        <!-- Overview -->
+        @if (showData.overview) {
+        <section class="section">
+          <h2 class="section-title">Overview</h2>
+          <p class="overview-text">{{ showData.overview }}</p>
+        </section>
+        }
+
+        <!-- Seasons -->
+        @if (showData.seasons && showData.seasons.length > 0) {
+        <section class="section">
+          <h2 class="section-title">Seasons</h2>
+          <div class="seasons-tabs">
+            @for (season of showData.seasons; track season.id) {
+            <button class="season-tab" [class.active]="selectedSeason() === season.season_number"
+              (click)="onSeasonSelect(season.season_number)" type="button">
+              <span class="season-number">S{{ season.season_number }}</span>
+              @if (season.name) {
+              <span class="season-name">{{ season.name }}</span>
+              }
+              <span class="season-episodes">{{ season.episode_count }} episodes</span>
+            </button>
+            }
+          </div>
+        </section>
+        }
+
+        <!-- Cast -->
+        @if (showData.credits && showData.credits.cast && showData.credits.cast.length > 0) {
+        <section class="section">
+          <h2 class="section-title">Cast</h2>
+          <div class="cast-grid">
+            @for (actor of showData.credits.cast.slice(0, 12); track actor.id) {
+            <div class="cast-item">
+              <div class="cast-image">
+                @if (actor.profile_path) {
+                <img [src]="tmdbService.getPosterUrl(actor.profile_path, 'w185')" [alt]="actor.name" />
+                } @else {
+                <div class="cast-placeholder">
+                  <span class="material-symbols-outlined">person</span>
+                </div>
+                }
+              </div>
+              <div class="cast-info">
+                <p class="cast-name">{{ actor.name }}</p>
+                <p class="cast-character">{{ actor.character }}</p>
+              </div>
+            </div>
+            }
+          </div>
+        </section>
+        }
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="sidebar">
+        <!-- Info Box -->
+        <div class="info-box">
+          <h3 class="info-title">Show Info</h3>
+          <div class="info-list">
+            @if (showData.first_air_date) {
+            <div class="info-item">
+              <span class="info-label">First Air Date</span>
+              <span class="info-value">{{ showData.first_air_date | date: 'longDate' }}</span>
+            </div>
+            }
+            @if (showData.number_of_seasons) {
+            <div class="info-item">
+              <span class="info-label">Seasons</span>
+              <span class="info-value">{{ showData.number_of_seasons }}</span>
+            </div>
+            }
+            @if (showData.number_of_episodes) {
+            <div class="info-item">
+              <span class="info-label">Episodes</span>
+              <span class="info-value">{{ showData.number_of_episodes }}</span>
+            </div>
+            }
+            @if (showData.status) {
+            <div class="info-item">
+              <span class="info-label">Status</span>
+              <span class="info-value">{{ showData.status }}</span>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Genres -->
+        @if (showData.genres && showData.genres.length > 0) {
+        <div class="info-box">
+          <h3 class="info-title">Genres</h3>
+          <div class="genres-list">
+            @for (genre of showData.genres; track genre.id) {
+            <span class="genre-tag">{{ genre.name }}</span>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Production Companies -->
+        @if (showData.production_companies && showData.production_companies.length > 0) {
+        <div class="info-box">
+          <h3 class="info-title">Production</h3>
+          <div class="production-list">
+            @for (company of showData.production_companies; track company.id) {
+            <div class="production-item">
+              @if (company.logo_path) {
+              <img [src]="tmdbService.getPosterUrl(company.logo_path, 'w92')" [alt]="company.name"
+                class="production-logo" />
+              } @else {
+              <span class="production-name">{{ company.name }}</span>
+              }
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Crew -->
+        @if (showData.credits && showData.credits.crew && showData.credits.crew.length > 0) {
+        <div class="info-box">
+          <h3 class="info-title">Crew</h3>
+          <div class="crew-list">
+            @for (member of showData.credits.crew.slice(0, 5); track member.id) {
+            <div class="crew-item">
+              <span class="crew-name">{{ member.name }}</span>
+              <span class="crew-job">{{ member.job }}</span>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </aside>
+    </div>
+  </div>
+</div>
+
+@if (tvShow()) {
+<app-add-to-list-dialog [isOpen]="isAddToListOpen()" [tmdbId]="tvShow()!.id" mediaType="tv" [title]="tvShow()!.name"
+  [posterPath]="tvShow()!.poster_path || undefined" [runtime]="0" [releaseDate]="tvShow()!.first_air_date || undefined"
+  (close)="closeAddToList()"></app-add-to-list-dialog>
+}
+}

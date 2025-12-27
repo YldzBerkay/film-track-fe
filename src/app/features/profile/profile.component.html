@@ -97,11 +97,19 @@
   <!-- Stats Grid -->
   <div class="stats-section">
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card stat-card--clickable" (click)="router.navigate(['/lists/watched'])">
         <span class="stat-value">{{ profileData.user.stats.moviesWatched }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">movie</span>
           <span>{{ 'profile.watched' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" style="font-size: 1.5rem;">{{ formatRuntime(profileData.user.stats.totalRuntime)
+          }}</span>
+        <div class="stat-label">
+          <span class="material-symbols-outlined">schedule</span>
+          <span>{{ 'profile.watchedTime' | translate }}</span>
         </div>
       </div>
       <div class="stat-card">

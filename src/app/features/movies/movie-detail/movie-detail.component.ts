@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TMDBService, TMDBMovieDetails } from '../../../core/services/tmdb.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,6 +26,8 @@ export class MovieDetailComponent implements OnInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
   isLoggedIn = signal(false);
+
+  isAddToListOpen = signal(false);
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
 
@@ -101,7 +104,11 @@ export class MovieDetailComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    // TODO: Open add to list modal
+    this.isAddToListOpen.set(true);
+  }
+
+  closeAddToList(): void {
+    this.isAddToListOpen.set(false);
   }
 
   goBack(): void {

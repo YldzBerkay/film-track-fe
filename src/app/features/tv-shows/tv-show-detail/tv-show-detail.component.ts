@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TMDBService, TMDBTvShowDetails } from '../../../core/services/tmdb.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
 
 @Component({
   selector: 'app-tv-show-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent],
   templateUrl: './tv-show-detail.component.html',
   styleUrl: './tv-show-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,6 +26,8 @@ export class TvShowDetailComponent implements OnInit {
   error = signal<string | null>(null);
   isLoggedIn = signal(false);
   selectedSeason = signal<number>(1);
+
+  isAddToListOpen = signal(false);
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
 
@@ -102,7 +105,11 @@ export class TvShowDetailComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    // TODO: Open add to list modal
+    this.isAddToListOpen.set(true);
+  }
+
+  closeAddToList(): void {
+    this.isAddToListOpen.set(false);
   }
 }
 

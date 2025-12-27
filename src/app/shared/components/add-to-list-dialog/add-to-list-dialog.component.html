@@ -1,0 +1,55 @@
+@if (isOpen) {
+<div class="dialog-backdrop" [@backdropAnimation] (click)="onBackdropClick($event)">
+    <div class="dialog-content" [@modalAnimation]>
+        <div class="dialog-header">
+            <h2 class="dialog-title">Add to List</h2>
+            <button class="close-btn" (click)="close.emit()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            @if (isLoading()) {
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <span>Loading lists...</span>
+            </div>
+            } @else {
+            <div class="lists-container">
+                @for (list of lists(); track list.id) {
+                <div class="list-item" [class.selected]="list.isIncluded" [class.disabled]="list.isDisabled"
+                    [title]="list.tooltip || ''" (click)="toggleList(list)">
+                    <div class="list-icon">
+                        <span class="material-symbols-outlined">{{ list.icon }}</span>
+                    </div>
+                    <span class="list-name">{{ list.name }}</span>
+                    <div class="checkbox">
+                        @if (list.isLoading) {
+                        <div class="small-spinner"></div>
+                        } @else {
+                        <span class="material-symbols-outlined check-icon">check</span>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+
+            <div class="create-list-section">
+                <div class="input-group">
+                    <input type="text" [(ngModel)]="newListName" placeholder="Create new list..."
+                        (keyup.enter)="createList()" />
+                    <button class="create-btn" [disabled]="!newListName().trim() || isCreatingList()"
+                        (click)="createList()">
+                        @if (isCreatingList()) {
+                        <div class="small-spinner"></div>
+                        } @else {
+                        <span class="material-symbols-outlined">add</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

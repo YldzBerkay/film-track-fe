@@ -13,6 +13,7 @@ export interface UserProfile {
     stats: {
       moviesWatched: number;
       episodesWatched: number;
+      totalRuntime: number;
     };
     followersCount: number;
     followingCount: number;

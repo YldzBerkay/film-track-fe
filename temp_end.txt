@@ -1,0 +1,5 @@
+
+@if (movie()) {
+<app-add-to-list-dialog [isOpen]="isAddToListOpen()" [tmdbId]="movie()!.id" mediaType="movie" [title]="movie()!.title"
+  [posterPath]="movie()!.poster_path || undefined" (close)="closeAddToList()"></app-add-to-list-dialog>
+}
