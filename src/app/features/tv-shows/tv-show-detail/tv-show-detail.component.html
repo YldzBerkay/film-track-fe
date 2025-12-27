@@ -351,5 +351,11 @@
   (save)="onRateSeason($event)">
 </app-rate-dialog>
 }
+
+<app-dialog [isOpen]="isSpecialsDialogOpen()" [title]="'watched.includeSpecials' | translate"
+  [message]="'watched.includeSpecialsMessage' | translate" [confirmText]="'watched.yesInclude' | translate"
+  [cancelText]="'watched.noExclude' | translate" type="warning" (confirm)="onSpecialsConfirm(true)"
+  (cancel)="onSpecialsConfirm(false)" (close)="isSpecialsDialogOpen.set(false)">
+</app-dialog>
 }
 }

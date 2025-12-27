@@ -54,7 +54,11 @@
         "yourRating": "Your Rating",
         "hours": "hours",
         "minutes": "minutes",
-        "empty": "You haven't watched anything yet"
+        "empty": "You haven't watched anything yet",
+        "includeSpecials": "Include Specials?",
+        "includeSpecialsMessage": "Season 0 generally contains specials. Do you want to add it as watched too? This will affect your total watch time.",
+        "yesInclude": "Yes, include",
+        "noExclude": "No, regular seasons only"
     },
     "profile": {
         "profile": "Profile",

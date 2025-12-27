@@ -54,7 +54,11 @@
         "yourRating": "Puanınız",
         "hours": "saat",
         "minutes": "dakika",
-        "empty": "Henüz hiçbir şey izlemediniz"
+        "empty": "Henüz hiçbir şey izlemediniz",
+        "includeSpecials": "Özelleri Dahil Et?",
+        "includeSpecialsMessage": "0. Sezon genellikle özel bölümleri içerir. Bunları da izlendi olarak eklemek ister misiniz? Bu toplam izleme sürenizi etkileyecektir.",
+        "yesInclude": "Evet, dahil et",
+        "noExclude": "Hayır, sadece normal sezonlar"
     },
     "profile": {
         "profile": "Profil",

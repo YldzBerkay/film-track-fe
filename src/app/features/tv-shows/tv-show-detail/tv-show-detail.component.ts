@@ -9,13 +9,14 @@ import { EpisodeRatingService } from '../../../core/services/episode-rating.serv
 import { SeasonRatingService } from '../../../core/services/season-rating.service';
 import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
 import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate-dialog.component';
+import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-tv-show-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, DialogComponent, TranslatePipe],
   templateUrl: './tv-show-detail.component.html',
   styleUrl: './tv-show-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -48,6 +49,7 @@ export class TvShowDetailComponent implements OnInit {
 
   isAddToListOpen = signal(false);
   isRateDialogOpen = signal(false);
+  isSpecialsDialogOpen = signal(false);
 
   // Episode ratings (keyed by episode number for current season)
   episodeRatings = signal<Record<number, number>>({});
@@ -93,9 +95,15 @@ export class TvShowDetailComponent implements OnInit {
     this.isRateDialogOpen.set(false);
   }
 
-  calculateTotalRuntime(show: TMDBTvShowDetails): number {
+  calculateTotalRuntime(show: TMDBTvShowDetails, includeSpecials = false): number {
     const avgRuntime = show.episode_run_time?.[0] || 30; // Default to 30 mins
-    return avgRuntime * (show.number_of_episodes || 0);
+
+    // Calculate episode count based on preference
+    const relevantEpisodes = show.seasons
+      .filter(s => includeSpecials || s.season_number !== 0)
+      .reduce((acc, s) => acc + s.episode_count, 0);
+
+    return avgRuntime * relevantEpisodes;
   }
 
   onRate(rating: number): void {
@@ -318,6 +326,7 @@ export class TvShowDetailComponent implements OnInit {
 
     if (this.isWatched()) {
       // Remove from watched
+      this.isLogging.set(true);
       this.watchedListService.removeItem(show.id, 'tv').subscribe({
         next: (res) => {
           if (res.success) {
@@ -332,27 +341,45 @@ export class TvShowDetailComponent implements OnInit {
         }
       });
     } else {
-      // Add to watched
-      this.watchedListService.addItem({
-        tmdbId: show.id,
-        mediaType: 'tv',
-        title: show.name,
-        posterPath: show.poster_path || undefined,
-        runtime: this.calculateTotalRuntime(show),
-        watchedAt: new Date().toISOString()
-      }).subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.isWatched.set(true);
-            this.loadPublicStats(show.id);
-          }
-          this.isLogging.set(false);
-        },
-        error: () => {
-          this.isLogging.set(false);
-        }
-      });
+      // Check for specials (Season 0)
+      const hasSpecials = show.seasons.some(s => s.season_number === 0);
+      if (hasSpecials) {
+        this.isSpecialsDialogOpen.set(true);
+      } else {
+        this.finishToggleWatched(false);
+      }
     }
+  }
+
+  onSpecialsConfirm(includeSpecials: boolean): void {
+    this.isSpecialsDialogOpen.set(false);
+    this.finishToggleWatched(includeSpecials);
+  }
+
+  finishToggleWatched(includeSpecials: boolean): void {
+    const show = this.tvShow();
+    if (!show) return;
+
+    this.isLogging.set(true);
+    this.watchedListService.addItem({
+      tmdbId: show.id,
+      mediaType: 'tv',
+      title: show.name,
+      posterPath: show.poster_path || undefined,
+      runtime: this.calculateTotalRuntime(show, includeSpecials),
+      watchedAt: new Date().toISOString()
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.isWatched.set(true);
+          this.loadPublicStats(show.id);
+        }
+        this.isLogging.set(false);
+      },
+      error: () => {
+        this.isLogging.set(false);
+      }
+    });
   }
 
   onAddToList(): void {
