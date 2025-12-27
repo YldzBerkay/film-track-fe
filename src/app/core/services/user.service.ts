@@ -91,12 +91,16 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getProfile(username: string): Observable<ApiResponse<UserProfile>> {
-    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/${username}`);
+  getProfile(username: string, lang?: string): Observable<ApiResponse<UserProfile>> {
+    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/${username}`, {
+      params: lang ? { lang } : undefined
+    });
   }
 
-  getCurrentProfile(): Observable<ApiResponse<UserProfile>> {
-    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/profile/me`);
+  getCurrentProfile(lang?: string): Observable<ApiResponse<UserProfile>> {
+    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/profile/me`, {
+      params: lang ? { lang } : undefined
+    });
   }
 
   searchUsers(query: string, page: number = 1): Observable<ApiResponse<UserSearchResults>> {

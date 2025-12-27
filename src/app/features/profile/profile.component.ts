@@ -208,8 +208,9 @@ export class ProfileComponent implements OnInit {
   loadProfile(username: string): void {
     this.isLoading.set(true);
     this.error.set(null);
+    const lang = this.languageService.language();
 
-    this.userService.getProfile(username).subscribe({
+    this.userService.getProfile(username, lang).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.profile.set(response.data);
@@ -240,8 +241,9 @@ export class ProfileComponent implements OnInit {
   loadCurrentProfile(): void {
     this.isLoading.set(true);
     this.error.set(null);
+    const lang = this.languageService.language();
 
-    this.userService.getCurrentProfile().subscribe({
+    this.userService.getCurrentProfile(lang).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.profile.set(response.data);
