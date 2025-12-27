@@ -43,7 +43,7 @@
             }
           </div>
           @if (publicStats()) {
-          <div class="rating-section internal-rating">
+          <div class="rating-section internal-rating" data-tooltip="CineTrack Rating">
             <span class="rating-label">CineTrack</span>
             <div class="rating-content">
               <span class="rating-value">{{ publicStats()!.count > 0 ? publicStats()!.averageRating.toFixed(1) : '?'
@@ -53,7 +53,7 @@
           </div>
           }
           @if (movieData.vote_average) {
-          <div class="rating-section tmdb-rating">
+          <div class="rating-section tmdb-rating" data-tooltip="TMDB Rating">
             <span class="rating-label">TMDB</span>
             <div class="rating-content">
               <span class="rating-value">{{ movieData.vote_average.toFixed(1) }}</span>

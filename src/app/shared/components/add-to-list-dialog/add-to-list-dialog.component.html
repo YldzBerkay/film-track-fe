@@ -18,7 +18,7 @@
             <div class="lists-container">
                 @for (list of lists(); track list.id) {
                 <div class="list-item" [class.selected]="list.isIncluded" [class.disabled]="list.isDisabled"
-                    [title]="list.tooltip || ''" (click)="toggleList(list)">
+                    [attr.data-tooltip]="list.tooltip" (click)="toggleList(list)">
                     <div class="list-icon">
                         <span class="material-symbols-outlined">{{ list.icon }}</span>
                     </div>

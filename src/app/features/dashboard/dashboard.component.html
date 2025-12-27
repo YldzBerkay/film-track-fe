@@ -262,8 +262,8 @@
                   <span>{{ user()?.streak }}</span>
                 </div>
               </div>
-              <h4 class="daily-pick-title" [title]="pick.title">{{ pick.title }}</h4>
-              <div class="daily-pick-meta" [title]="pick.year + ' • ' + pick.genre">
+              <h4 class="daily-pick-title" [attr.data-tooltip]="pick.title">{{ pick.title }}</h4>
+              <div class="daily-pick-meta" [attr.data-tooltip]="pick.year + ' • ' + pick.genre">
                 <span>{{ pick.year }}</span>
                 <span class="separator">•</span>
                 <span>{{ pick.genre }}</span>
@@ -301,12 +301,12 @@
               <div class="daily-pick-header">
                 <div class="daily-pick-badge mealtime-badge">{{ 'dashboard.mealtimeRoulette' | translate }}</div>
               </div>
-              <h4 class="daily-pick-title" [title]="meal.showTitle">{{ meal.showTitle }}</h4>
-              <div class="daily-pick-meta" [title]="meal.episodeTitle">
+              <h4 class="daily-pick-title" [attr.data-tooltip]="meal.showTitle">{{ meal.showTitle }}</h4>
+              <div class="daily-pick-meta" [attr.data-tooltip]="meal.episodeTitle">
                 <span>{{ meal.episodeTitle }}</span>
               </div>
               <div class="daily-pick-meta"
-                [title]="'S' + meal.seasonNumber + ' E' + meal.episodeNumber + ' • ' + (meal.runtime | number:'1.0-0') + 'm'">
+                [attr.data-tooltip]="'S' + meal.seasonNumber + ' E' + meal.episodeNumber + ' • ' + (meal.runtime | number:'1.0-0') + 'm'">
                 <span>S{{ meal.seasonNumber }} E{{ meal.episodeNumber }}</span>
                 <span class="separator">•</span>
                 <span>{{ meal.runtime | number:'1.0-0' }}m</span>

@@ -91,9 +91,10 @@ export class AddToListDialogComponent implements OnChanges {
                 }
 
                 // Process Watched List
+                let isInWatched = false;
                 if (response.watchedList.success) {
                     const watchedList = response.watchedList.data.watchedList;
-                    const isInWatched = watchedList.items.some(
+                    isInWatched = watchedList.items.some(
                         item => item.tmdbId === Number(this.tmdbId) && item.mediaType === this.mediaType
                     );
 
@@ -115,12 +116,17 @@ export class AddToListDialogComponent implements OnChanges {
                             item => item.tmdbId === Number(this.tmdbId) && item.mediaType === this.mediaType
                         );
 
+                        const isWatchlist = list.isDefault;
+                        const isDisabled = isWatchlist && isInWatched && !isInList;
+
                         listItems.push({
                             id: list._id,
                             name: list.name,
                             icon: list.isDefault ? 'bookmark' : (list.icon || 'list'),
                             isIncluded: isInList,
-                            type: list.isDefault ? 'watchlist' : 'custom'
+                            type: list.isDefault ? 'watchlist' : 'custom',
+                            isDisabled: isDisabled,
+                            tooltip: isDisabled ? 'Already in watched list' : undefined
                         });
                     });
                 }
@@ -158,14 +164,31 @@ export class AddToListDialogComponent implements OnChanges {
 
         (action$ as any).subscribe({
             next: () => {
-                // Success: just turn off loading
-                this.lists.update(current =>
-                    current.map(item =>
+                // Success: turn off loading and handle reactive disabling
+                this.lists.update(current => {
+                    const updated = current.map(item =>
                         item.id === list.id
                             ? { ...item, isLoading: false }
                             : item
-                    )
-                );
+                    );
+
+                    // If we toggled 'watched', update 'watchlist' isDisabled status
+                    if (list.type === 'watched') {
+                        const isInWatchedNow = updated.find(i => i.id === list.id)?.isIncluded;
+                        return updated.map(item => {
+                            if (item.type === 'watchlist') {
+                                const isDisabled = isInWatchedNow && !item.isIncluded;
+                                return {
+                                    ...item,
+                                    isDisabled: isDisabled,
+                                    tooltip: isDisabled ? 'Already in watched list' : undefined
+                                };
+                            }
+                            return item;
+                        });
+                    }
+                    return updated;
+                });
             },
             error: (err: any) => {
                 console.error(`Failed to toggle list ${list.name}`, err);
