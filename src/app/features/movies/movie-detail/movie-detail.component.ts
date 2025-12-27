@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect } from '@angular/core';
 import { CommonModule, DatePipe, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TMDBService, TMDBMovieDetails } from '../../../core/services/tmdb.service';
@@ -9,6 +9,7 @@ import { AddToListDialogComponent } from '../../../shared/components/add-to-list
 import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate-dialog.component';
 
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-movie-detail',
@@ -26,6 +27,7 @@ export class MovieDetailComponent implements OnInit {
   private authService = inject(AuthService);
   private watchedListService = inject(WatchedListService);
   private location = inject(Location);
+  private languageService = inject(LanguageService);
 
   movie = signal<TMDBMovieDetails | null>(null);
   isLoading = signal(true);
@@ -43,6 +45,21 @@ export class MovieDetailComponent implements OnInit {
   isRateDialogOpen = signal(false);
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
+
+  private previousLanguage = this.languageService.language();
+
+  constructor() {
+    effect(() => {
+      const currentLang = this.languageService.language();
+      if (currentLang !== this.previousLanguage) {
+        this.previousLanguage = currentLang;
+        const id = this.tmdbId();
+        if (id) {
+          this.loadMovieDetails(id);
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.isLoggedIn.set(this.authService.isAuthenticated());

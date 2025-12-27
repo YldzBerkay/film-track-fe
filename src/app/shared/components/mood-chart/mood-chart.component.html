@@ -8,6 +8,15 @@
   } @else if (moodData()) {
   <div class="chart-wrapper">
     <canvas baseChart [data]="chartData()" [options]="chartOptions" [type]="chartType"></canvas>
+    @if (isDefaultMood()) {
+    <div class="insufficient-data-overlay">
+      <div class="insufficient-data-content">
+        <span class="material-symbols-outlined">psychology_alt</span>
+        <p>{{ 'mood.insufficientData' | translate }}</p>
+        <span class="hint">{{ 'mood.insufficientDataHint' | translate }}</span>
+      </div>
+    </div>
+    }
   </div>
   } @else {
   <div class="chart-empty">

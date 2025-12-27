@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LanguageService } from './language.service';
 
 export interface WatchedItem {
     tmdbId: number;
@@ -73,6 +74,11 @@ export interface WatchedReportsResponse {
         totalFilmsRuntime: number;
         totalRuntime: number;
         genreCounts: Record<string, number>;
+        genreRatings: {
+            all: Array<{ genre: string; averageRating: number; count: number }>;
+            top: Array<{ genre: string; averageRating: number; count: number }>;
+            bottom: Array<{ genre: string; averageRating: number; count: number }>;
+        };
         totalRatingCount: number;
         averageRating: number | null;
         ratings: Array<{ tmdbId: number; mediaType: 'movie' | 'tv'; title: string; rating: number }>;
@@ -84,13 +90,18 @@ export interface WatchedReportsResponse {
 })
 export class WatchedListService {
     private http = inject(HttpClient);
+    private languageService = inject(LanguageService);
     private apiUrl = 'http://localhost:3000/api/watched';
 
     /**
      * Get user's watched list
      */
-    getWatchedList(): Observable<WatchedListResponse> {
-        return this.http.get<WatchedListResponse>(this.apiUrl);
+    getWatchedList(limit?: number): Observable<WatchedListResponse> {
+        let params = new HttpParams().set('lang', this.languageService.langCode());
+        if (limit) {
+            params = params.set('limit', limit.toString());
+        }
+        return this.http.get<WatchedListResponse>(this.apiUrl, { params });
     }
 
     /**

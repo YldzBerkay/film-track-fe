@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed, HostListener, effect } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../layout/header/header.component';
@@ -7,6 +7,7 @@ import { WatchlistService, Watchlist, WatchlistResponse } from '../../../core/se
 import { WatchedListService, WatchedList, WatchedListResponse } from '../../../core/services/watched-list.service';
 import { TranslatePipe, TranslationService } from '../../../core/i18n';
 import { EditListDialogComponent, ListItem } from '../../../shared/components/edit-list-dialog/edit-list-dialog.component';
+import { LanguageService } from '../../../core/services/language.service';
 
 type ListType = 'watched' | 'watchlist' | 'custom';
 
@@ -26,6 +27,7 @@ export class ListDetailComponent implements OnInit {
     private watchlistService: WatchlistService = inject(WatchlistService);
     private watchedListService: WatchedListService = inject(WatchedListService);
     private translationService: TranslationService = inject(TranslationService);
+    private languageService: LanguageService = inject(LanguageService);
 
     listType = signal<ListType>('watched');
     watchedList = signal<WatchedList | null>(null);
@@ -35,6 +37,32 @@ export class ListDetailComponent implements OnInit {
 
     // Privacy dropdown state
     showPrivacyDropdown = signal(false);
+
+    private previousLanguage = this.languageService.language();
+
+    constructor() {
+        effect(() => {
+            const currentLang = this.languageService.language();
+            if (currentLang !== this.previousLanguage) {
+                this.previousLanguage = currentLang;
+                this.reloadList();
+            }
+        });
+    }
+
+    reloadList(): void {
+        const type = this.listType();
+        if (type === 'watched') {
+            this.loadWatchedList();
+        } else if (type === 'watchlist') {
+            this.loadDefaultWatchlist();
+        } else if (type === 'custom') {
+            const id = this.watchlist()?._id;
+            if (id) {
+                this.loadCustomWatchlist(id);
+            }
+        }
+    }
 
     readonly listTitle = computed(() => {
         const type = this.listType();

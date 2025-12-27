@@ -116,14 +116,48 @@ export class RecommendationService {
 
     getMoodBasedRecommendations(
         mode: 'match' | 'shift' = 'match',
-        limit: number = 10,
-        includeWatched: boolean = false
+        limit: number = 5,
+        includeWatched: boolean = false,
+        forceRefresh: boolean = false
     ): Observable<ApiResponse<MoodRecommendation[]>> {
         const params = this.getParams({
             mode,
             limit: limit.toString(),
-            includeWatched: includeWatched.toString()
+            includeWatched: includeWatched.toString(),
+            forceRefresh: forceRefresh.toString()
         });
         return this.http.get<ApiResponse<MoodRecommendation[]>>(`${this.apiUrl}/mood-based`, { params });
+    }
+
+    /**
+     * Submit feedback (like/dislike) on a recommendation
+     * This trains the AI to better match user preferences
+     */
+    submitFeedback(tmdbId: number, title: string, action: 'like' | 'dislike'): Observable<ApiResponse<void>> {
+        return this.http.post<ApiResponse<void>>(`${this.apiUrl}/feedback`, {
+            tmdbId,
+            title,
+            action
+        });
+    }
+
+    /**
+     * Get a single replacement recommendation (uses monthly quota)
+     */
+    replaceCard(excludeIds: number[]): Observable<{ success: boolean; data?: MoodRecommendation; error?: string; remaining?: number }> {
+        const params = this.getParams({
+            excludeIds: excludeIds.join(',')
+        });
+        return this.http.get<{ success: boolean; data?: MoodRecommendation; error?: string; remaining?: number }>(
+            `${this.apiUrl}/replace`,
+            { params }
+        );
+    }
+
+    /**
+     * Get user's current replacement quota
+     */
+    getQuota(): Observable<ApiResponse<{ remaining: number; total: number }>> {
+        return this.http.get<ApiResponse<{ remaining: number; total: number }>>(`${this.apiUrl}/quota`);
     }
 }

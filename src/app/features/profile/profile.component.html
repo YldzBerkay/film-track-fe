@@ -169,10 +169,61 @@
       <!-- Mood Charts Section -->
       @if (isOwnProfile()) {
       <div class="mood-section">
+        <div class="section-header mood-section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">psychology</span>
+            {{ 'profile.cinematicMood' | translate }}
+          </h2>
+          @if (isDev) {
+          <button class="refresh-all-btn" (click)="refreshMood()" [disabled]="isRefreshingAllMood()">
+            @if (isRefreshingAllMood()) {
+            <span class="material-symbols-outlined spinning">sync</span>
+            <span>{{ 'profile.refreshing' | translate }}</span>
+            } @else {
+            <span class="material-symbols-outlined">refresh</span>
+            <span>{{ 'profile.refreshAll' | translate }}</span>
+            }
+          </button>
+          }
+        </div>
+        @if (aiThresholdNotMet() && aiThresholdMeta()) {
+        <!-- Locked State: Not enough rated movies for Mood Analysis -->
+        <div class="ai-locked-state">
+          <div class="locked-icon">
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+          <h3 class="locked-title">{{ 'profile.aiLocked' | translate }}</h3>
+          <p class="locked-message">{{ 'profile.aiLockedMessage' | translate }}</p>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill"
+                [style.width.%]="(aiThresholdMeta()!.currentCount / aiThresholdMeta()!.requiredCount) * 100"></div>
+            </div>
+            <span class="progress-text">{{ aiThresholdMeta()!.currentCount }} / {{ aiThresholdMeta()!.requiredCount
+              }}</span>
+          </div>
+          <p class="remaining-hint">{{ 'profile.aiLockedRemaining' | translate:{ remaining: aiThresholdMeta()!.remaining
+            } }}</p>
+        </div>
+        } @else {
         <div class="mood-charts-grid">
           <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
-          <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
+
+          <div class="timeline-container">
+            <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
+
+            @if (!hasEnoughTimelineData()) {
+            <div class="timeline-overlay">
+              <div class="overlay-content">
+                <span class="material-symbols-outlined">info</span>
+                <p>{{ 'profile.timelineInfo' | translate }}</p>
+                <span class="timeline-progress">{{ moodTimeline().length }}/3 {{ 'profile.days' | translate }}</span>
+              </div>
+            </div>
+            }
+          </div>
         </div>
+        }
       </div>
 
       <!-- Badges Section -->
@@ -229,7 +280,8 @@
 
           <!-- Controls -->
           <div class="mood-controls">
-            <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()">
+            <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()"
+              [attr.data-tooltip]="(moodRecsMode() === 'match' ? 'profile.matchTooltip' : 'profile.shiftTooltip') | translate">
               <span class="material-symbols-outlined">{{ moodRecsMode() === 'match' ? 'favorite' : 'swap_horiz'
                 }}</span>
               {{ (moodRecsMode() === 'match' ? 'profile.match' : 'profile.shift') | translate }}
@@ -244,29 +296,65 @@
         <div class="badges-loading">
           <div class="spinner"></div>
         </div>
+        } @else if (aiThresholdNotMet() && aiThresholdMeta()) {
+        <!-- Locked State: Not enough rated movies -->
+        <div class="ai-locked-state">
+          <div class="locked-icon">
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+          <h3 class="locked-title">{{ 'profile.aiLocked' | translate }}</h3>
+          <p class="locked-message">{{ 'profile.aiLockedMessage' | translate }}</p>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill"
+                [style.width.%]="(aiThresholdMeta()!.currentCount / aiThresholdMeta()!.requiredCount) * 100"></div>
+            </div>
+            <span class="progress-text">{{ aiThresholdMeta()!.currentCount }} / {{ aiThresholdMeta()!.requiredCount
+              }}</span>
+          </div>
+          <p class="remaining-hint">{{ 'profile.aiLockedRemaining' | translate:{ remaining: aiThresholdMeta()!.remaining
+            } }}</p>
+        </div>
         } @else if (moodRecommendations().length > 0) {
-        <div class="badges-slider-container">
-          <button class="slider-btn prev" (click)="scrollRecommendations('left')">
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-
-          <div class="badges-slider" #recommendationsContainer>
-            @for (rec of moodRecommendations(); track rec.tmdbId) {
-            <div class="recommendation-card" (click)="router.navigate(['/movies', rec.tmdbId])">
+        <!-- Premium Deck: 5 Interactive Cards -->
+        <div class="premium-deck-grid">
+          @for (rec of moodRecommendations(); track rec.tmdbId) {
+          <div class="premium-card" [class.rated]="isCardRated(rec.tmdbId)">
+            <!-- Card Content -->
+            <div class="card-content" (click)="router.navigate(['/movies', rec.tmdbId])">
               <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="rec-poster" />
-              <div class="rec-overlay">
-                <span class="material-symbols-outlined">play_circle</span>
-              </div>
               <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
                 {{ rec.score }}%
               </div>
             </div>
+
+            <!-- Feedback Buttons (visible when not rated) -->
+            @if (!isCardRated(rec.tmdbId)) {
+            <div class="feedback-buttons">
+              <button class="feedback-btn like" (click)="rateCard(rec, 'like'); $event.stopPropagation()"
+                title="{{ 'profile.like' | translate }}">
+                <span class="material-symbols-outlined">thumb_up</span>
+              </button>
+              <button class="feedback-btn dislike" (click)="rateCard(rec, 'dislike'); $event.stopPropagation()"
+                title="{{ 'profile.dislike' | translate }}">
+                <span class="material-symbols-outlined">thumb_down</span>
+              </button>
+            </div>
+            }
+
+            <!-- Replace Overlay (visible when rated) -->
+            @if (isCardRated(rec.tmdbId)) {
+            <div class="replace-overlay">
+              <button class="replace-btn" (click)="replaceCard(rec.tmdbId); $event.stopPropagation()"
+                [disabled]="replacementQuota().remaining <= 0">
+                <span class="material-symbols-outlined">refresh</span>
+                <span>{{ 'profile.replaceCard' | translate }}</span>
+                <span class="quota-badge">({{ replacementQuota().remaining }}/{{ replacementQuota().total }})</span>
+              </button>
+            </div>
             }
           </div>
-
-          <button class="slider-btn next" (click)="scrollRecommendations('right')">
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
+          }
         </div>
         } @else {
         <div class="badges-empty">
@@ -921,3 +1009,40 @@
 
 <app-watched-reports-dialog [isOpen]="showReportsDialog()" (close)="showReportsDialog.set(false)">
 </app-watched-reports-dialog>
+
+<!-- Rating Dialog -->
+@if (showRatingDialog() && ratingDialogMovie()) {
+<div class="rating-dialog-overlay" (click)="cancelRating()">
+  <div class="rating-dialog" (click)="$event.stopPropagation()">
+    <div class="rating-dialog-header">
+      <img [src]="tmdbService.getPosterUrl(ratingDialogMovie()!.posterPath, 'w200')" class="dialog-poster" />
+      <div class="dialog-info">
+        <h3>{{ ratingDialogMovie()!.title }}</h3>
+        <p class="dialog-action" [class.like]="ratingDialogAction() === 'like'"
+          [class.dislike]="ratingDialogAction() === 'dislike'">
+          <span class="material-symbols-outlined">{{ ratingDialogAction() === 'like' ? 'thumb_up' : 'thumb_down'
+            }}</span>
+          {{ ratingDialogAction() === 'like' ? ('profile.like' | translate) : ('profile.dislike' | translate) }}
+        </p>
+      </div>
+    </div>
+
+    <div class="rating-section">
+      <p class="rating-label">{{ 'profile.rateThisMovie' | translate }}</p>
+      <div class="star-rating">
+        @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
+        <button class="star-btn" [class.active]="star <= selectedRating()" (click)="selectedRating.set(star)">
+          <span class="material-symbols-outlined">{{ star <= selectedRating() ? 'star' : 'star_border' }}</span>
+        </button>
+        }
+      </div>
+      <span class="rating-value">{{ selectedRating() }}/10</span>
+    </div>
+
+    <div class="rating-dialog-actions">
+      <button class="btn-cancel" (click)="cancelRating()">{{ 'common.cancel' | translate }}</button>
+      <button class="btn-confirm" (click)="confirmRating()">{{ 'profile.addToWatched' | translate }}</button>
+    </div>
+  </div>
+</div>
+}

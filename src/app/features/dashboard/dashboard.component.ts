@@ -55,6 +55,7 @@ export class DashboardComponent implements OnInit {
       this.loadDailyPick();
       this.loadMealtimePick();
       this.loadMoodRecommendations();
+      this.loadLists();
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef, effect, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef, effect, HostListener, isDevMode } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -19,6 +19,7 @@ import { WatchedListService, WatchedList } from '../../core/services/watched-lis
 import { WatchlistService, Watchlist } from '../../core/services/watchlist.service';
 import { EditListDialogComponent, ListItem } from '../../shared/components/edit-list-dialog/edit-list-dialog.component';
 import { WatchedReportsDialogComponent } from '../../shared/components/watched-reports-dialog/watched-reports-dialog.component';
+import { forkJoin } from 'rxjs';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
@@ -31,6 +32,7 @@ type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfileComponent implements OnInit {
+  isDev = isDevMode();
   private route = inject(ActivatedRoute);
   router = inject(Router);
   userService = inject(UserService);
@@ -58,6 +60,26 @@ export class ProfileComponent implements OnInit {
   isLoadingRecommendations = signal(false);
   moodRecsMode = signal<'match' | 'shift'>('match');
   includeWatched = signal(false);
+
+  // Unified loading state for all mood sections
+  isRefreshingAllMood = signal(false);
+
+  // Threshold state for AI recommendations (25 movies required)
+  aiThresholdNotMet = signal(false);
+  aiThresholdMeta = signal<{ currentCount: number; requiredCount: number; remaining: number } | null>(null);
+
+  // Timeline needs at least 3 days of data to display properly
+  hasEnoughTimelineData = computed(() => this.moodTimeline().length >= 3);
+
+  // RL Feedback System - Track which cards have been rated
+  ratedCards = signal<Set<number>>(new Set()); // Set of tmdbIds that have been liked/disliked
+  replacementQuota = signal<{ remaining: number; total: number }>({ remaining: 3, total: 3 });
+
+  // Rating dialog state (shown after like/dislike)
+  showRatingDialog = signal(false);
+  ratingDialogMovie = signal<MoodRecommendation | null>(null);
+  ratingDialogAction = signal<'like' | 'dislike'>('like');
+  selectedRating = signal(7); // Default rating
 
   // Watched list for Lists tab
   watched = signal<WatchedList | null>(null);
@@ -113,10 +135,20 @@ export class ProfileComponent implements OnInit {
   showEditListDialog = signal(false);
   selectedListForEdit = signal<Watchlist | null>(null);
 
+  // Flag to prevent duplicate API calls on initial load
+  private hasInitialized = false;
+
   constructor() {
     effect(() => {
-      // Reload language-dependent content when language changes
-      this.languageService.language();
+      // Track language changes
+      const currentLang = this.languageService.language();
+
+      // Skip first run - ngOnInit handles initial load
+      if (!this.hasInitialized) {
+        return;
+      }
+
+      // Only reload on actual language changes after initialization
       this.reloadLanguageDependentContent();
     });
   }
@@ -124,6 +156,9 @@ export class ProfileComponent implements OnInit {
   reloadLanguageDependentContent(): void {
     if (this.isOwnProfile()) {
       this.loadMoodRecommendations();
+      this.loadLists();
+      this.loadBadges();
+      this.loadMoodTimeline();
     }
     // For other users' profile, we might want to reload the profile data itself if it contains translated fields
     // but usually TMDB data is what's translated.
@@ -165,11 +200,15 @@ export class ProfileComponent implements OnInit {
 
     // Load mood data if viewing own profile
     if (this.isOwnProfile()) {
+      this.loadMood();
       this.loadMoodTimeline();
       this.loadBadges();
       this.loadMoodRecommendations();
       this.loadLists();
     }
+
+    // Mark as initialized so language effect can trigger future reloads
+    this.hasInitialized = true;
   }
 
   loadProfile(username: string): void {
@@ -336,7 +375,19 @@ export class ProfileComponent implements OnInit {
   loadMood(): void {
     this.isLoadingMood.set(true);
     this.moodService.getUserMood().subscribe({
-      next: (response) => {
+      next: (response: any) => {
+        // Handle NOT_ENOUGH_DATA threshold error
+        if (response.error === 'NOT_ENOUGH_DATA' && response.meta) {
+          this.aiThresholdNotMet.set(true);
+          this.aiThresholdMeta.set(response.meta);
+          this.moodData.set(null);
+          this.isLoadingMood.set(false);
+          return;
+        }
+
+        // Success case  
+        this.aiThresholdNotMet.set(false);
+
         if (response.success && response.data) {
           this.moodData.set(response.data);
         }
@@ -344,6 +395,64 @@ export class ProfileComponent implements OnInit {
       },
       error: () => {
         this.isLoadingMood.set(false);
+      }
+    });
+  }
+
+  /**
+   * Refresh All Mood Data - Parallel API calls for better performance
+   * Refreshes: Mood Chart, Mood Timeline, and Mood Recommendations
+   */
+  refreshMood(): void {
+    // Set all loading states
+    this.isRefreshingAllMood.set(true);
+    this.isLoadingMood.set(true);
+    this.isLoadingTimeline.set(true);
+    this.isLoadingRecommendations.set(true);
+
+    // Parallel API calls using forkJoin
+    forkJoin({
+      mood: this.moodService.getUserMood(true),
+      timeline: this.moodService.getMoodTimeline(30),
+      recommendations: this.recommendationService.getMoodBasedRecommendations(
+        this.moodRecsMode(),
+        5,
+        this.includeWatched(),
+        true // Force refresh (clears cache)
+      )
+    }).subscribe({
+      next: (results) => {
+        // Update Mood Chart
+        if (results.mood.success && results.mood.data) {
+          this.moodData.set(results.mood.data);
+        }
+
+        // Update Mood Timeline
+        if (results.timeline.success && results.timeline.data) {
+          this.moodTimeline.set(results.timeline.data);
+        }
+
+        // Update Recommendations
+        if (results.recommendations.success && results.recommendations.data) {
+          const recommendations = results.recommendations.data.map(rec => ({
+            ...rec,
+            score: Math.round(rec.moodSimilarity)
+          }));
+          this.moodRecommendations.set(recommendations);
+        }
+
+        // Clear all loading states
+        this.isRefreshingAllMood.set(false);
+        this.isLoadingMood.set(false);
+        this.isLoadingTimeline.set(false);
+        this.isLoadingRecommendations.set(false);
+      },
+      error: (error) => {
+        console.error('[Mood Refresh] Error:', error);
+        this.isRefreshingAllMood.set(false);
+        this.isLoadingMood.set(false);
+        this.isLoadingTimeline.set(false);
+        this.isLoadingRecommendations.set(false);
       }
     });
   }
@@ -526,12 +635,25 @@ export class ProfileComponent implements OnInit {
   loadMoodRecommendations(): void {
     this.isLoadingRecommendations.set(true);
     // Use signal values for mode and includeWatched
-    this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 10, this.includeWatched()).subscribe({
-      next: (response) => {
+    this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 5, this.includeWatched()).subscribe({
+      next: (response: any) => {
+        // Handle NOT_ENOUGH_DATA threshold error
+        if (response.error === 'NOT_ENOUGH_DATA' && response.meta) {
+          this.aiThresholdNotMet.set(true);
+          this.aiThresholdMeta.set(response.meta);
+          this.moodRecommendations.set([]);
+          this.isLoadingRecommendations.set(false);
+          return;
+        }
+
+        // Success case
+        this.aiThresholdNotMet.set(false);
+        this.aiThresholdMeta.set(null);
+
         if (response.success && response.data) {
-          const recommendations = response.data.map(rec => ({
+          const recommendations = response.data.map((rec: any) => ({
             ...rec,
-            score: Math.round(rec.moodSimilarity * 100)
+            score: Math.round(rec.moodSimilarity)
           }));
           this.moodRecommendations.set(recommendations);
         }
@@ -552,6 +674,116 @@ export class ProfileComponent implements OnInit {
   toggleIncludeWatched(): void {
     this.includeWatched.set(!this.includeWatched());
     this.loadMoodRecommendations();
+  }
+
+  /**
+   * Rate a recommendation card (like/dislike)
+   * Opens rating dialog first, then submits feedback
+   */
+  rateCard(rec: MoodRecommendation, action: 'like' | 'dislike'): void {
+    // Set default rating based on action
+    this.selectedRating.set(action === 'like' ? 8 : 4);
+    this.ratingDialogMovie.set(rec);
+    this.ratingDialogAction.set(action);
+    this.showRatingDialog.set(true);
+  }
+
+  /**
+   * Confirm rating from dialog - submits feedback and adds to watched list
+   */
+  confirmRating(): void {
+    const movie = this.ratingDialogMovie();
+    const action = this.ratingDialogAction();
+    const rating = this.selectedRating();
+
+    if (!movie) return;
+
+    // Add to rated set for UI feedback
+    const newSet = new Set(this.ratedCards());
+    newSet.add(movie.tmdbId);
+    this.ratedCards.set(newSet);
+
+    // Close dialog
+    this.showRatingDialog.set(false);
+
+    // Submit feedback to backend (trains AI)
+    this.recommendationService.submitFeedback(movie.tmdbId, movie.title, action).subscribe({
+      next: () => {
+        console.log(`[Feedback] ${action.toUpperCase()} sent for ${movie.title}`);
+      },
+      error: (err) => {
+        console.error('[Feedback] Error:', err);
+      }
+    });
+
+    // Add to watched list with rating
+    this.watchedListService.addItem({
+      tmdbId: movie.tmdbId,
+      mediaType: 'movie',
+      title: movie.title,
+      posterPath: movie.posterPath,
+      runtime: 120, // Default runtime, could be fetched
+      rating: rating
+    }).subscribe({
+      next: () => {
+        console.log(`[Watched] Added ${movie.title} with rating ${rating}`);
+      },
+      error: (err) => {
+        console.error('[Watched] Error:', err);
+      }
+    });
+  }
+
+  /**
+   * Cancel rating dialog
+   */
+  cancelRating(): void {
+    this.showRatingDialog.set(false);
+    this.ratingDialogMovie.set(null);
+  }
+
+  /**
+   * Replace a rated card with a new recommendation (uses quota)
+   */
+  replaceCard(tmdbIdToReplace: number): void {
+    const currentRecs = this.moodRecommendations();
+    const excludeIds = currentRecs.map(r => r.tmdbId);
+
+    this.recommendationService.replaceCard(excludeIds).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          // Replace the card in the array
+          const newRecs = currentRecs.map(r =>
+            r.tmdbId === tmdbIdToReplace
+              ? { ...response.data!, score: Math.round(response.data!.moodSimilarity) }
+              : r
+          );
+          this.moodRecommendations.set(newRecs);
+
+          // Remove from rated set
+          const newSet = new Set(this.ratedCards());
+          newSet.delete(tmdbIdToReplace);
+          this.ratedCards.set(newSet);
+
+          // Update quota
+          if (response.remaining !== undefined) {
+            this.replacementQuota.set({ remaining: response.remaining, total: 3 });
+          }
+        } else if (response.error === 'QUOTA_EXCEEDED') {
+          console.warn('[Replace] Quota exceeded');
+        }
+      },
+      error: (err) => {
+        console.error('[Replace] Error:', err);
+      }
+    });
+  }
+
+  /**
+   * Check if a card has been rated
+   */
+  isCardRated(tmdbId: number): boolean {
+    return this.ratedCards().has(tmdbId);
   }
 
   @ViewChild('recommendationsContainer') recommendationsContainer!: ElementRef<HTMLDivElement>;

@@ -17,6 +17,20 @@ export class MoodChartComponent {
   moodData = input<MoodVector | null>(null);
   isLoading = input<boolean>(false);
 
+  // Detect if all mood values are at default (50) - indicates insufficient data
+  isDefaultMood = computed(() => {
+    const data = this.moodData();
+    if (!data) return true;
+
+    const values = [
+      data.adrenaline, data.melancholy, data.joy, data.tension, data.intellect,
+      data.romance, data.wonder, data.nostalgia, data.darkness, data.inspiration
+    ];
+
+    // Check if all values are exactly 50 (default baseline)
+    return values.every(v => v === 50);
+  });
+
   chartData = computed(() => {
     const data = this.moodData();
     const labels = [

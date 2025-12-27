@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect } from '@angular/core';
 import { CommonModule, DatePipe, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TMDBService, TMDBTvShowDetails, TMDBSeasonDetails } from '../../../core/services/tmdb.service';
@@ -12,6 +12,7 @@ import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-tv-show-detail',
@@ -31,6 +32,7 @@ export class TvShowDetailComponent implements OnInit {
   private episodeRatingService = inject(EpisodeRatingService);
   private seasonRatingService = inject(SeasonRatingService);
   private location = inject(Location);
+  private languageService = inject(LanguageService);
 
   tvShow = signal<TMDBTvShowDetails | null>(null);
   isLoading = signal(true);
@@ -69,6 +71,26 @@ export class TvShowDetailComponent implements OnInit {
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
   readonly hasSpecials = computed(() => this.tvShow()?.seasons.some(s => s.season_number === 0) || false);
   readonly specialsEpisodeCount = computed(() => this.tvShow()?.seasons.find(s => s.season_number === 0)?.episode_count || 0);
+
+  private previousLanguage = this.languageService.language();
+
+  constructor() {
+    effect(() => {
+      const currentLang = this.languageService.language();
+      if (currentLang !== this.previousLanguage) {
+        this.previousLanguage = currentLang;
+        const id = this.tmdbId();
+        if (id) {
+          this.loadTvShowDetails(id);
+          // Also reload season details if one is selected
+          const selectedSeason = this.selectedSeason();
+          if (selectedSeason !== null) {
+            this.loadSeasonDetails(id, selectedSeason);
+          }
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.isLoggedIn.set(this.authService.isAuthenticated());

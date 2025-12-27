@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LanguageService } from './language.service';
 
 export interface WatchlistItem {
     tmdbId: number;
@@ -51,13 +52,15 @@ export interface CheckWatchlistResponse {
 })
 export class WatchlistService {
     private http = inject(HttpClient);
+    private languageService = inject(LanguageService);
     private apiUrl = 'http://localhost:3000/api/watchlists';
 
     /**
      * Get all watchlists for the current user
      */
     getWatchlists(): Observable<WatchlistsResponse> {
-        return this.http.get<WatchlistsResponse>(this.apiUrl);
+        const params = new HttpParams().set('lang', this.languageService.langCode());
+        return this.http.get<WatchlistsResponse>(this.apiUrl, { params });
     }
 
     /**
@@ -70,15 +73,23 @@ export class WatchlistService {
     /**
      * Get the user's default watchlist
      */
-    getDefaultWatchlist(): Observable<WatchlistResponse> {
-        return this.http.get<WatchlistResponse>(`${this.apiUrl}/default`);
+    getDefaultWatchlist(limit?: number): Observable<WatchlistResponse> {
+        let params = new HttpParams().set('lang', this.languageService.langCode());
+        if (limit) {
+            params = params.set('limit', limit.toString());
+        }
+        return this.http.get<WatchlistResponse>(`${this.apiUrl}/default`, { params });
     }
 
     /**
      * Get a specific watchlist by ID
      */
-    getWatchlist(id: string): Observable<WatchlistResponse> {
-        return this.http.get<WatchlistResponse>(`${this.apiUrl}/${id}`);
+    getWatchlist(id: string, limit?: number): Observable<WatchlistResponse> {
+        let params = new HttpParams().set('lang', this.languageService.langCode());
+        if (limit) {
+            params = params.set('limit', limit.toString());
+        }
+        return this.http.get<WatchlistResponse>(`${this.apiUrl}/${id}`, { params });
     }
 
     /**
