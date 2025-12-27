@@ -445,53 +445,405 @@
   margin: 0;
 }
 
-// Seasons Section
-.seasons-tabs {
+// Seasons Accordion
+.seasons-accordion {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.season-tab {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
+.accordion-item {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.active {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+    .accordion-header {
+      background-color: rgba(var(--color-primary-rgb), 0.05);
+
+      .expand-icon {
+        color: var(--color-primary);
+        transform: rotate(0deg);
+      }
+    }
+  }
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s;
   text-align: left;
 
   &:hover {
-    background-color: rgba(44, 52, 64, 0.8);
-    border-color: var(--color-primary);
+    background-color: rgba(255, 255, 255, 0.02);
   }
 
-  &.active {
-    background-color: rgba(0, 224, 84, 0.1);
-    border-color: var(--color-primary);
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .season-number {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .season-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-main);
+  }
+
+  .season-episodes {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  .expand-icon {
+    color: var(--color-text-muted);
+    transition: transform 0.3s;
+  }
+
+  .season-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+
+    &.tmdb {
+      color: #ff9800;
+
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1;
+        font-size: 16px;
+      }
+    }
+
+    &.ct {
+      color: var(--color-primary);
+
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1;
+        font-size: 16px;
+      }
+
+      .vote-count {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        margin-left: 2px;
+      }
+    }
+  }
+
+  .season-rate-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    &.rated {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1;
+      }
+    }
   }
 }
 
-.season-number {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-primary);
-  min-width: 40px;
+.accordion-panel {
+  padding: 20px;
+  border-top: 1px solid var(--color-border);
+  animation: slideDown 0.3s ease-out;
 }
 
-.season-name {
-  flex: 1;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-main);
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.season-episodes {
-  font-size: 14px;
-  color: var(--color-text-secondary);
+.season-loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(var(--color-primary-rgb), 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+.season-content {
+  min-height: 200px;
+  position: relative;
+}
+
+.season-loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 224, 84, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.episode-card {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .episode-still {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 112.5px; // 200 * 9/16
+    background-color: #1a1f26;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .still-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-muted);
+
+      .material-symbols-outlined {
+        font-size: 40px;
+      }
+    }
+
+    .episode-number {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  .episode-info {
+    padding: 16px 20px 16px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .episode-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 12px;
+  }
+
+  .episode-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin: 0;
+  }
+
+  .episode-air-date {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .episode-overview {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    margin: 0 0 12px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .episode-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .episode-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+
+    &.tmdb {
+      color: #ff9800;
+    }
+
+    &.ct {
+      color: var(--color-primary);
+
+      .vote-count {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        margin-left: 2px;
+      }
+    }
+
+    .material-symbols-outlined {
+      font-size: 16px;
+      font-variation-settings: 'FILL' 1;
+    }
+  }
+
+  .episode-rate-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    .material-symbols-outlined {
+      font-size: 14px;
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    &.rated {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .episode-card {
+    grid-template-columns: 1fr;
+
+    .episode-info {
+      padding: 16px;
+    }
+
+    .episode-still {
+      aspect-ratio: 16/9;
+    }
+  }
 }
 
 // Cast Section

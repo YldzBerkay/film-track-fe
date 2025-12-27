@@ -1,10 +1,12 @@
 import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TMDBService, TMDBTvShowDetails } from '../../../core/services/tmdb.service';
+import { TMDBService, TMDBTvShowDetails, TMDBSeasonDetails } from '../../../core/services/tmdb.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { WatchedListService } from '../../../core/services/watched-list.service';
+import { EpisodeRatingService } from '../../../core/services/episode-rating.service';
+import { SeasonRatingService } from '../../../core/services/season-rating.service';
 import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
 import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate-dialog.component';
 
@@ -25,13 +27,17 @@ export class TvShowDetailComponent implements OnInit {
   private activityService = inject(ActivityService);
   private authService = inject(AuthService);
   private watchedListService = inject(WatchedListService);
+  private episodeRatingService = inject(EpisodeRatingService);
+  private seasonRatingService = inject(SeasonRatingService);
   private location = inject(Location);
 
   tvShow = signal<TMDBTvShowDetails | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
   isLoggedIn = signal(false);
-  selectedSeason = signal<number>(1);
+  selectedSeason = signal<number | null>(null);
+  seasonDetails = signal<TMDBSeasonDetails | null>(null);
+  isSeasonLoading = signal(false);
 
   // Rating & Watched state
   userRating = signal<number | null>(null);
@@ -42,6 +48,20 @@ export class TvShowDetailComponent implements OnInit {
 
   isAddToListOpen = signal(false);
   isRateDialogOpen = signal(false);
+
+  // Episode ratings (keyed by episode number for current season)
+  episodeRatings = signal<Record<number, number>>({});
+  episodeRatingDialogOpen = signal(false);
+  ratingEpisode = signal<{ seasonNumber: number; episodeNumber: number; name: string } | null>(null);
+
+  // Season ratings (keyed by season number)
+  seasonRatings = signal<Record<number, number>>({});
+  seasonRatingDialogOpen = signal(false);
+  ratingSeason = signal<{ seasonNumber: number; name: string } | null>(null);
+
+  // Public Stats for seasons and episodes
+  seasonPublicStats = signal<Record<number, { count: number; averageRating: number }>>({});
+  episodePublicStats = signal<Record<number, { count: number; averageRating: number }>>({});
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
 
@@ -73,6 +93,11 @@ export class TvShowDetailComponent implements OnInit {
     this.isRateDialogOpen.set(false);
   }
 
+  calculateTotalRuntime(show: TMDBTvShowDetails): number {
+    const avgRuntime = show.episode_run_time?.[0] || 30; // Default to 30 mins
+    return avgRuntime * (show.number_of_episodes || 0);
+  }
+
   onRate(rating: number): void {
     if (this.isRating()) return;
 
@@ -85,7 +110,7 @@ export class TvShowDetailComponent implements OnInit {
       mediaType: 'tv',
       title: show.name,
       posterPath: show.poster_path || undefined,
-      runtime: 0, // TV shows might have varying runtime, usually passed 0 or avg
+      runtime: this.calculateTotalRuntime(show),
       rating: rating,
       watchedAt: new Date().toISOString()
     }).subscribe({
@@ -112,8 +137,20 @@ export class TvShowDetailComponent implements OnInit {
       next: (response) => {
         if (response.success && response.data) {
           this.tvShow.set(response.data);
-          if (response.data.seasons && response.data.seasons.length > 0) {
-            this.selectedSeason.set(response.data.seasons[0].season_number);
+          // By default, no season is selected. Accordions are closed.
+
+          // Load stats for all seasons (bulk fetch)
+          this.loadShowSeasonStats(Number(id));
+
+          // Load user's season ratings for this show
+          if (this.isLoggedIn()) {
+            this.seasonRatingService.getUserRatingsForShow(Number(id)).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.seasonRatings.set(res.data.ratings);
+                }
+              }
+            });
           }
         } else {
           this.error.set('TV Show not found');
@@ -125,6 +162,37 @@ export class TvShowDetailComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  loadSeasonDetails(tvId: string, seasonNumber: number): void {
+    this.isSeasonLoading.set(true);
+    this.episodeRatings.set({}); // Clear previous ratings
+
+    this.tmdbService.getSeasonDetails(tvId, seasonNumber).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.seasonDetails.set(response.data);
+
+          // Load stats for all episodes in this season (bulk fetch)
+          this.loadSeasonEpisodeStats(Number(tvId), seasonNumber);
+        }
+        this.isSeasonLoading.set(false);
+      },
+      error: () => {
+        this.isSeasonLoading.set(false);
+      }
+    });
+
+    // Load user's ratings for this season (if logged in)
+    if (this.isLoggedIn()) {
+      this.episodeRatingService.getUserRatingsForSeason(Number(tvId), seasonNumber).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.episodeRatings.set(res.data.ratings);
+          }
+        }
+      });
+    }
   }
 
   checkUserStatus(tmdbId: number): void {
@@ -144,6 +212,52 @@ export class TvShowDetailComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.publicStats.set(res.data);
+        }
+      }
+    });
+  }
+
+  loadSeasonPublicStats(tvId: number, seasonNumber: number): void {
+    this.seasonRatingService.getPublicStats(tvId, seasonNumber).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.seasonPublicStats.update(prev => ({
+            ...prev,
+            [seasonNumber]: res.data
+          }));
+        }
+      }
+    });
+  }
+
+  loadShowSeasonStats(tvId: number): void {
+    this.seasonRatingService.getShowPublicStats(tvId).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.seasonPublicStats.set(res.data.stats);
+        }
+      }
+    });
+  }
+
+  loadEpisodePublicStats(tvId: number, seasonNumber: number, episodeNumber: number): void {
+    this.episodeRatingService.getPublicStats(tvId, seasonNumber, episodeNumber).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.episodePublicStats.update(prev => ({
+            ...prev,
+            [episodeNumber]: res.data
+          }));
+        }
+      }
+    });
+  }
+
+  loadSeasonEpisodeStats(tvId: number, seasonNumber: number): void {
+    this.episodeRatingService.getSeasonPublicStats(tvId, seasonNumber).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.episodePublicStats.set(res.data.stats);
         }
       }
     });
@@ -174,7 +288,12 @@ export class TvShowDetailComponent implements OnInit {
   }
 
   onSeasonSelect(seasonNumber: number): void {
-    this.selectedSeason.set(seasonNumber);
+    if (this.selectedSeason() === seasonNumber) {
+      this.selectedSeason.set(null); // Collapse if already selected
+    } else {
+      this.selectedSeason.set(seasonNumber);
+      this.loadSeasonDetails(this.tmdbId(), seasonNumber);
+    }
   }
 
   onLogClick(): void {
@@ -219,7 +338,7 @@ export class TvShowDetailComponent implements OnInit {
         mediaType: 'tv',
         title: show.name,
         posterPath: show.poster_path || undefined,
-        runtime: 0,
+        runtime: this.calculateTotalRuntime(show),
         watchedAt: new Date().toISOString()
       }).subscribe({
         next: (res) => {
@@ -250,6 +369,145 @@ export class TvShowDetailComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  openEpisodeRateDialog(episode: { episode_number: number; name: string }): void {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const seasonNum = this.selectedSeason();
+    if (seasonNum === null) return;
+
+    this.ratingEpisode.set({
+      seasonNumber: seasonNum,
+      episodeNumber: episode.episode_number,
+      name: episode.name
+    });
+    this.episodeRatingDialogOpen.set(true);
+  }
+
+  closeEpisodeRateDialog(): void {
+    this.episodeRatingDialogOpen.set(false);
+    this.ratingEpisode.set(null);
+  }
+
+  onRateEpisode(rating: number): void {
+    const ep = this.ratingEpisode();
+    if (!ep) return;
+
+    const wasAlreadyRated = !!this.episodeRatings()[ep.episodeNumber];
+    const oldRating = this.episodeRatings()[ep.episodeNumber];
+
+    this.episodeRatingService.rateEpisode(
+      Number(this.tmdbId()),
+      ep.seasonNumber,
+      ep.episodeNumber,
+      rating
+    ).subscribe({
+      next: (res) => {
+        if (res.success) {
+          // Update local ratings
+          const current = this.episodeRatings();
+          this.episodeRatings.set({
+            ...current,
+            [ep.episodeNumber]: rating
+          });
+
+          // Optimistically update episode public stats
+          const currentStats = this.episodePublicStats()[ep.episodeNumber];
+          if (currentStats) {
+            const newCount = wasAlreadyRated ? currentStats.count : currentStats.count + 1;
+            const oldTotal = currentStats.averageRating * currentStats.count;
+            const newTotal = wasAlreadyRated
+              ? oldTotal - oldRating + rating
+              : oldTotal + rating;
+            const newAvg = Math.round((newTotal / newCount) * 10) / 10;
+
+            this.episodePublicStats.update(prev => ({
+              ...prev,
+              [ep.episodeNumber]: { count: newCount, averageRating: newAvg }
+            }));
+          } else {
+            this.episodePublicStats.update(prev => ({
+              ...prev,
+              [ep.episodeNumber]: { count: 1, averageRating: rating }
+            }));
+          }
+        }
+        this.closeEpisodeRateDialog();
+      },
+      error: () => {
+        this.closeEpisodeRateDialog();
+      }
+    });
+  }
+
+  openSeasonRateDialog(season: { season_number: number; name: string }, event: Event): void {
+    event.stopPropagation(); // Prevent accordion toggle
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.ratingSeason.set({
+      seasonNumber: season.season_number,
+      name: season.name
+    });
+    this.seasonRatingDialogOpen.set(true);
+  }
+
+  closeSeasonRateDialog(): void {
+    this.seasonRatingDialogOpen.set(false);
+    this.ratingSeason.set(null);
+  }
+
+  onRateSeason(rating: number): void {
+    const s = this.ratingSeason();
+    if (!s) return;
+
+    const wasAlreadyRated = !!this.seasonRatings()[s.seasonNumber];
+    const oldRating = this.seasonRatings()[s.seasonNumber];
+
+    this.seasonRatingService.rateSeason(
+      Number(this.tmdbId()),
+      s.seasonNumber,
+      rating
+    ).subscribe({
+      next: (res) => {
+        if (res.success) {
+          const current = this.seasonRatings();
+          this.seasonRatings.set({
+            ...current,
+            [s.seasonNumber]: rating
+          });
+
+          // Optimistically update season public stats
+          const currentStats = this.seasonPublicStats()[s.seasonNumber];
+          if (currentStats) {
+            const newCount = wasAlreadyRated ? currentStats.count : currentStats.count + 1;
+            const oldTotal = currentStats.averageRating * currentStats.count;
+            const newTotal = wasAlreadyRated
+              ? oldTotal - oldRating + rating
+              : oldTotal + rating;
+            const newAvg = Math.round((newTotal / newCount) * 10) / 10;
+
+            this.seasonPublicStats.update(prev => ({
+              ...prev,
+              [s.seasonNumber]: { count: newCount, averageRating: newAvg }
+            }));
+          } else {
+            this.seasonPublicStats.update(prev => ({
+              ...prev,
+              [s.seasonNumber]: { count: 1, averageRating: rating }
+            }));
+          }
+        }
+        this.closeSeasonRateDialog();
+      },
+      error: () => {
+        this.closeSeasonRateDialog();
+      }
+    });
   }
 }
 

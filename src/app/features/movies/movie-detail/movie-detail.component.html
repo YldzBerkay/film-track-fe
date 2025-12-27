@@ -74,9 +74,8 @@
               <span class="material-symbols-outlined">{{ userRating() ? 'star' : 'star_rate' }}</span>
               {{ userRating() ? ('details.rated' | translate:{rating: userRating()!}) : ('details.rate' | translate) }}
             </button>
-            <button class="btn-secondary" (click)="onAddToList()">
+            <button class="btn-icon" (click)="onAddToList()">
               <span class="material-symbols-outlined">bookmark_add</span>
-              {{ 'details.addToList' | translate }}
             </button>
             <button class="btn-icon">
               <span class="material-symbols-outlined">share</span>

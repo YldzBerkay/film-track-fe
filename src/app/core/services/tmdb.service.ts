@@ -88,6 +88,7 @@ export interface TMDBMovieDetails extends TMDBMovie {
 export interface TMDBTvShowDetails extends TMDBTvShow {
   number_of_seasons: number;
   number_of_episodes: number;
+  episode_run_time: number[];
   status?: string;
   vote_average?: number;
   vote_count?: number;
@@ -107,6 +108,7 @@ export interface TMDBTvShowDetails extends TMDBTvShow {
     episode_count: number;
     poster_path: string | null;
     air_date: string;
+    vote_average?: number;
   }>;
   credits?: {
     cast: Array<{

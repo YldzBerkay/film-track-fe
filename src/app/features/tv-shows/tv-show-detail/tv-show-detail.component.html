@@ -49,16 +49,15 @@
             <span class="meta-item">{{ showData.genres[0].name }}</span>
             }
           </div>
-          @if (publicStats()) {
           <div class="rating-section internal-rating">
             <span class="rating-label">CineTrack</span>
             <div class="rating-content">
-              <span class="rating-value">{{ publicStats()!.count > 0 ? publicStats()!.averageRating.toFixed(1) : '?'
+              <span class="rating-value">{{ (publicStats()?.count || 0) > 0 ? publicStats()?.averageRating?.toFixed(1) :
+                '?'
                 }}</span>
-              <span class="rating-count">({{ publicStats()!.count }} {{ 'details.votes' | translate }})</span>
+              <span class="rating-count">({{ publicStats()?.count || 0 }} {{ 'details.votes' | translate }})</span>
             </div>
           </div>
-          }
           @if (showData.vote_average) {
           <div class="rating-section tmdb-rating">
             <span class="rating-label">TMDB</span>
@@ -81,9 +80,8 @@
               <span class="material-symbols-outlined">{{ userRating() ? 'star' : 'star_rate' }}</span>
               {{ userRating() ? ('details.rated' | translate:{rating: userRating()!}) : ('details.rate' | translate) }}
             </button>
-            <button class="btn-secondary" (click)="onAddToList()">
+            <button class="btn-icon" (click)="onAddToList()">
               <span class="material-symbols-outlined">bookmark_add</span>
-              {{ 'details.addToList' | translate }}
             </button>
             <button class="btn-icon">
               <span class="material-symbols-outlined">share</span>
@@ -107,21 +105,115 @@
         </section>
         }
 
-        <!-- Seasons -->
+        <!-- Seasons Accordion -->
         @if (showData.seasons && showData.seasons.length > 0) {
         <section class="section">
           <h2 class="section-title">{{ 'details.seasons' | translate }}</h2>
-          <div class="seasons-tabs">
+          <div class="seasons-accordion">
             @for (season of showData.seasons; track season.id) {
-            <button class="season-tab" [class.active]="selectedSeason() === season.season_number"
-              (click)="onSeasonSelect(season.season_number)" type="button">
-              <span class="season-number">S{{ season.season_number }}</span>
-              @if (season.name) {
-              <span class="season-name">{{ season.name }}</span>
+            <div class="accordion-item" [class.active]="selectedSeason() === season.season_number">
+              <button class="accordion-header" (click)="onSeasonSelect(season.season_number)" type="button">
+                <div class="header-left">
+                  <span class="season-number">S{{ season.season_number }}</span>
+                  @if (season.name) {
+                  <span class="season-name">{{ season.name }}</span>
+                  }
+                </div>
+                <div class="header-right">
+                  @if (season.vote_average) {
+                  <span class="season-rating tmdb" [title]="'TMDB Rating'">
+                    <span class="material-symbols-outlined">star</span>
+                    {{ season.vote_average.toFixed(1) }}
+                  </span>
+                  }
+                  @if (season.season_number !== 0) {
+                  <span class="season-rating ct" [title]="'CineTrack Rating'">
+                    <span class="material-symbols-outlined">star</span>
+                    {{ seasonPublicStats()[season.season_number]?.count ?
+                    seasonPublicStats()[season.season_number].averageRating : '?' }}
+                    <span class="vote-count">({{ seasonPublicStats()[season.season_number]?.count || 0 }})</span>
+                  </span>
+                  <button class="season-rate-btn" [class.rated]="seasonRatings()[season.season_number]"
+                    (click)="openSeasonRateDialog(season, $event)" type="button">
+                    <span class="material-symbols-outlined">{{ seasonRatings()[season.season_number] ? 'star' :
+                      'star_rate' }}</span>
+                    @if (seasonRatings()[season.season_number]) {
+                    <span>{{ seasonRatings()[season.season_number] }}/10</span>
+                    } @else {
+                    <span>{{ 'details.rate' | translate }}</span>
+                    }
+                  </button>
+                  }
+                  <span class="season-episodes">{{ 'details.seasonEpisodes' | translate:{count: season.episode_count}
+                    }}</span>
+                  <span class="material-symbols-outlined expand-icon">{{ selectedSeason() === season.season_number ?
+                    'expand_less' : 'expand_more' }}</span>
+                </div>
+              </button>
+
+              @if (selectedSeason() === season.season_number) {
+              <div class="accordion-panel">
+                @if (isSeasonLoading()) {
+                <div class="season-loading">
+                  <div class="spinner"></div>
+                </div>
+                } @else if (seasonDetails()) {
+                <div class="episodes-list">
+                  @for (episode of seasonDetails()!.episodes; track episode.id) {
+                  <div class="episode-card">
+                    <div class="episode-still">
+                      @if (episode.still_path) {
+                      <img [src]="tmdbService.getPosterUrl(episode.still_path, 'w300')" [alt]="episode.name" />
+                      } @else {
+                      <div class="still-placeholder">
+                        <span class="material-symbols-outlined">movie</span>
+                      </div>
+                      }
+                      <div class="episode-number">E{{ episode.episode_number }}</div>
+                    </div>
+                    <div class="episode-info">
+                      <div class="episode-header">
+                        <h4 class="episode-name">{{ episode.name }}</h4>
+                        <span class="episode-air-date">{{ episode.air_date | date:'mediumDate' }}</span>
+                      </div>
+                      @if (episode.overview) {
+                      <p class="episode-overview">{{ episode.overview }}</p>
+                      }
+                      <div class="episode-meta">
+                        @if (episode.vote_average) {
+                        <span class="episode-rating tmdb">
+                          <span class="material-symbols-outlined">star</span>
+                          {{ episode.vote_average.toFixed(1) }}
+                        </span>
+                        }
+
+                        <span class="episode-rating ct" [title]="'CineTrack Rating'">
+                          <span class="material-symbols-outlined">star</span>
+                          {{ episodePublicStats()[episode.episode_number]?.count ?
+                          episodePublicStats()[episode.episode_number].averageRating : '?' }}
+                          <span class="vote-count">({{ episodePublicStats()[episode.episode_number]?.count || 0
+                            }})</span>
+                        </span>
+
+                        <button class="episode-rate-btn" [class.rated]="episodeRatings()[episode.episode_number]"
+                          (click)="openEpisodeRateDialog(episode)" type="button">
+                          <span class="material-symbols-outlined">{{ episodeRatings()[episode.episode_number] ? 'star' :
+                            'star_rate' }}</span>
+                          @if (episodeRatings()[episode.episode_number]) {
+                          <span>{{ episodeRatings()[episode.episode_number] }}/10</span>
+                          } @else {
+                          <span>{{ 'details.rate' | translate }}</span>
+                          }
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+                }
+              </div>
               }
-              <span class="season-episodes">{{ 'details.seasonEpisodes' | translate:{count: season.episode_count}
-                }}</span>
-            </button>
+            </div>
             }
           </div>
         </section>
@@ -223,7 +315,7 @@
         <div class="info-box">
           <h3 class="info-title">{{ 'details.crew' | translate }}</h3>
           <div class="crew-list">
-            @for (member of showData.credits.crew.slice(0, 5); track member.id) {
+            @for (member of showData.credits.crew.slice(0, 5); track $index) {
             <div class="crew-item">
               <span class="crew-name">{{ member.name }}</span>
               <span class="crew-job">{{ member.job }}</span>
@@ -245,5 +337,19 @@
 <app-rate-dialog [isOpen]="isRateDialogOpen()" [title]="tvShow()!.name" [initialRating]="userRating()"
   (close)="closeRateDialog()" (save)="onRate($event)">
 </app-rate-dialog>
+
+@if (ratingEpisode()) {
+<app-rate-dialog [isOpen]="episodeRatingDialogOpen()" [title]="ratingEpisode()!.name"
+  [initialRating]="episodeRatings()[ratingEpisode()!.episodeNumber] || null" (close)="closeEpisodeRateDialog()"
+  (save)="onRateEpisode($event)">
+</app-rate-dialog>
+}
+
+@if (ratingSeason()) {
+<app-rate-dialog [isOpen]="seasonRatingDialogOpen()" [title]="ratingSeason()!.name"
+  [initialRating]="seasonRatings()[ratingSeason()!.seasonNumber] || null" (close)="closeSeasonRateDialog()"
+  (save)="onRateSeason($event)">
+</app-rate-dialog>
+}
 }
 }
