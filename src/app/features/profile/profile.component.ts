@@ -135,21 +135,18 @@ export class ProfileComponent implements OnInit {
   showEditListDialog = signal(false);
   selectedListForEdit = signal<Watchlist | null>(null);
 
-  // Flag to prevent duplicate API calls on initial load
-  private hasInitialized = false;
+  private previousLanguage = this.languageService.language();
 
   constructor() {
     effect(() => {
       // Track language changes
       const currentLang = this.languageService.language();
 
-      // Skip first run - ngOnInit handles initial load
-      if (!this.hasInitialized) {
-        return;
-      }
-
       // Only reload on actual language changes after initialization
-      this.reloadLanguageDependentContent();
+      if (currentLang !== this.previousLanguage) {
+        this.previousLanguage = currentLang;
+        this.reloadLanguageDependentContent();
+      }
     });
   }
 
@@ -206,9 +203,6 @@ export class ProfileComponent implements OnInit {
       this.loadMoodRecommendations();
       this.loadLists();
     }
-
-    // Mark as initialized so language effect can trigger future reloads
-    this.hasInitialized = true;
   }
 
   loadProfile(username: string): void {
@@ -330,7 +324,7 @@ export class ProfileComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: ''
     });
   }
 
@@ -458,7 +452,8 @@ export class ProfileComponent implements OnInit {
   }
 
   loadWatchedList(): void {
-    this.watchedListService.getWatchedList().subscribe({
+    const limit = this.activeTab() === 'profile' ? 10 : undefined;
+    this.watchedListService.getWatchedList(limit).subscribe({
       next: (response) => {
         if (response.success && response.data.watchedList) {
           this.watched.set(response.data.watchedList);
@@ -469,11 +464,13 @@ export class ProfileComponent implements OnInit {
   }
 
   loadLists(): void {
+    const limit = this.activeTab() === 'profile' ? 10 : undefined;
+
     // Load watched list
     this.loadWatchedList();
 
     // Load default watchlist
-    this.watchlistService.getDefaultWatchlist().subscribe({
+    this.watchlistService.getDefaultWatchlist(limit).subscribe({
       next: (response) => {
         if (response.success && response.data.watchlist) {
           this.defaultWatchlist.set(response.data.watchlist);
@@ -483,7 +480,7 @@ export class ProfileComponent implements OnInit {
     });
 
     // Load all watchlists to get custom lists
-    this.watchlistService.getWatchlists().subscribe({
+    this.watchlistService.getWatchlists(limit).subscribe({
       next: (response) => {
         if (response.success && response.data.watchlists) {
           const customLists = response.data.watchlists.filter(l => !l.isDefault);

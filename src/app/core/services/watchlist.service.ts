@@ -58,8 +58,11 @@ export class WatchlistService {
     /**
      * Get all watchlists for the current user
      */
-    getWatchlists(): Observable<WatchlistsResponse> {
-        const params = new HttpParams().set('lang', this.languageService.langCode());
+    getWatchlists(limit?: number): Observable<WatchlistsResponse> {
+        let params = new HttpParams().set('lang', this.languageService.langCode());
+        if (limit) {
+            params = params.set('limit', limit.toString());
+        }
         return this.http.get<WatchlistsResponse>(this.apiUrl, { params });
     }
 
