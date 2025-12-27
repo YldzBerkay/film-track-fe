@@ -16,6 +16,7 @@ export interface Watchlist {
     name: string;
     icon?: string;
     isDefault: boolean;
+    privacyStatus: number;  // 0=everyone, 1=friends, 2=nobody
     items: WatchlistItem[];
     createdAt: string;
     updatedAt: string;
@@ -118,6 +119,23 @@ export class WatchlistService {
     ): Observable<CheckWatchlistResponse> {
         return this.http.get<CheckWatchlistResponse>(
             `${this.apiUrl}/check/${tmdbId}?mediaType=${mediaType}`
+        );
+    }
+
+    /**
+     * Update privacy status of a watchlist
+     */
+    updatePrivacy(watchlistId: string, privacyStatus: number): Observable<WatchlistResponse> {
+        return this.http.patch<WatchlistResponse>(
+            `${this.apiUrl}/${watchlistId}/privacy`,
+            { privacyStatus }
+        );
+    }
+
+    reorderItems(watchlistId: string, orderedTmdbIds: number[]): Observable<WatchlistResponse> {
+        return this.http.patch<WatchlistResponse>(
+            `${this.apiUrl}/${watchlistId}/reorder`,
+            { orderedTmdbIds }
         );
     }
 }

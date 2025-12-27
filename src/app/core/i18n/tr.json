@@ -33,7 +33,9 @@
         "emptyWatchlistHint": "Daha sonra izlemek istediğiniz film ve dizileri ekleyin",
         "itemAdded": "İzleme listesine eklendi",
         "itemRemoved": "İzleme listesinden kaldırıldı",
-        "items": "içerik"
+        "items": "içerik",
+        "empty": "İzleme listeniz boş",
+        "emptyList": "Bu liste boş"
     },
     "watched": {
         "title": "İzlediklerim",
@@ -51,7 +53,8 @@
         "rateThis": "Puanla",
         "yourRating": "Puanınız",
         "hours": "saat",
-        "minutes": "dakika"
+        "minutes": "dakika",
+        "empty": "Henüz hiçbir şey izlemediniz"
     },
     "profile": {
         "profile": "Profil",
@@ -120,7 +123,14 @@
         "noFavoriteMovies": "Henüz favori film yok.",
         "noFavoriteTvShows": "Henüz favori dizi yok.",
         "dragToReorder": "Sıralamak için sürükleyin",
-        "removeFromFavorites": "Favorilerden kaldır"
+        "removeFromFavorites": "Favorilerden kaldır",
+        "sliderView": "Slider Görünümü",
+        "listView": "Liste Görünümü"
+    },
+    "privacy": {
+        "everyone": "Herkes",
+        "friends": "Sadece Arkadaşlar",
+        "nobody": "Sadece Ben"
     },
     "card": {
         "matchScore": "Eşleşme Skoru: %{{score}}"

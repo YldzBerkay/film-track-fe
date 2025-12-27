@@ -18,6 +18,7 @@ export interface WatchedList {
     userId: string;
     name: string;
     isDefault: boolean;
+    privacyStatus: number; // 0=everyone, 1=friends, 2=nobody
     items: WatchedItem[];
     totalRuntime: number;
     createdAt: string;
@@ -135,5 +136,22 @@ export class WatchedListService {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
         return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+
+    /**
+     * Update the privacy status of the watched list
+     */
+    updatePrivacy(privacyStatus: number): Observable<WatchedListResponse> {
+        return this.http.patch<WatchedListResponse>(
+            `${this.apiUrl}/privacy`,
+            { privacyStatus }
+        );
+    }
+
+    reorderItems(orderedTmdbIds: number[]): Observable<WatchedListResponse> {
+        return this.http.patch<WatchedListResponse>(
+            `${this.apiUrl}/reorder`,
+            { orderedTmdbIds }
+        );
     }
 }

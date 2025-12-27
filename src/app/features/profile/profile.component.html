@@ -135,10 +135,6 @@
         type="button">
         <span>{{ 'profile.profile' | translate }}</span>
       </button>
-      <button class="tab-item" [class.active]="activeTab() === 'watchlist'" (click)="onTabChange('watchlist')"
-        type="button">
-        <span>{{ 'profile.watchlistTab' | translate }}</span>
-      </button>
       <button class="tab-item" [class.active]="activeTab() === 'lists'" (click)="onTabChange('lists')" type="button">
         <span>{{ 'profile.listsTab' | translate }}</span>
       </button>
@@ -153,209 +149,524 @@
   </div>
 
   <!-- Content Section -->
-  <div class="content-section">
-    @if (activeTab() === 'profile') {
-    <!-- Mood Charts Section -->
-    @if (isOwnProfile()) {
-    <div class="mood-section">
-      <div class="mood-charts-grid">
-        <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
-        <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
-      </div>
-    </div>
 
-    <!-- Badges Section -->
-    <div class="badges-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined section-icon">workspace_premium</span>
-          {{ 'profile.moodBadges' | translate }}
-        </h2>
-      </div>
-      @if (isLoadingBadges()) {
-      <div class="badges-loading">
-        <div class="spinner"></div>
-      </div>
-      } @else if (badges().length > 0) {
-      <div class="badges-slider-container">
-        <button class="slider-btn prev" (click)="scrollBadges('left')">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-
-        <div class="badges-slider" #badgesContainer>
-          @for (badge of badges(); track badge.id) {
-          <div class="badge-item" [class.earned]="badge.earnedAt" [title]="badge.description">
-            <span class="badge-icon">{{ badge.icon }}</span>
-            <span class="badge-name">{{ badge.name }}</span>
-            @if (!badge.earnedAt && badge.progress !== undefined && badge.threshold) {
-            <div class="badge-progress">
-              <div class="badge-progress-bar" [style.width.%]="(badge.progress / badge.threshold) * 100"></div>
-            </div>
-            <span class="badge-progress-text">{{ badge.progress }}/{{ badge.threshold }}</span>
-            }
-          </div>
-          }
+  <div class="content-container">
+    <div class="content-section">
+      @if (activeTab() === 'profile') {
+      <!-- Mood Charts Section -->
+      @if (isOwnProfile()) {
+      <div class="mood-section">
+        <div class="mood-charts-grid">
+          <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
+          <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
         </div>
-
-        <button class="slider-btn next" (click)="scrollBadges('right')">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
       </div>
-      } @else {
-      <div class="badges-empty">
-        <p>{{ 'profile.earnBadgesHint' | translate }}</p>
-      </div>
-      }
-    </div>
 
-    <!-- Mood Recommendations Section -->
-    <div class="badges-section recommendations-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined section-icon">movie_filter</span>
-          {{ 'profile.forYourMood' | translate }}
-        </h2>
-
-        <!-- Controls -->
-        <div class="mood-controls">
-          <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()">
-            <span class="material-symbols-outlined">{{ moodRecsMode() === 'match' ? 'favorite' : 'swap_horiz' }}</span>
-            {{ (moodRecsMode() === 'match' ? 'profile.match' : 'profile.shift') | translate }}
+      <!-- Badges Section -->
+      <div class="badges-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">workspace_premium</span>
+            {{ 'profile.moodBadges' | translate }}
+          </h2>
+        </div>
+        @if (isLoadingBadges()) {
+        <div class="badges-loading">
+          <div class="spinner"></div>
+        </div>
+        } @else if (badges().length > 0) {
+        <div class="badges-slider-container">
+          <button class="slider-btn prev" (click)="scrollBadges('left')">
+            <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <button class="mood-toggle-btn" [class.active]="includeWatched()" (click)="toggleIncludeWatched()">
-            <span class="material-symbols-outlined">{{ includeWatched() ? 'visibility' : 'visibility_off' }}</span>
-            {{ (includeWatched() ? 'profile.all' : 'profile.unwatched') | translate }}
-          </button>
-        </div>
-      </div>
-      @if (isLoadingRecommendations()) {
-      <div class="badges-loading">
-        <div class="spinner"></div>
-      </div>
-      } @else if (moodRecommendations().length > 0) {
-      <div class="badges-slider-container">
-        <button class="slider-btn prev" (click)="scrollRecommendations('left')">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
 
-        <div class="badges-slider" #recommendationsContainer>
-          @for (rec of moodRecommendations(); track rec.tmdbId) {
-          <div class="recommendation-card" (click)="router.navigate(['/movies', rec.tmdbId])">
-            <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="rec-poster" />
-            <div class="rec-overlay">
-              <span class="material-symbols-outlined">play_circle</span>
-            </div>
-            <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
-              {{ rec.score }}%
-            </div>
-          </div>
-          }
-        </div>
-
-        <button class="slider-btn next" (click)="scrollRecommendations('right')">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-      </div>
-      } @else {
-      <div class="badges-empty">
-        <p>{{ 'profile.noMoodRecs' | translate }}</p>
-      </div>
-      }
-    </div>
-    }
-    <!-- Director's Cut (Movies) Section -->
-    @if (profileData.user.favoriteMovies.length > 0) {
-    <div class="favorites-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined section-icon">movie</span>
-          {{ 'profile.directorsMovieCut' | translate }}
-        </h2>
-        @if (isOwnProfile()) {
-        <button class="section-edit-btn" (click)="openEditFavorites('movies')">
-          <span class="material-symbols-outlined">edit</span>
-          {{ 'profile.edit' | translate }}
-        </button>
-        }
-      </div>
-      <div class="favorites-grid">
-        @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
-        <div class="favorite-item" (click)="router.navigate(['/movies', movie.tmdbId])">
-          <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title" class="favorite-poster" />
-          <div class="favorite-overlay">
-            <span class="material-symbols-outlined">visibility</span>
-          </div>
-        </div>
-        }
-      </div>
-    </div>
-    }
-
-    <!-- Director's Cut (TV Shows) Section -->
-    @if (profileData.user.favoriteTvShows.length > 0) {
-    <div class="favorites-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined section-icon">tv</span>
-          {{ 'profile.directorsTvCut' | translate }}
-        </h2>
-        @if (isOwnProfile()) {
-        <button class="section-edit-btn" (click)="openEditFavorites('tv')">
-          <span class="material-symbols-outlined">edit</span>
-          {{ 'profile.edit' | translate }}
-        </button>
-        }
-      </div>
-      <div class="favorites-grid">
-        @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
-        <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
-          <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="favorite-poster" />
-          <div class="favorite-overlay">
-            <span class="material-symbols-outlined">visibility</span>
-          </div>
-        </div>
-        }
-      </div>
-    </div>
-    }
-
-    <!-- Recent Activity Section -->
-    @if (profileData.recentActivities.length > 0) {
-    <div class="activity-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined section-icon">history</span>
-          {{ 'profile.recentActivity' | translate }}
-        </h2>
-        <a class="section-view-all" href="#">
-          {{ 'profile.viewAll' | translate }}
-          <span class="material-symbols-outlined">arrow_forward</span>
-        </a>
-      </div>
-      <div class="activity-carousel">
-        @for (activity of profileData.recentActivities; track activity._id) {
-        <div class="activity-card">
-          <div class="activity-image">
-            <img [src]="tmdbService.getPosterUrl(activity.mediaPosterPath, 'w500')" [alt]="activity.mediaTitle" />
-            @if (activity.rating) {
-            <div class="activity-rating-badge">
-              <span class="material-symbols-outlined">star</span>
-              <span>{{ activity.rating.toFixed(1) }}</span>
+          <div class="badges-slider" #badgesContainer>
+            @for (badge of badges(); track badge.id) {
+            <div class="badge-item" [class.earned]="badge.earnedAt" [title]="badge.description">
+              <span class="badge-icon">{{ badge.icon }}</span>
+              <span class="badge-name">{{ badge.name }}</span>
+              @if (!badge.earnedAt && badge.progress !== undefined && badge.threshold) {
+              <div class="badge-progress">
+                <div class="badge-progress-bar" [style.width.%]="(badge.progress / badge.threshold) * 100"></div>
+              </div>
+              <span class="badge-progress-text">{{ badge.progress }}/{{ badge.threshold }}</span>
+              }
             </div>
             }
           </div>
-          <div class="activity-info">
-            <h3 class="activity-title">{{ activity.mediaTitle }}</h3>
-            <div class="activity-meta">
-              <span class="activity-time">{{ getTimeAgo(activity.createdAt) }}</span>
-            </div>
-          </div>
+
+          <button class="slider-btn next" (click)="scrollBadges('right')">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+        } @else {
+        <div class="badges-empty">
+          <p>{{ 'profile.earnBadgesHint' | translate }}</p>
         </div>
         }
       </div>
+
+      <!-- Mood Recommendations Section -->
+      <div class="badges-section recommendations-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">movie_filter</span>
+            {{ 'profile.forYourMood' | translate }}
+          </h2>
+
+          <!-- Controls -->
+          <div class="mood-controls">
+            <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()">
+              <span class="material-symbols-outlined">{{ moodRecsMode() === 'match' ? 'favorite' : 'swap_horiz'
+                }}</span>
+              {{ (moodRecsMode() === 'match' ? 'profile.match' : 'profile.shift') | translate }}
+            </button>
+            <button class="mood-toggle-btn" [class.active]="includeWatched()" (click)="toggleIncludeWatched()">
+              <span class="material-symbols-outlined">{{ includeWatched() ? 'visibility' : 'visibility_off' }}</span>
+              {{ (includeWatched() ? 'profile.all' : 'profile.unwatched') | translate }}
+            </button>
+          </div>
+        </div>
+        @if (isLoadingRecommendations()) {
+        <div class="badges-loading">
+          <div class="spinner"></div>
+        </div>
+        } @else if (moodRecommendations().length > 0) {
+        <div class="badges-slider-container">
+          <button class="slider-btn prev" (click)="scrollRecommendations('left')">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+
+          <div class="badges-slider" #recommendationsContainer>
+            @for (rec of moodRecommendations(); track rec.tmdbId) {
+            <div class="recommendation-card" (click)="router.navigate(['/movies', rec.tmdbId])">
+              <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="rec-poster" />
+              <div class="rec-overlay">
+                <span class="material-symbols-outlined">play_circle</span>
+              </div>
+              <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
+                {{ rec.score }}%
+              </div>
+            </div>
+            }
+          </div>
+
+          <button class="slider-btn next" (click)="scrollRecommendations('right')">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+        } @else {
+        <div class="badges-empty">
+          <p>{{ 'profile.noMoodRecs' | translate }}</p>
+        </div>
+        }
+      </div>
+      }
+      <!-- Director's Cut (Movies) Section -->
+      @if (profileData.user.favoriteMovies.length > 0) {
+      <div class="favorites-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">movie</span>
+            {{ 'profile.directorsMovieCut' | translate }}
+          </h2>
+          @if (isOwnProfile()) {
+          <button class="section-edit-btn" (click)="openEditFavorites('movies')">
+            <span class="material-symbols-outlined">edit</span>
+            {{ 'profile.edit' | translate }}
+          </button>
+          }
+        </div>
+        <div class="favorites-grid">
+          @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
+          <div class="favorite-item" (click)="router.navigate(['/movies', movie.tmdbId])">
+            <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title"
+              class="favorite-poster" />
+            <div class="favorite-overlay">
+              <span class="material-symbols-outlined">visibility</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Director's Cut (TV Shows) Section -->
+      @if (profileData.user.favoriteTvShows.length > 0) {
+      <div class="favorites-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">tv</span>
+            {{ 'profile.directorsTvCut' | translate }}
+          </h2>
+          @if (isOwnProfile()) {
+          <button class="section-edit-btn" (click)="openEditFavorites('tv')">
+            <span class="material-symbols-outlined">edit</span>
+            {{ 'profile.edit' | translate }}
+          </button>
+          }
+        </div>
+        <div class="favorites-grid">
+          @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
+          <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
+            <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="favorite-poster" />
+            <div class="favorite-overlay">
+              <span class="material-symbols-outlined">visibility</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Recent Activity Section -->
+      @if (profileData.recentActivities.length > 0) {
+      <div class="activity-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">history</span>
+            {{ 'profile.recentActivity' | translate }}
+          </h2>
+          <a class="section-view-all" href="#">
+            {{ 'profile.viewAll' | translate }}
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </div>
+        <div class="activity-carousel">
+          @for (activity of profileData.recentActivities; track activity._id) {
+          <div class="activity-card">
+            <div class="activity-image">
+              <img [src]="tmdbService.getPosterUrl(activity.mediaPosterPath, 'w500')" [alt]="activity.mediaTitle" />
+              @if (activity.rating) {
+              <div class="activity-rating-badge">
+                <span class="material-symbols-outlined">star</span>
+                <span>{{ activity.rating.toFixed(1) }}</span>
+              </div>
+              }
+            </div>
+            <div class="activity-info">
+              <h3 class="activity-title">{{ activity.mediaTitle }}</h3>
+              <div class="activity-meta">
+                <span class="activity-time">{{ getTimeAgo(activity.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+      } @else if (activeTab() === 'lists') {
+      <!-- Lists Tab Content -->
+      <div class="lists-tab-content">
+        <!-- View Toggle -->
+        <div class="lists-view-toggle">
+          <button class="view-toggle-btn" [class.active]="listsViewMode() === 'slider'"
+            (click)="listsViewMode.set('slider')">
+            <span class="material-symbols-outlined">view_carousel</span>
+            <span>{{ 'profile.sliderView' | translate }}</span>
+          </button>
+          <button class="view-toggle-btn" [class.active]="listsViewMode() === 'list'"
+            (click)="listsViewMode.set('list')">
+            <span class="material-symbols-outlined">list</span>
+            <span>{{ 'profile.listView' | translate }}</span>
+          </button>
+        </div>
+
+        @if (listsViewMode() === 'slider') {
+        <!-- Watched List Section -->
+        @if (watched(); as watchedList) {
+        <div class="list-card">
+          <div class="list-card-header">
+            <div class="list-card-title">
+              <span class="material-symbols-outlined list-icon">visibility</span>
+              <h3>{{ 'watched.title' | translate }}</h3>
+              <span class="list-badge">{{ watchedList.items.length }}</span>
+            </div>
+            <div class="list-card-actions">
+              @if (isOwnProfile()) {
+              <div class="privacy-dropdown-container">
+                <button class="privacy-btn" (click)="togglePrivacyDropdown('watched', $event)">
+                  <span class="material-symbols-outlined">{{ getPrivacyIcon(watchedList.privacyStatus) }}</span>
+                </button>
+                @if (activePrivacyDropdown() === 'watched') {
+                <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                  <button class="privacy-option" [class.active]="watchedList.privacyStatus === 0"
+                    (click)="updateWatchedPrivacy(0)">
+                    <span class="material-symbols-outlined">public</span>
+                    <span>{{ 'privacy.everyone' | translate }}</span>
+                  </button>
+                  <button class="privacy-option" [class.active]="watchedList.privacyStatus === 1"
+                    (click)="updateWatchedPrivacy(1)">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>{{ 'privacy.friends' | translate }}</span>
+                  </button>
+                  <button class="privacy-option" [class.active]="watchedList.privacyStatus === 2"
+                    (click)="updateWatchedPrivacy(2)">
+                    <span class="material-symbols-outlined">lock</span>
+                    <span>{{ 'privacy.nobody' | translate }}</span>
+                  </button>
+                </div>
+                }
+              </div>
+              }
+              <button class="expand-btn" routerLink="/lists/watched">
+                <span>{{ 'profile.viewAll' | translate }}</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          @if (watchedList.items.length > 0) {
+          <div class="list-slider-container">
+            <button class="slider-btn prev" (click)="scrollWatched('left')">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <div class="list-slider" #watchedContainer>
+              @for (item of watchedList.items.slice(0, 20); track item.tmdbId) {
+              <div class="list-poster-card"
+                (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
+                @if (item.posterPath) {
+                <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title" class="poster-img" />
+                } @else {
+                <div class="poster-placeholder">
+                  <span class="material-symbols-outlined">movie</span>
+                </div>
+                }
+                <div class="poster-overlay">
+                  <span class="material-symbols-outlined">play_circle</span>
+                </div>
+                @if (item.rating) {
+                <div class="poster-rating">
+                  <span class="material-symbols-outlined">star</span>
+                  {{ item.rating.toFixed(1) }}
+                </div>
+                }
+              </div>
+              }
+            </div>
+
+            <button class="slider-btn next" (click)="scrollWatched('right')">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          } @else {
+          <div class="list-empty">
+            <span class="material-symbols-outlined">movie</span>
+            <p>{{ 'watched.empty' | translate }}</p>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Default Watchlist Section -->
+        @if (defaultWatchlist(); as watchlist) {
+        <div class="list-card">
+          <div class="list-card-header">
+            <div class="list-card-title">
+              <span class="material-symbols-outlined list-icon">bookmark</span>
+              <h3>{{ 'watchlist.title' | translate }}</h3>
+              <span class="list-badge">{{ watchlist.items.length }}</span>
+            </div>
+            <div class="list-card-actions">
+              @if (isOwnProfile()) {
+              <div class="privacy-dropdown-container">
+                <button class="privacy-btn" (click)="togglePrivacyDropdown('watchlist', $event)">
+                  <span class="material-symbols-outlined">{{ getPrivacyIcon(watchlist.privacyStatus) }}</span>
+                </button>
+                @if (activePrivacyDropdown() === 'watchlist') {
+                <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                  <button class="privacy-option" [class.active]="watchlist.privacyStatus === 0"
+                    (click)="updateWatchlistPrivacy(watchlist._id, 0)">
+                    <span class="material-symbols-outlined">public</span>
+                    <span>{{ 'privacy.everyone' | translate }}</span>
+                  </button>
+                  <button class="privacy-option" [class.active]="watchlist.privacyStatus === 1"
+                    (click)="updateWatchlistPrivacy(watchlist._id, 1)">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>{{ 'privacy.friends' | translate }}</span>
+                  </button>
+                  <button class="privacy-option" [class.active]="watchlist.privacyStatus === 2"
+                    (click)="updateWatchlistPrivacy(watchlist._id, 2)">
+                    <span class="material-symbols-outlined">lock</span>
+                    <span>{{ 'privacy.nobody' | translate }}</span>
+                  </button>
+                </div>
+                }
+              </div>
+              }
+              <button class="expand-btn" routerLink="/lists/watchlist">
+                <span>{{ 'profile.viewAll' | translate }}</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          @if (watchlist.items.length > 0) {
+          <div class="list-slider-container">
+            <button class="slider-btn prev" (click)="scrollWatchlist('left')">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <div class="list-slider" #watchlistContainer>
+              @for (item of watchlist.items.slice(0, 20); track item.tmdbId) {
+              <div class="list-poster-card"
+                (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
+                @if (item.posterPath) {
+                <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title" class="poster-img" />
+                } @else {
+                <div class="poster-placeholder">
+                  <span class="material-symbols-outlined">movie</span>
+                </div>
+                }
+                <div class="poster-overlay">
+                  <span class="material-symbols-outlined">play_circle</span>
+                </div>
+              </div>
+              }
+            </div>
+
+            <button class="slider-btn next" (click)="scrollWatchlist('right')">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          } @else {
+          <div class="list-empty">
+            <span class="material-symbols-outlined">bookmark_border</span>
+            <p>{{ 'watchlist.empty' | translate }}</p>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Custom Lists Section -->
+        @for (list of customWatchlists(); track list._id) {
+        <div class="list-card">
+          <div class="list-card-header">
+            <div class="list-card-title">
+              <span class="material-symbols-outlined list-icon">{{ list.icon || 'list' }}</span>
+              <h3>{{ list.name }}</h3>
+              <span class="list-badge">{{ list.items.length }}</span>
+            </div>
+            <div class="list-card-actions">
+              @if (isOwnProfile()) {
+              <div class="privacy-dropdown-container">
+                <button class="privacy-btn" (click)="togglePrivacyDropdown(list._id, $event)">
+                  <span class="material-symbols-outlined">{{ getPrivacyIcon(list.privacyStatus) }}</span>
+                </button>
+                @if (activePrivacyDropdown() === list._id) {
+                <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                  <button class="privacy-option" [class.active]="list.privacyStatus === 0"
+                    (click)="updateWatchlistPrivacy(list._id, 0)">
+                    <span class="material-symbols-outlined">public</span>
+                    <span>{{ 'privacy.everyone' | translate }}</span>
+                  </button>
+                  <button class="privacy-option" [class.active]="list.privacyStatus === 1"
+                    (click)="updateWatchlistPrivacy(list._id, 1)">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>{{ 'privacy.friends' | translate }}</span>
+                  </button>
+                  <button class="privacy-option" [class.active]="list.privacyStatus === 2"
+                    (click)="updateWatchlistPrivacy(list._id, 2)">
+                    <span class="material-symbols-outlined">lock</span>
+                    <span>{{ 'privacy.nobody' | translate }}</span>
+                  </button>
+                </div>
+                }
+              </div>
+              }
+              <button class="expand-btn" [routerLink]="['/lists', list._id]">
+                <span>{{ 'profile.viewAll' | translate }}</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          @if (list.items.length > 0) {
+          <div class="list-slider-container">
+            <button class="slider-btn prev" (click)="scrollCustomList('list-' + list._id, 'left')">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <div class="list-slider" [id]="'list-' + list._id">
+              @for (item of list.items.slice(0, 20); track item.tmdbId) {
+              <div class="list-poster-card"
+                (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
+                @if (item.posterPath) {
+                <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title" class="poster-img" />
+                } @else {
+                <div class="poster-placeholder">
+                  <span class="material-symbols-outlined">movie</span>
+                </div>
+                }
+                <div class="poster-overlay">
+                  <span class="material-symbols-outlined">play_circle</span>
+                </div>
+              </div>
+              }
+            </div>
+
+            <button class="slider-btn next" (click)="scrollCustomList('list-' + list._id, 'right')">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          } @else {
+          <div class="list-empty">
+            <span class="material-symbols-outlined">{{ list.icon || 'list' }}</span>
+            <p>{{ 'watchlist.emptyList' | translate }}</p>
+          </div>
+          }
+        </div>
+        }
+        } @else {
+        <!-- Compact List View -->
+        <div class="lists-compact-view">
+          <!-- Watched List -->
+          @if (watched(); as watchedList) {
+          <a class="compact-list-item" routerLink="/lists/watched">
+            <div class="compact-list-icon">
+              <span class="material-symbols-outlined">visibility</span>
+            </div>
+            <div class="compact-list-info">
+              <span class="compact-list-name">{{ 'watched.title' | translate }}</span>
+              <span class="compact-list-count">{{ watchedList.items.length }} {{ 'watchlist.items' | translate }}</span>
+            </div>
+            <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
+          </a>
+          }
+
+          <!-- Default Watchlist -->
+          @if (defaultWatchlist(); as watchlist) {
+          <a class="compact-list-item" routerLink="/lists/watchlist">
+            <div class="compact-list-icon">
+              <span class="material-symbols-outlined">bookmark</span>
+            </div>
+            <div class="compact-list-info">
+              <span class="compact-list-name">{{ 'watchlist.title' | translate }}</span>
+              <span class="compact-list-count">{{ watchlist.items.length }} {{ 'watchlist.items' | translate }}</span>
+            </div>
+            <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
+          </a>
+          }
+
+          <!-- Custom Lists -->
+          @for (list of customWatchlists(); track list._id) {
+          <a class="compact-list-item" [routerLink]="['/lists', list._id]">
+            <div class="compact-list-icon">
+              <span class="material-symbols-outlined">{{ list.icon || 'list' }}</span>
+            </div>
+            <div class="compact-list-info">
+              <span class="compact-list-name">{{ list.name }}</span>
+              <span class="compact-list-count">{{ list.items.length }} {{ 'watchlist.items' | translate }}</span>
+            </div>
+            <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
+          </a>
+          }
+        </div>
+        }
+      </div>
+      }
     </div>
-    }
-    }
   </div>
 </div>
 

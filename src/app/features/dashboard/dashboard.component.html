@@ -496,9 +496,6 @@
     </div>
   </div>
 </div>
-<app-create-list-dialog 
-  [isOpen]="showCreateListDialog()"
-  [isLoading]="isCreatingList()"
-  (close)="closeCreateListDialog()"
-  (create)="handleCreateList($event)">
+<app-create-list-dialog [isOpen]="showCreateListDialog()" [isLoading]="isCreatingList()"
+  (close)="closeCreateListDialog()" (create)="handleCreateList($event)">
 </app-create-list-dialog>

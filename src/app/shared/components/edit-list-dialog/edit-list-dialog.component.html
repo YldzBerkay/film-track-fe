@@ -1,0 +1,78 @@
+@if (isOpen()) {
+<div class="dialog-overlay" (click)="closeDialog($event)">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+            <div class="header-title">
+                <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
+                <h2>{{ listTitle() }}</h2>
+            </div>
+            <button class="close-btn" (click)="closeDialog()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            @if (items().length === 0) {
+            <div class="empty-state">
+                <span class="material-symbols-outlined empty-icon">{{ listIcon() }}</span>
+                <p>{{ 'watchlist.emptyList' | translate }}</p>
+            </div>
+            } @else {
+            <div class="drag-list" cdkDropList (cdkDropListDropped)="drop($event)">
+                @for (item of items(); track item.tmdbId) {
+                <div class="drag-item" cdkDrag>
+                    <div class="drag-handle" cdkDragHandle>
+                        <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    @if (item.posterPath) {
+                    <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w92')" class="item-poster" alt="poster">
+                    } @else {
+                    <div class="item-poster-placeholder">
+                        <span class="material-symbols-outlined">movie</span>
+                    </div>
+                    }
+                    <div class="item-info">
+                        <div class="item-title">{{ item.title }}</div>
+                        <div class="item-meta">
+                            <span class="media-type">{{ getMediaTypeLabel(item.mediaType) }}</span>
+                            @if (item.rating) {
+                            <span class="rating">
+                                <span class="material-symbols-outlined">star</span>
+                                {{ item.rating.toFixed(1) }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+                    <button class="remove-btn" (click)="removeItem(item.tmdbId)">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                    <!-- Drag Preview -->
+                    <div *cdkDragPreview class="drag-preview">
+                        @if (item.posterPath) {
+                        <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w92')" class="preview-poster">
+                        }
+                        <span class="preview-title">{{ item.title }}</span>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+
+        <div class="dialog-footer">
+            <p class="help-text">{{ 'profile.dragToReorder' | translate }}</p>
+            <div class="actions">
+                <button class="cancel-btn" (click)="closeDialog()">{{ 'profile.cancel' | translate }}</button>
+                <button class="save-btn" (click)="saveChanges()" [disabled]="isSaving()">
+                    @if (isSaving()) {
+                    <span class="spinner-small"></span>
+                    {{ 'profile.saving' | translate }}
+                    } @else {
+                    {{ 'profile.saveChanges' | translate }}
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}

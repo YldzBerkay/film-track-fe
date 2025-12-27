@@ -33,7 +33,9 @@
         "emptyWatchlistHint": "Add movies and TV shows you want to watch later",
         "itemAdded": "Added to watchlist",
         "itemRemoved": "Removed from watchlist",
-        "items": "items"
+        "items": "items",
+        "empty": "Your watchlist is empty",
+        "emptyList": "This list is empty"
     },
     "watched": {
         "title": "Watched",
@@ -51,7 +53,8 @@
         "rateThis": "Rate this",
         "yourRating": "Your Rating",
         "hours": "hours",
-        "minutes": "minutes"
+        "minutes": "minutes",
+        "empty": "You haven't watched anything yet"
     },
     "profile": {
         "profile": "Profile",
@@ -120,7 +123,14 @@
         "noFavoriteMovies": "No favorite movies yet.",
         "noFavoriteTvShows": "No favorite TV shows yet.",
         "dragToReorder": "Drag items to reorder",
-        "removeFromFavorites": "Remove from favorites"
+        "removeFromFavorites": "Remove from favorites",
+        "sliderView": "Slider View",
+        "listView": "List View"
+    },
+    "privacy": {
+        "everyone": "Everyone",
+        "friends": "Friends Only",
+        "nobody": "Only Me"
     },
     "card": {
         "matchScore": "Match Score: {{score}}%"

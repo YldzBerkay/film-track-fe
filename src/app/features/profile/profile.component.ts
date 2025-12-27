@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef, effect, HostListener } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -15,6 +15,8 @@ import { EditFavoritesDialogComponent } from '../../shared/components/edit-favor
 import { FavoritesService, FavoriteMovie, FavoriteTvShow } from '../../core/services/favorites.service';
 import { LanguageService } from '../../core/services/language.service';
 import { TranslationService, TranslatePipe } from '../../core/i18n';
+import { WatchedListService, WatchedList } from '../../core/services/watched-list.service';
+import { WatchlistService, Watchlist } from '../../core/services/watchlist.service';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
@@ -37,6 +39,8 @@ export class ProfileComponent implements OnInit {
   favoritesService = inject(FavoritesService);
   languageService = inject(LanguageService);
   translationService = inject(TranslationService);
+  private watchedListService = inject(WatchedListService);
+  private watchlistService = inject(WatchlistService);
 
   profile = signal<UserProfile | null>(null);
   isLoading = signal(true);
@@ -52,6 +56,17 @@ export class ProfileComponent implements OnInit {
   isLoadingRecommendations = signal(false);
   moodRecsMode = signal<'match' | 'shift'>('match');
   includeWatched = signal(false);
+
+  // Watched list for Lists tab
+  watched = signal<WatchedList | null>(null);
+
+  // Watchlists for Lists tab
+  defaultWatchlist = signal<Watchlist | null>(null);
+  customWatchlists = signal<Watchlist[]>([]);
+  listsViewMode = signal<'slider' | 'list'>('slider');
+
+  // Privacy dropdown state
+  activePrivacyDropdown = signal<string | null>(null);  // 'watched', 'watchlist', or list ID
 
   // Follow state
   isFollowing = signal(false);
@@ -132,11 +147,18 @@ export class ProfileComponent implements OnInit {
       this.loadProfile(username);
     }
 
+    // Read tab from query params
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam && ['profile', 'lists', 'reviews', 'likes'].includes(tabParam)) {
+      this.activeTab.set(tabParam as TabType);
+    }
+
     // Load mood data if viewing own profile
     if (this.isOwnProfile()) {
       this.loadMoodTimeline();
       this.loadBadges();
       this.loadMoodRecommendations();
+      this.loadLists();
     }
   }
 
@@ -255,6 +277,12 @@ export class ProfileComponent implements OnInit {
 
   onTabChange(tab: TabType): void {
     this.activeTab.set(tab);
+    // Update URL query params without navigation
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   getTimeAgo(dateString: string): string {
@@ -301,6 +329,136 @@ export class ProfileComponent implements OnInit {
         this.isLoadingMood.set(false);
       }
     });
+  }
+
+  loadWatchedList(): void {
+    this.watchedListService.getWatchedList().subscribe({
+      next: (response) => {
+        if (response.success && response.data.watchedList) {
+          this.watched.set(response.data.watchedList);
+        }
+      },
+      error: (err) => console.error('Failed to load watched list', err)
+    });
+  }
+
+  loadLists(): void {
+    // Load watched list
+    this.loadWatchedList();
+
+    // Load default watchlist
+    this.watchlistService.getDefaultWatchlist().subscribe({
+      next: (response) => {
+        if (response.success && response.data.watchlist) {
+          this.defaultWatchlist.set(response.data.watchlist);
+        }
+      },
+      error: (err) => console.error('Failed to load default watchlist', err)
+    });
+
+    // Load all watchlists to get custom lists
+    this.watchlistService.getWatchlists().subscribe({
+      next: (response) => {
+        if (response.success && response.data.watchlists) {
+          const customLists = response.data.watchlists.filter(l => !l.isDefault);
+          this.customWatchlists.set(customLists);
+        }
+      },
+      error: (err) => console.error('Failed to load watchlists', err)
+    });
+  }
+
+  @ViewChild('watchlistContainer') watchlistContainer!: ElementRef<HTMLDivElement>;
+
+  scrollWatchlist(direction: 'left' | 'right'): void {
+    if (!this.watchlistContainer) return;
+
+    const container = this.watchlistContainer.nativeElement;
+    const scrollAmount = 300;
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  scrollCustomList(containerId: string, direction: 'left' | 'right'): void {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const scrollAmount = 300;
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.activePrivacyDropdown.set(null);
+  }
+
+  togglePrivacyDropdown(listId: string, event: Event): void {
+    event.stopPropagation();
+    if (this.activePrivacyDropdown() === listId) {
+      this.activePrivacyDropdown.set(null);
+    } else {
+      this.activePrivacyDropdown.set(listId);
+    }
+  }
+
+  closePrivacyDropdown(): void {
+    this.activePrivacyDropdown.set(null);
+  }
+
+  updateWatchedPrivacy(privacyStatus: number): void {
+    this.watchedListService.updatePrivacy(privacyStatus).subscribe({
+      next: (response) => {
+        if (response.success && response.data.watchedList) {
+          this.watched.set(response.data.watchedList);
+        }
+      },
+      error: (err) => console.error('Failed to update watched list privacy', err)
+    });
+    this.activePrivacyDropdown.set(null);
+  }
+
+  updateWatchlistPrivacy(watchlistId: string, privacyStatus: number): void {
+    this.watchlistService.updatePrivacy(watchlistId, privacyStatus).subscribe({
+      next: (response) => {
+        if (response.success && response.data.watchlist) {
+          const updated = response.data.watchlist;
+          if (updated.isDefault) {
+            this.defaultWatchlist.set(updated);
+          } else {
+            this.customWatchlists.update(lists =>
+              lists.map(l => l._id === updated._id ? updated : l)
+            );
+          }
+        }
+      },
+      error: (err) => console.error('Failed to update watchlist privacy', err)
+    });
+    this.activePrivacyDropdown.set(null);
+  }
+
+  getPrivacyIcon(privacyStatus: number | undefined): string {
+    switch (privacyStatus) {
+      case 1: return 'group';
+      case 2: return 'lock';
+      default: return 'public';
+    }
+  }
+
+  getPrivacyLabel(privacyStatus: number | undefined): string {
+    switch (privacyStatus) {
+      case 1: return this.translationService.t('privacy.friends');
+      case 2: return this.translationService.t('privacy.nobody');
+      default: return this.translationService.t('privacy.everyone');
+    }
   }
 
   loadMoodTimeline(): void {
@@ -386,6 +544,21 @@ export class ProfileComponent implements OnInit {
 
     const container = this.recommendationsContainer.nativeElement;
     const scrollAmount = 300; // Adjust scroll distance
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  @ViewChild('watchedContainer') watchedContainer!: ElementRef<HTMLDivElement>;
+
+  scrollWatched(direction: 'left' | 'right'): void {
+    if (!this.watchedContainer) return;
+
+    const container = this.watchedContainer.nativeElement;
+    const scrollAmount = 300;
 
     if (direction === 'left') {
       container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
