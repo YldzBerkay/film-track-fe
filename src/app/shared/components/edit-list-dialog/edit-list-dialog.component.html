@@ -3,8 +3,8 @@
     <div class="dialog-content" (click)="$event.stopPropagation()">
         <div class="dialog-header">
             <div class="header-title">
-                <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
-                <h2>{{ listTitle() }}</h2>
+                <span class="material-symbols-outlined list-icon">{{ isDefault() ? listIcon() : editedIcon() }}</span>
+                <h2>{{ isDefault() ? listTitle() : editedName() }}</h2>
             </div>
             <button class="close-btn" (click)="closeDialog()">
                 <span class="material-symbols-outlined">close</span>
@@ -12,6 +12,28 @@
         </div>
 
         <div class="dialog-body">
+            @if (!isDefault()) {
+            <div class="edit-metadata">
+                <div class="input-group">
+                    <label>{{ 'dialog.createList.nameLabel' | translate }}</label>
+                    <input type="text" [ngModel]="editedName()" (ngModelChange)="editedName.set($event)"
+                        [placeholder]="'dialog.createList.namePlaceholder' | translate" class="dialog-input"
+                        [disabled]="isSaving()" maxlength="50">
+                </div>
+
+                <div class="input-group">
+                    <label>{{ 'dialog.createList.iconLabel' | translate }}</label>
+                    <div class="icon-grid">
+                        @for (icon of availableIcons; track icon) {
+                        <div class="icon-option" [class.selected]="editedIcon() === icon" (click)="selectIcon(icon)">
+                            <span class="material-symbols-outlined">{{ icon }}</span>
+                        </div>
+                        }
+                    </div>
+                </div>
+                <div class="divider"></div>
+            </div>
+            }
             @if (items().length === 0) {
             <div class="empty-state">
                 <span class="material-symbols-outlined empty-icon">{{ listIcon() }}</span>

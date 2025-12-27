@@ -112,5 +112,6 @@
 </div>
 
 <app-edit-list-dialog [isOpen]="showEditDialog()" [listTitle]="listTitle()" [listIcon]="listIcon()"
-    [initialItems]="listItemsForEdit()" (close)="showEditDialog.set(false)" (save)="saveListOrder($event)">
+    [initialItems]="listItemsForEdit()" [isDefault]="listType() !== 'custom'" (close)="showEditDialog.set(false)"
+    (save)="saveListOrder($event)">
 </app-edit-list-dialog>

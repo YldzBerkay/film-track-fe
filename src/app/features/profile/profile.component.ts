@@ -17,13 +17,14 @@ import { LanguageService } from '../../core/services/language.service';
 import { TranslationService, TranslatePipe } from '../../core/i18n';
 import { WatchedListService, WatchedList } from '../../core/services/watched-list.service';
 import { WatchlistService, Watchlist } from '../../core/services/watchlist.service';
+import { EditListDialogComponent, ListItem } from '../../shared/components/edit-list-dialog/edit-list-dialog.component';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, TranslatePipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -102,6 +103,10 @@ export class ProfileComponent implements OnInit {
   // Edit Favorites Dialog state
   showEditFavoritesDialog = signal(false);
   editFavoritesTab = signal<'movies' | 'tv'>('movies');
+
+  // Edit List Dialog state
+  showEditListDialog = signal(false);
+  selectedListForEdit = signal<Watchlist | null>(null);
 
   constructor() {
     effect(() => {
@@ -898,6 +903,41 @@ export class ProfileComponent implements OnInit {
         alert('Failed to save favorites');
       }
     });
+  }
+
+  openEditList(list: Watchlist): void {
+    this.selectedListForEdit.set(list);
+    this.showEditListDialog.set(true);
+  }
+
+  saveCustomList(data: { items: ListItem[], name?: string, icon?: string }): void {
+    const list = this.selectedListForEdit();
+    if (!list) return;
+
+    const orderedTmdbIds = data.items.map(item => item.tmdbId);
+    this.watchlistService.reorderItems(list._id, orderedTmdbIds, data.name, data.icon).subscribe({
+      next: (res) => {
+        if (res.success && res.data.watchlist) {
+          // Update local state
+          this.customWatchlists.update(lists =>
+            lists.map(l => l._id === res.data.watchlist._id ? res.data.watchlist : l)
+          );
+          this.showEditListDialog.set(false);
+          this.selectedListForEdit.set(null);
+        }
+      }
+    });
+  }
+
+  getEditListItems(list: Watchlist | null): ListItem[] {
+    if (!list) return [];
+    return list.items.map(item => ({
+      tmdbId: item.tmdbId,
+      mediaType: item.mediaType,
+      title: item.title,
+      posterPath: item.posterPath,
+      rating: (item as any).rating
+    }));
   }
 }
 

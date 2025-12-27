@@ -214,8 +214,8 @@ export class ListDetailComponent implements OnInit {
         this.showEditDialog.set(true);
     }
 
-    saveListOrder(items: ListItem[]): void {
-        const orderedTmdbIds = items.map(item => item.tmdbId);
+    saveListOrder(data: { items: ListItem[], name?: string, icon?: string }): void {
+        const orderedTmdbIds = data.items.map(item => item.tmdbId);
         const type = this.listType();
 
         if (type === 'watched') {
@@ -230,7 +230,7 @@ export class ListDetailComponent implements OnInit {
         } else {
             const id = this.listId();
             if (id) {
-                this.watchlistService.reorderItems(id, orderedTmdbIds).subscribe({
+                this.watchlistService.reorderItems(id, orderedTmdbIds, data.name, data.icon).subscribe({
                     next: (response: WatchlistResponse) => {
                         if (response.success && response.data.watchlist) {
                             this.watchlist.set(response.data.watchlist);

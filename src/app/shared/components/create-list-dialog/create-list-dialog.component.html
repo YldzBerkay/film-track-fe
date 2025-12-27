@@ -1,7 +1,8 @@
 <div class="dialog-backdrop" *ngIf="isOpen" [@backdropAnimation] (click)="onBackdropClick($event)">
     <div class="dialog-modal" [@modalAnimation]>
         <div class="dialog-header">
-            <h3 class="dialog-title">{{ 'dialog.createList.title' | translate }}</h3>
+            <h3 class="dialog-title">{{ (isEdit ? 'dialog.createList.editTitle' : 'dialog.createList.title') | translate
+                }}</h3>
             <button class="close-btn" (click)="onCancel()" *ngIf="!isLoading">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -32,9 +33,9 @@
                 {{ 'dialog.cancel' | translate }}
             </button>
             <button class="btn btn-primary" (click)="onSubmit()" [disabled]="!listName().trim() || isLoading">
-                <span class="material-symbols-outlined" *ngIf="!isLoading">add</span>
+                <span class="material-symbols-outlined" *ngIf="!isLoading">{{ isEdit ? 'save' : 'add' }}</span>
                 <div class="spinner-small" *ngIf="isLoading"></div>
-                {{ 'dialog.createList.create' | translate }}
+                {{ (isEdit ? 'dialog.createList.save' : 'dialog.createList.create') | translate }}
             </button>
         </div>
     </div>

@@ -146,7 +146,9 @@
             "nameLabel": "List Name",
             "namePlaceholder": "e.g. Action Movies 2024",
             "iconLabel": "Select Icon",
-            "create": "Create List"
+            "create": "Create List",
+            "editTitle": "Edit List",
+            "save": "Save Changes"
         }
     },
     "share": {

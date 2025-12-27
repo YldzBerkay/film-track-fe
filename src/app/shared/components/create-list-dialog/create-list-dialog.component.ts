@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -34,11 +34,21 @@ import { TranslatePipe } from '../../../core/i18n';
 export class CreateListDialogComponent {
     @Input() isOpen = false;
     @Input() isLoading = false;
+    @Input() isEdit = false;
+    @Input() initialName = '';
+    @Input() initialIcon = 'list';
     @Output() close = new EventEmitter<void>();
     @Output() create = new EventEmitter<{ name: string; icon: string }>();
 
     listName = signal('');
     selectedIcon = signal('list');
+
+    ngOnChanges(): void {
+        if (this.isOpen) {
+            this.listName.set(this.isEdit ? this.initialName : '');
+            this.selectedIcon.set(this.isEdit ? this.initialIcon : 'list');
+        }
+    }
 
     // Predefined icons available for selection
     availableIcons = [

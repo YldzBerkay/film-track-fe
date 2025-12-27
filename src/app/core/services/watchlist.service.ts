@@ -132,10 +132,10 @@ export class WatchlistService {
         );
     }
 
-    reorderItems(watchlistId: string, orderedTmdbIds: number[]): Observable<WatchlistResponse> {
+    reorderItems(watchlistId: string, orderedTmdbIds?: number[], name?: string, icon?: string): Observable<WatchlistResponse> {
         return this.http.patch<WatchlistResponse>(
             `${this.apiUrl}/${watchlistId}/reorder`,
-            { orderedTmdbIds }
+            { orderedTmdbIds, name, icon }
         );
     }
 }

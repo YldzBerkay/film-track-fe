@@ -146,7 +146,9 @@
             "nameLabel": "Liste Adı",
             "namePlaceholder": "örn. Aksiyon Filmleri 2024",
             "iconLabel": "İkon Seç",
-            "create": "Liste Oluştur"
+            "create": "Liste Oluştur",
+            "editTitle": "Listeyi Düzenle",
+            "save": "Değişiklikleri Kaydet"
         }
     },
     "share": {
