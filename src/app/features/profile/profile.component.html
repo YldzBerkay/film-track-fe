@@ -158,6 +158,10 @@
       <button class="tab-item" [class.active]="activeTab() === 'likes'" (click)="onTabChange('likes')" type="button">
         <span>{{ 'profile.likesTab' | translate }}</span>
       </button>
+      <button class="tab-item" [class.active]="activeTab() === 'settings'" (click)="onTabChange('settings')"
+        type="button">
+        <span>{{ 'profile.settingsTab' | translate }}</span>
+      </button>
     </div>
   </div>
 

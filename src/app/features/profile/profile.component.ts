@@ -22,7 +22,7 @@ import { EditListDialogComponent, ListItem } from '../../shared/components/edit-
 import { WatchedReportsDialogComponent } from '../../shared/components/watched-reports-dialog/watched-reports-dialog.component';
 import { forkJoin } from 'rxjs';
 
-type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
+type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes' | 'settings';
 
 @Component({
   selector: 'app-profile',
