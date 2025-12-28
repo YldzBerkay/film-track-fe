@@ -3127,3 +3127,39 @@ app-mood-timeline {
     font-size: 22px;
   }
 }
+
+// Processing notification for background mood analysis
+.processing-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(147, 112, 219, 0.1), rgba(108, 92, 231, 0.15));
+  border: 1px solid rgba(147, 112, 219, 0.3);
+  border-radius: 12px;
+
+  >.material-symbols-outlined {
+    font-size: 28px;
+    color: #a29bfe;
+    margin-top: 2px;
+  }
+
+  .notification-content {
+    flex: 1;
+  }
+
+  .notification-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-text-main);
+    margin: 0 0 6px 0;
+  }
+
+  .notification-text {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+}

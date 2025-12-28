@@ -144,9 +144,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   // CSV Import state
   isImporting = signal(false);
-  importResult = signal<{ importedCount: number; skippedCount: number; failedCount: number; failedItems: string[] } | null>(null);
+  importResult = signal<{ importedCount: number; skippedCount: number; failedCount: number; failedItems: string[]; estimatedProcessingSeconds: number } | null>(null);
   showFailedItems = signal(false);
   overwriteExisting = signal(false);
+
+  // Helper method to get estimated processing time in minutes
+  getEstimatedMinutes(): number {
+    const result = this.importResult();
+    if (!result?.estimatedProcessingSeconds) return 0;
+    return Math.ceil(result.estimatedProcessingSeconds / 60);
+  }
 
   private previousLanguage = this.languageService.language();
 
@@ -1278,7 +1285,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
     this.userService.uploadWatchHistoryCsv(file, this.overwriteExisting()).subscribe({
       next: (response) => {
+        console.log('[Import] Response received:', response);
         if (response.success && response.data) {
+          console.log('[Import] Setting importResult with estimatedProcessingSeconds:', response.data.estimatedProcessingSeconds);
           this.importResult.set(response.data);
           // Reload watched list to show new items
           this.loadWatchedList();
@@ -1291,7 +1300,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           importedCount: 0,
           skippedCount: 0,
           failedCount: 0,
-          failedItems: []
+          failedItems: [],
+          estimatedProcessingSeconds: 0
         });
         this.isImporting.set(false);
       }

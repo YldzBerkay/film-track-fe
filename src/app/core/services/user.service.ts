@@ -144,6 +144,7 @@ export class UserService {
     skippedCount: number;
     failedCount: number;
     failedItems: string[];
+    estimatedProcessingSeconds: number;
   }>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -153,6 +154,7 @@ export class UserService {
       skippedCount: number;
       failedCount: number;
       failedItems: string[];
+      estimatedProcessingSeconds: number;
     }>>('http://localhost:3000/api/import/watch-history', formData);
   }
 }

@@ -884,6 +884,16 @@
               }
             </div>
             }
+            @if (importResult()?.estimatedProcessingSeconds && importResult()!.estimatedProcessingSeconds > 0) {
+            <div class="processing-notification">
+              <span class="material-symbols-outlined">schedule</span>
+              <div class="notification-content">
+                <p class="notification-title">{{ 'settings.moodProcessingTitle' | translate }}</p>
+                <p class="notification-text">{{ 'settings.moodProcessingMessage' | translate:{ minutes:
+                  getEstimatedMinutes() } }}</p>
+              </div>
+            </div>
+            }
           </div>
         </div>
       </div>
