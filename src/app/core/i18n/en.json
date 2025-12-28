@@ -380,5 +380,18 @@
         "noRatings": "No ratings yet",
         "generating": "Generating report...",
         "failedToLoad": "Failed to load report"
+    },
+    "settings": {
+        "importTitle": "Import Watch History",
+        "importInstructions": "Upload a CSV file containing columns: Name, Year, Rating, Date.",
+        "selectCsv": "Select CSV File",
+        "importProcessing": "Processing your history...",
+        "importSuccess": "Processed {{count}} items.",
+        "importSkipped": "{{count}} items skipped (already exist).",
+        "importFailed": "{{count}} items could not be matched.",
+        "showFailed": "Show details",
+        "hideFailed": "Hide details",
+        "overwriteExisting": "Overwrite existing ratings",
+        "overwriteHint": "If unchecked, items already in your watched list will be skipped."
     }
 }

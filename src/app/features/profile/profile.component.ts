@@ -142,6 +142,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   showEditListDialog = signal(false);
   selectedListForEdit = signal<Watchlist | null>(null);
 
+  // CSV Import state
+  isImporting = signal(false);
+  importResult = signal<{ importedCount: number; skippedCount: number; failedCount: number; failedItems: string[] } | null>(null);
+  showFailedItems = signal(false);
+  overwriteExisting = signal(false);
+
   private previousLanguage = this.languageService.language();
 
   constructor() {
@@ -1253,6 +1259,50 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       posterPath: item.posterPath,
       rating: (item as any).rating
     }));
+  }
+
+  // CSV Import handler
+  onCsvFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    if (!file.name.endsWith('.csv')) {
+      console.error('Invalid file type');
+      return;
+    }
+
+    this.isImporting.set(true);
+    this.importResult.set(null);
+    this.showFailedItems.set(false);
+
+    this.userService.uploadWatchHistoryCsv(file, this.overwriteExisting()).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.importResult.set(response.data);
+          // Reload watched list to show new items
+          this.loadWatchedList();
+        }
+        this.isImporting.set(false);
+      },
+      error: (err) => {
+        console.error('Import failed:', err);
+        this.importResult.set({
+          importedCount: 0,
+          skippedCount: 0,
+          failedCount: 0,
+          failedItems: []
+        });
+        this.isImporting.set(false);
+      }
+    });
+
+    // Reset input so same file can be selected again
+    input.value = '';
+  }
+
+  toggleFailedItems(): void {
+    this.showFailedItems.set(!this.showFailedItems());
   }
 }
 

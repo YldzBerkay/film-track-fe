@@ -364,5 +364,18 @@
         "seasonsCount": "{{count}} Sezon",
         "episodesCount": "{{count}} Bölüm",
         "seasonEpisodes": "{{count}} bölüm"
+    },
+    "settings": {
+        "importTitle": "İzleme Geçmişini İçe Aktar",
+        "importInstructions": "Şu sütunları içeren bir CSV dosyası yükleyin: Name, Year, Rating, Date.",
+        "selectCsv": "CSV Dosyası Seç",
+        "importProcessing": "Geçmişiniz işleniyor...",
+        "importSuccess": "{{count}} içerik işlendi.",
+        "importSkipped": "{{count}} içerik atlandı (zaten mevcut).",
+        "importFailed": "{{count}} içerik eşleştirilemedi.",
+        "showFailed": "Detayları göster",
+        "hideFailed": "Detayları gizle",
+        "overwriteExisting": "Mevcut puanları güncelle",
+        "overwriteHint": "İşaretlenmezse, izleme listenizde olan içerikler atlanır."
     }
 }

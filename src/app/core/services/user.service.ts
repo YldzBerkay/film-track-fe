@@ -138,5 +138,22 @@ export class UserService {
       params: { all: showAll.toString() }
     });
   }
+
+  uploadWatchHistoryCsv(file: File, overwriteExisting: boolean = false): Observable<ApiResponse<{
+    importedCount: number;
+    skippedCount: number;
+    failedCount: number;
+    failedItems: string[];
+  }>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('overwriteExisting', String(overwriteExisting));
+    return this.http.post<ApiResponse<{
+      importedCount: number;
+      skippedCount: number;
+      failedCount: number;
+      failedItems: string[];
+    }>>('http://localhost:3000/api/import/watch-history', formData);
+  }
 }
 

@@ -124,6 +124,8 @@
                     watched episode
                     } @else if (activity.type === 'tv_show_watched') {
                     watched
+                    } @else if (activity.type === 'bulk_import') {
+                    imported watch history
                     }
                   </p>
                   <p class="activity-time">{{ getTimeAgo(activity.createdAt) }}</p>
@@ -169,6 +171,13 @@
                     }
                   </div>
                   }
+                </div>
+              </div>
+              } @else if (activity.type === 'bulk_import') {
+              <!-- Bulk import: show only title, no poster or year -->
+              <div class="media-content bulk-import-content">
+                <div class="media-info">
+                  <h3 class="media-title">{{ activity.mediaTitle }}</h3>
                 </div>
               </div>
               } @else {

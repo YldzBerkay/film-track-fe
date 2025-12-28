@@ -9,7 +9,7 @@ export interface Activity {
     username: string;
     name: string;
   };
-  type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating';
+  type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import';
   mediaType: 'movie' | 'tv_show' | 'tv_episode';
   tmdbId: number;
   mediaTitle: string;
