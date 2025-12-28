@@ -155,6 +155,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     return Math.ceil(result.estimatedProcessingSeconds / 60);
   }
 
+  currentYear = new Date().getFullYear();
+
   private previousLanguage = this.languageService.language();
 
   constructor() {

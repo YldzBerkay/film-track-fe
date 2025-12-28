@@ -59,14 +59,11 @@
             </div>
           </div>
           @if (showData.vote_average) {
-          <div class="rating-section tmdb-rating" data-tooltip="TMDB Rating">
-            <span class="rating-label">TMDB</span>
-            <div class="rating-content">
-              <span class="rating-value">{{ showData.vote_average.toFixed(1) }}</span>
-              @if (showData.vote_count) {
-              <span class="rating-count">({{ showData.vote_count | number }} {{ 'details.votes' | translate }})</span>
-              }
+          <div class="tmdb-rating-badge" title="Source: The Movie Database">
+            <div class="badge-label">
+              <img [src]="tmdbService.tmdbLogoUrl" alt="TMDB" style="height: 8px; width: auto;">
             </div>
+            <div class="badge-score">{{ showData.vote_average.toFixed(1) }}</div>
           </div>
           }
 
