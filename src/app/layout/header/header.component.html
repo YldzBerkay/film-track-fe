@@ -22,13 +22,7 @@
             <!-- Mood Widget -->
             <app-mood-widget></app-mood-widget>
 
-            <button class="log-btn" (click)="onLogClick()">
-                <span class="material-symbols-outlined">add</span>
-                {{ 'header.log' | translate }}
-            </button>
-            <button class="lang-toggle-btn" (click)="toggleLanguage()" title="Switch language">
-                <span class="lang-code">{{ currentLanguage() === 'en' ? 'EN' : 'TR' }}</span>
-            </button>
+
             <div class="notification-wrapper">
                 <button class="icon-btn" (click)="toggleNotificationMenu($event)">
                     <span class="material-symbols-outlined">notifications</span>
@@ -91,6 +85,10 @@
                         <div class="profile-menu-item" (click)="router.navigate(['/profile']); closeProfileMenu()">
                             <span class="material-symbols-outlined">person</span>
                             <span>{{ 'header.profile' | translate }}</span>
+                        </div>
+                        <div class="profile-menu-item" (click)="toggleLanguage()">
+                            <span class="material-symbols-outlined">language</span>
+                            <span>{{ currentLanguage() === 'en' ? 'Türkçe' : 'English' }}</span>
                         </div>
                         <div class="profile-menu-item" (click)="onLogout()">
                             <span class="material-symbols-outlined">logout</span>

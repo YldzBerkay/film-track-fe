@@ -30,7 +30,7 @@ export class HeaderComponent {
     showNotificationMenu = signal(false);
     showProfileMenu = signal(false);
 
-    @Output() logClick = new EventEmitter<void>();
+
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent): void {
@@ -48,10 +48,6 @@ export class HeaderComponent {
         if (query.trim()) {
             this.router.navigate(['/search'], { queryParams: { q: query } });
         }
-    }
-
-    onLogClick(): void {
-        this.logClick.emit();
     }
 
     toggleNotificationMenu(event: MouseEvent): void {
