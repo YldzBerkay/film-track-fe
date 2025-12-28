@@ -509,6 +509,20 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  scrollCarousel(event: Event, direction: 'left' | 'right'): void {
+    const button = event.currentTarget as HTMLElement;
+    const container = button.parentElement?.querySelector('.favorites-grid') as HTMLElement;
+    if (!container) return;
+
+    const scrollAmount = 300;
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
   scrollCustomList(containerId: string, direction: 'left' | 'right'): void {
     const container = document.getElementById(containerId);
     if (!container) return;

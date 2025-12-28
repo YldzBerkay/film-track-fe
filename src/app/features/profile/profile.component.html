@@ -101,7 +101,7 @@
   <!-- Stats Grid -->
   <div class="stats-section">
     <div class="stats-grid">
-      <div class="stat-card stat-card--clickable" (click)="router.navigate(['/lists/watched'])">
+      <div class="stat-card stat-card--clickable hide-on-mobile" (click)="router.navigate(['/lists/watched'])">
         <span class="stat-value">{{ profileData.user.stats.moviesWatched + profileData.user.stats.episodesWatched
           }}</span>
         <div class="stat-label">
@@ -109,7 +109,7 @@
           <span>{{ 'profile.watched' | translate }}</span>
         </div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card hide-on-mobile">
         <span class="stat-value" style="font-size: 1.5rem;">{{ formatRuntime(profileData.user.stats.totalRuntime)
           }}</span>
         <div class="stat-label">
@@ -117,7 +117,7 @@
           <span>{{ 'profile.watchedTime' | translate }}</span>
         </div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card hide-on-mobile">
         <span class="stat-value">{{ profileData.reviewCount }}</span>
         <div class="stat-label">
           <span class="material-symbols-outlined">rate_review</span>
@@ -378,16 +378,26 @@
           </button>
           }
         </div>
-        <div class="favorites-grid">
-          @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
-          <div class="favorite-item" (click)="router.navigate(['/movies', movie.tmdbId])">
-            <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title"
-              class="favorite-poster" />
-            <div class="favorite-overlay">
-              <span class="material-symbols-outlined">visibility</span>
+        <div class="carousel-container">
+          <button class="carousel-btn carousel-btn--left" (click)="scrollCarousel($event, 'left')"
+            aria-label="Scroll left">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <div class="favorites-grid" #moviesFavoritesGrid>
+            @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
+            <div class="favorite-item" (click)="router.navigate(['/movies', movie.tmdbId])">
+              <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title"
+                class="favorite-poster" />
+              <div class="favorite-overlay">
+                <span class="material-symbols-outlined">visibility</span>
+              </div>
             </div>
+            }
           </div>
-          }
+          <button class="carousel-btn carousel-btn--right" (click)="scrollCarousel($event, 'right')"
+            aria-label="Scroll right">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
         </div>
       </div>
       }
@@ -407,15 +417,26 @@
           </button>
           }
         </div>
-        <div class="favorites-grid">
-          @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
-          <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
-            <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="favorite-poster" />
-            <div class="favorite-overlay">
-              <span class="material-symbols-outlined">visibility</span>
+        <div class="carousel-container">
+          <button class="carousel-btn carousel-btn--left" (click)="scrollCarousel($event, 'left')"
+            aria-label="Scroll left">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <div class="favorites-grid" #tvFavoritesGrid>
+            @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
+            <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
+              <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name"
+                class="favorite-poster" />
+              <div class="favorite-overlay">
+                <span class="material-symbols-outlined">visibility</span>
+              </div>
             </div>
+            }
           </div>
-          }
+          <button class="carousel-btn carousel-btn--right" (click)="scrollCarousel($event, 'right')"
+            aria-label="Scroll right">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
         </div>
       </div>
       }
