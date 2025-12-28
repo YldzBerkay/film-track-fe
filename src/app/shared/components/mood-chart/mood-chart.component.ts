@@ -115,7 +115,7 @@ export class MoodChartComponent {
           stepSize: 20,
           color: '#9ca3af',
           font: {
-            size: 12
+            size: 10 // Reduced tick size
           },
           backdropColor: 'transparent'
         },
@@ -124,9 +124,13 @@ export class MoodChartComponent {
         },
         pointLabels: {
           color: '#F1F1F1',
-          font: {
-            size: 14,
-            weight: 'bold'
+          font: (context) => {
+            const width = context.chart.width;
+            const size = width < 400 ? 10 : 14; // Dynamic font size based on width
+            return {
+              size: size,
+              weight: 'bold'
+            };
           }
         }
       }
