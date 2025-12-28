@@ -249,6 +249,8 @@
         "justNow": "Az önce",
         "minuteAgo": "1 dakika önce",
         "minutesAgo": "{{count}} dakika önce",
+        "minutesShort": "dk",
+        "hoursShort": "sa",
         "hourAgo": "1 saat önce",
         "hoursAgo": "{{count}} saat önce",
         "dayAgo": "1 gün önce",

@@ -34,7 +34,7 @@ export interface DailyPick {
     tmdbId: number;
     title: string;
     year: number;
-    genre: string;
+    runtime: number;
     backdropUrl: string;
     overview: string;
     watched: boolean;

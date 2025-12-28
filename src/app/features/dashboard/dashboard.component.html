@@ -251,10 +251,11 @@
                 </div>
               </div>
               <h4 class="daily-pick-title" [attr.data-tooltip]="pick.title">{{ pick.title }}</h4>
-              <div class="daily-pick-meta" [attr.data-tooltip]="pick.year + ' • ' + pick.genre">
+              <div class="daily-pick-meta"
+                [attr.data-tooltip]="pick.year + ' • ' + pick.runtime + ('common.minutesShort' | translate)">
                 <span>{{ pick.year }}</span>
                 <span class="separator">•</span>
-                <span>{{ pick.genre }}</span>
+                <span>{{ pick.runtime }}{{ 'common.minutesShort' | translate }}</span>
               </div>
               <div class="daily-pick-actions">
                 <button class="daily-pick-btn primary">
@@ -294,10 +295,10 @@
                 <span>{{ meal.episodeTitle }}</span>
               </div>
               <div class="daily-pick-meta"
-                [attr.data-tooltip]="'S' + meal.seasonNumber + ' E' + meal.episodeNumber + ' • ' + (meal.runtime | number:'1.0-0') + 'm'">
+                [attr.data-tooltip]="'S' + meal.seasonNumber + ' E' + meal.episodeNumber + ' • ' + (meal.runtime | number:'1.0-0') + ('common.minutesShort' | translate)">
                 <span>S{{ meal.seasonNumber }} E{{ meal.episodeNumber }}</span>
                 <span class="separator">•</span>
-                <span>{{ meal.runtime | number:'1.0-0' }}m</span>
+                <span>{{ meal.runtime | number:'1.0-0' }}{{ 'common.minutesShort' | translate }}</span>
               </div>
               <div class="daily-pick-actions">
                 <button class="daily-pick-btn primary">
@@ -340,14 +341,12 @@
                 <div class="daily-pick-header">
                   <div class="daily-pick-badge"
                     style="background: rgba(108, 92, 231, 0.2); border-color: rgba(108, 92, 231, 0.3); color: #a29bfe;">
-                    Mood Match: {{ rec.score }}%
+                    Mood Match: {{ rec.moodSimilarity }}%
                   </div>
                 </div>
                 <h4 class="daily-pick-title">{{ rec.title }}</h4>
                 <div class="daily-pick-meta">
                   <span>{{ rec.releaseDate | date:'yyyy' }}</span>
-                  <span class="separator">•</span>
-                  <span class="mood-badge" style="color: #a29bfe;">{{ rec.moodMatchType | titlecase }}</span>
                 </div>
                 <div class="daily-pick-actions">
                   <a class="daily-pick-btn primary" [routerLink]="['/movie', rec.tmdbId]"

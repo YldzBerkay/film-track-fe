@@ -249,6 +249,8 @@
         "justNow": "Just now",
         "minuteAgo": "1 minute ago",
         "minutesAgo": "{{count}} minutes ago",
+        "minutesShort": "min",
+        "hoursShort": "h",
         "hourAgo": "1 hour ago",
         "hoursAgo": "{{count}} hours ago",
         "dayAgo": "1 day ago",

@@ -414,7 +414,7 @@ export class DashboardComponent implements OnInit {
 
   loadMoodRecommendations(): void {
     this.isMoodRecsLoading.set(true);
-    this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 6, this.includeWatched()).subscribe({
+    this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 1, this.includeWatched()).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.moodRecommendations.set(response.data);
