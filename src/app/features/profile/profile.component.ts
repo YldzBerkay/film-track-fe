@@ -157,6 +157,60 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   currentYear = new Date().getFullYear();
 
+  // Password Update State
+  passwordData = signal({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  isUpdatingPassword = signal(false);
+  passwordMessage = signal<{ type: 'success' | 'error', text: string } | null>(null);
+
+  updatePasswordField(field: 'oldPassword' | 'newPassword' | 'confirmPassword', value: string) {
+    this.passwordData.update(current => ({
+      ...current,
+      [field]: value
+    }));
+  }
+
+  updatePassword() {
+    const { oldPassword, newPassword, confirmPassword } = this.passwordData();
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      this.passwordMessage.set({ type: 'error', text: 'All fields are required' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      this.passwordMessage.set({ type: 'error', text: 'New passwords do not match' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      this.passwordMessage.set({ type: 'error', text: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    this.isUpdatingPassword.set(true);
+    this.passwordMessage.set(null);
+
+    this.authService.changePassword({ oldPassword, newPassword }).subscribe({
+      next: () => {
+        this.isUpdatingPassword.set(false);
+        this.passwordMessage.set({ type: 'success', text: 'Password updated successfully' });
+        this.passwordData.set({ oldPassword: '', newPassword: '', confirmPassword: '' });
+
+        // Clear success message after 3 seconds
+        setTimeout(() => this.passwordMessage.set(null), 3000);
+      },
+      error: (err) => {
+        this.isUpdatingPassword.set(false);
+        const msg = err.error?.message || 'Failed to update password';
+        this.passwordMessage.set({ type: 'error', text: msg });
+      }
+    });
+  }
+
   private previousLanguage = this.languageService.language();
 
   constructor() {

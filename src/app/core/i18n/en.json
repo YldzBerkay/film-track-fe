@@ -394,6 +394,11 @@
         "overwriteExisting": "Overwrite existing ratings",
         "overwriteHint": "If unchecked, items already in your watched list will be skipped.",
         "moodProcessingTitle": "Building your cinematic profile",
-        "moodProcessingMessage": "We're analyzing the emotional DNA of your films to craft personalized recommendations. This typically takes around {{minutes}} minutes."
+        "moodProcessingMessage": "We're analyzing the emotional DNA of your films to craft personalized recommendations. This typically takes around {{minutes}} minutes.",
+        "passwordTitle": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "updatePassword": "Update Password"
     }
 }

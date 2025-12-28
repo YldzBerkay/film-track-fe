@@ -378,6 +378,11 @@
         "overwriteExisting": "Mevcut puanları güncelle",
         "overwriteHint": "İşaretlenmezse, izleme listenizde olan içerikler atlanır.",
         "moodProcessingTitle": "Sinematik profiliniz oluşturuluyor",
-        "moodProcessingMessage": "Size özel öneriler sunabilmek için filmlerinizin duygusal yapısını analiz ediyoruz. Bu işlem yaklaşık {{minutes}} dakika sürecektir."
+        "moodProcessingMessage": "Size özel öneriler sunabilmek için filmlerinizin duygusal yapısını analiz ediyoruz. Bu işlem yaklaşık {{minutes}} dakika sürecektir.",
+        "passwordTitle": "Şifre Değiştir",
+        "currentPassword": "Mevcut Şifre",
+        "newPassword": "Yeni Şifre",
+        "confirmPassword": "Şifreyi Onayla",
+        "updatePassword": "Şifreyi Güncelle"
     }
 }
