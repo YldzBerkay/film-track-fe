@@ -9,7 +9,7 @@ import { DialogComponent } from '../../shared/components/dialog/dialog.component
 import { HeaderComponent } from '../../layout/header/header.component';
 import { LanguageService } from '../../core/services/language.service';
 import { TranslatePipe, TranslationService } from '../../core/i18n';
-import { WatchlistService, Watchlist } from '../../core/services/watchlist.service';
+import { WatchlistService, Watchlist, DashboardListSummary } from '../../core/services/watchlist.service';
 import { WatchedListService, WatchedList } from '../../core/services/watched-list.service';
 
 type FeedType = 'following' | 'friends' | 'global';
@@ -75,9 +75,9 @@ export class DashboardComponent implements OnInit {
   isMealtimePickLoading = signal(true);
 
   // Lists section state
-  defaultWatchlist = signal<Watchlist | null>(null);
-  watchedList = signal<WatchedList | null>(null);
-  customWatchlists = signal<Watchlist[]>([]);
+  defaultWatchlist = signal<DashboardListSummary | null>(null);
+  watchedList = signal<DashboardListSummary | null>(null);
+  customWatchlists = signal<DashboardListSummary[]>([]);
 
   // Create List Dialog state
   showCreateListDialog = signal(false);
@@ -128,7 +128,14 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.data.watchlist) {
           // Add new list to custom lists
-          this.customWatchlists.update(lists => [...lists, response.data.watchlist]);
+          const newSummary: DashboardListSummary = {
+            _id: response.data.watchlist._id,
+            name: response.data.watchlist.name,
+            icon: response.data.watchlist.icon,
+            itemCount: 0, // New list is empty
+            isDefault: response.data.watchlist.isDefault
+          };
+          this.customWatchlists.update(lists => [...lists, newSummary]);
           this.closeCreateListDialog();
         }
         this.isCreatingList.set(false);
@@ -173,35 +180,23 @@ export class DashboardComponent implements OnInit {
   }
 
   loadLists(): void {
-    // Load default watchlist (ensures it exists)
-    this.watchlistService.getDefaultWatchlist().subscribe({
+    this.watchlistService.getDashboardSummary().subscribe({
       next: (response) => {
-        if (response.success && response.data.watchlist) {
-          this.defaultWatchlist.set(response.data.watchlist);
+        if (response.success && response.data) {
+          if (response.data.watchedList) {
+            this.watchedList.set(response.data.watchedList);
+          }
+          if (response.data.defaultWatchlist) {
+            this.defaultWatchlist.set(response.data.defaultWatchlist);
+          }
+          if (response.data.customList) {
+            this.customWatchlists.set([response.data.customList]);
+          } else {
+            this.customWatchlists.set([]);
+          }
         }
       },
-      error: (err) => console.error('Failed to load default watchlist', err)
-    });
-
-    // Load all watchlists to get custom lists
-    this.watchlistService.getWatchlists().subscribe({
-      next: (response) => {
-        if (response.success && response.data.watchlists) {
-          const customLists = response.data.watchlists.filter(l => !l.isDefault);
-          this.customWatchlists.set(customLists);
-        }
-      },
-      error: (err) => console.error('Failed to load watchlists', err)
-    });
-
-    // Load watched list
-    this.watchedListService.getWatchedList().subscribe({
-      next: (response) => {
-        if (response.success && response.data.watchedList) {
-          this.watchedList.set(response.data.watchedList);
-        }
-      },
-      error: (err) => console.error('Failed to load watched list', err)
+      error: (err) => console.error('Failed to load lists summary', err)
     });
   }
 

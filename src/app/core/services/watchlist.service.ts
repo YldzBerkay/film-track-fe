@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LanguageService } from './language.service';
+import { WatchedList } from './watched-list.service';
 
 export interface WatchlistItem {
     tmdbId: number;
@@ -39,6 +40,23 @@ export interface WatchlistResponse {
     };
 }
 
+export interface DashboardListSummary {
+    _id: string;
+    name: string;
+    itemCount: number;
+    icon?: string;
+    isDefault?: boolean;
+}
+
+export interface DashboardSummaryResponse {
+    success: boolean;
+    data: {
+        watchedList: DashboardListSummary | null;
+        defaultWatchlist: DashboardListSummary | null;
+        customList: DashboardListSummary | null;
+    };
+}
+
 export interface CheckWatchlistResponse {
     success: boolean;
     data: {
@@ -54,6 +72,13 @@ export class WatchlistService {
     private http = inject(HttpClient);
     private languageService = inject(LanguageService);
     private apiUrl = 'http://localhost:3000/api/watchlists';
+
+    /**
+     * Get dashboard summary of lists
+     */
+    getDashboardSummary(): Observable<DashboardSummaryResponse> {
+        return this.http.get<DashboardSummaryResponse>(`${this.apiUrl}/dashboard-summary`);
+    }
 
     /**
      * Get all watchlists for the current user
