@@ -29,6 +29,7 @@ export class HeaderComponent {
     searchQuery = signal<string>('');
     showNotificationMenu = signal(false);
     showProfileMenu = signal(false);
+    showMobileMenu = signal(false);
 
 
 
@@ -40,6 +41,7 @@ export class HeaderComponent {
         if (!isClickInside) {
             this.showNotificationMenu.set(false);
             this.showProfileMenu.set(false);
+            this.showMobileMenu.set(false);
         }
     }
 
@@ -66,11 +68,23 @@ export class HeaderComponent {
     toggleProfileMenu(event: MouseEvent): void {
         event.stopPropagation();
         this.showNotificationMenu.set(false);
+        this.showMobileMenu.set(false);
         this.showProfileMenu.update(v => !v);
     }
 
     closeProfileMenu(): void {
         this.showProfileMenu.set(false);
+    }
+
+    toggleMobileMenu(event: MouseEvent): void {
+        event.stopPropagation();
+        this.showNotificationMenu.set(false);
+        this.showProfileMenu.set(false);
+        this.showMobileMenu.update(v => !v);
+    }
+
+    closeMobileMenu(): void {
+        this.showMobileMenu.set(false);
     }
 
     onLogout(): void {

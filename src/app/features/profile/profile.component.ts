@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, ViewChild, ElementRef, effect, HostListener, isDevMode } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, AfterViewInit, inject, ViewChild, ElementRef, effect, HostListener, isDevMode } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -32,7 +32,7 @@ type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, AfterViewInit {
   isDev = isDevMode();
   private route = inject(ActivatedRoute);
   router = inject(Router);
@@ -96,6 +96,12 @@ export class ProfileComponent implements OnInit {
   // Follow state
   isFollowing = signal(false);
   isFollowLoading = signal(false);
+
+  // Carousel scroll visibility state
+  isBadgesScrollable = signal(false);
+  isPremiumDeckScrollable = signal(false);
+  isMoviesFavoritesScrollable = signal(false);
+  isTvFavoritesScrollable = signal(false);
 
   // Followers/Following dialog state
   showUserListDialog = signal(false);
@@ -203,6 +209,46 @@ export class ProfileComponent implements OnInit {
       this.loadBadges();
       this.loadMoodRecommendations();
       this.loadLists();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Check scrollable status after view initializes (with longer delay for content to render)
+    setTimeout(() => this.updateScrollableStatus(), 500);
+  }
+
+  // Effect to update scrollable status when content changes
+  private scrollableEffect = effect(() => {
+    // Track content changes that affect scrollability
+    this.badges();
+    this.moodRecommendations();
+    this.profile();
+    // Re-check scrollable status after content updates
+    setTimeout(() => this.updateScrollableStatus(), 100);
+  });
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.updateScrollableStatus();
+  }
+
+  updateScrollableStatus(): void {
+    // Check each carousel's scrollable status
+    if (this.badgesContainer?.nativeElement) {
+      const el = this.badgesContainer.nativeElement;
+      this.isBadgesScrollable.set(el.scrollWidth > el.clientWidth);
+    }
+    if (this.premiumDeckGrid?.nativeElement) {
+      const el = this.premiumDeckGrid.nativeElement;
+      this.isPremiumDeckScrollable.set(el.scrollWidth > el.clientWidth);
+    }
+    if (this.moviesFavoritesGrid?.nativeElement) {
+      const el = this.moviesFavoritesGrid.nativeElement;
+      this.isMoviesFavoritesScrollable.set(el.scrollWidth > el.clientWidth);
+    }
+    if (this.tvFavoritesGrid?.nativeElement) {
+      const el = this.tvFavoritesGrid.nativeElement;
+      this.isTvFavoritesScrollable.set(el.scrollWidth > el.clientWidth);
     }
   }
 
@@ -495,6 +541,10 @@ export class ProfileComponent implements OnInit {
   }
 
   @ViewChild('watchlistContainer') watchlistContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('premiumDeckGrid') premiumDeckGrid!: ElementRef<HTMLDivElement>;
+  @ViewChild('moviesFavoritesGrid') moviesFavoritesGrid!: ElementRef<HTMLDivElement>;
+  @ViewChild('tvFavoritesGrid') tvFavoritesGrid!: ElementRef<HTMLDivElement>;
+  @ViewChild('badgesContainer') badgesContainer!: ElementRef<HTMLDivElement>;
 
   scrollWatchlist(direction: 'left' | 'right'): void {
     if (!this.watchlistContainer) return;
@@ -509,9 +559,22 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  scrollPremiumDeck(direction: 'left' | 'right'): void {
+    if (!this.premiumDeckGrid) return;
+
+    const container = this.premiumDeckGrid.nativeElement;
+    const scrollAmount = 300;
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
   scrollCarousel(event: Event, direction: 'left' | 'right'): void {
     const button = event.currentTarget as HTMLElement;
-    const container = button.parentElement?.querySelector('.favorites-grid') as HTMLElement;
+    const container = button.parentElement?.querySelector('.carousel-grid') as HTMLElement;
     if (!container) return;
 
     const scrollAmount = 300;
@@ -630,8 +693,6 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
-
-  @ViewChild('badgesContainer') badgesContainer!: ElementRef<HTMLDivElement>;
 
   scrollBadges(direction: 'left' | 'right'): void {
     if (!this.badgesContainer) return;

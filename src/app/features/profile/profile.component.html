@@ -239,12 +239,14 @@
           <div class="spinner"></div>
         </div>
         } @else if (badges().length > 0) {
-        <div class="badges-slider-container">
-          <button class="slider-btn prev" (click)="scrollBadges('left')">
+        <div class="carousel-container">
+          @if (isBadgesScrollable()) {
+          <button class="carousel-btn carousel-btn--left" (click)="scrollBadges('left')">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
+          }
 
-          <div class="badges-slider" #badgesContainer>
+          <div class="carousel-grid" #badgesContainer>
             @for (badge of badges(); track badge.id) {
             <div class="badge-item" [class.earned]="badge.earnedAt" [title]="badge.description">
               <span class="badge-icon">{{ badge.icon }}</span>
@@ -259,9 +261,11 @@
             }
           </div>
 
-          <button class="slider-btn next" (click)="scrollBadges('right')">
+          @if (isBadgesScrollable()) {
+          <button class="carousel-btn carousel-btn--right" (click)="scrollBadges('right')">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
+          }
         </div>
         } @else {
         <div class="badges-empty">
@@ -317,43 +321,58 @@
         </div>
         } @else if (moodRecommendations().length > 0) {
         <!-- Premium Deck: 5 Interactive Cards -->
-        <div class="premium-deck-grid">
-          @for (rec of moodRecommendations(); track rec.tmdbId) {
-          <div class="premium-card" [class.rated]="isCardRated(rec.tmdbId)">
-            <!-- Card Content -->
-            <div class="card-content" (click)="router.navigate(['/movies', rec.tmdbId])">
-              <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="rec-poster" />
-              <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
-                {{ rec.score }}%
+        <div class="carousel-container">
+          @if (isPremiumDeckScrollable()) {
+          <button class="carousel-btn carousel-btn--left" (click)="scrollPremiumDeck('left')" aria-label="Scroll left">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          }
+
+          <div class="carousel-grid" #premiumDeckGrid>
+            @for (rec of moodRecommendations(); track rec.tmdbId) {
+            <div class="carousel-card" [class.rated]="isCardRated(rec.tmdbId)">
+              <!-- Card Content -->
+              <div class="card-content" (click)="router.navigate(['/movies', rec.tmdbId])">
+                <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="card-poster" />
+                <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
+                  {{ rec.score }}%
+                </div>
               </div>
-            </div>
 
-            <!-- Feedback Buttons (visible when not rated) -->
-            @if (!isCardRated(rec.tmdbId)) {
-            <div class="feedback-buttons">
-              <button class="feedback-btn like" (click)="rateCard(rec, 'like'); $event.stopPropagation()"
-                title="{{ 'profile.like' | translate }}">
-                <span class="material-symbols-outlined">thumb_up</span>
-              </button>
-              <button class="feedback-btn dislike" (click)="rateCard(rec, 'dislike'); $event.stopPropagation()"
-                title="{{ 'profile.dislike' | translate }}">
-                <span class="material-symbols-outlined">thumb_down</span>
-              </button>
-            </div>
-            }
+              <!-- Feedback Buttons (visible when not rated) -->
+              @if (!isCardRated(rec.tmdbId)) {
+              <div class="feedback-buttons">
+                <button class="feedback-btn like" (click)="rateCard(rec, 'like'); $event.stopPropagation()"
+                  title="{{ 'profile.like' | translate }}">
+                  <span class="material-symbols-outlined">thumb_up</span>
+                </button>
+                <button class="feedback-btn dislike" (click)="rateCard(rec, 'dislike'); $event.stopPropagation()"
+                  title="{{ 'profile.dislike' | translate }}">
+                  <span class="material-symbols-outlined">thumb_down</span>
+                </button>
+              </div>
+              }
 
-            <!-- Replace Overlay (visible when rated) -->
-            @if (isCardRated(rec.tmdbId)) {
-            <div class="replace-overlay">
-              <button class="replace-btn" (click)="replaceCard(rec.tmdbId); $event.stopPropagation()"
-                [disabled]="replacementQuota().remaining <= 0">
-                <span class="material-symbols-outlined">refresh</span>
-                <span>{{ 'profile.replaceCard' | translate }}</span>
-                <span class="quota-badge">({{ replacementQuota().remaining }}/{{ replacementQuota().total }})</span>
-              </button>
+              <!-- Replace Overlay (visible when rated) -->
+              @if (isCardRated(rec.tmdbId)) {
+              <div class="replace-overlay">
+                <button class="replace-btn" (click)="replaceCard(rec.tmdbId); $event.stopPropagation()"
+                  [disabled]="replacementQuota().remaining <= 0">
+                  <span class="material-symbols-outlined">refresh</span>
+                  <span>{{ 'profile.replaceCard' | translate }}</span>
+                  <span class="quota-badge">({{ replacementQuota().remaining }}/{{ replacementQuota().total }})</span>
+                </button>
+              </div>
+              }
             </div>
             }
           </div>
+
+          @if (isPremiumDeckScrollable()) {
+          <button class="carousel-btn carousel-btn--right" (click)="scrollPremiumDeck('right')"
+            aria-label="Scroll right">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
           }
         </div>
         } @else {
@@ -379,25 +398,28 @@
           }
         </div>
         <div class="carousel-container">
+          @if (isMoviesFavoritesScrollable()) {
           <button class="carousel-btn carousel-btn--left" (click)="scrollCarousel($event, 'left')"
             aria-label="Scroll left">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <div class="favorites-grid" #moviesFavoritesGrid>
+          }
+          <div class="carousel-grid" #moviesFavoritesGrid>
             @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
-            <div class="favorite-item" (click)="router.navigate(['/movies', movie.tmdbId])">
-              <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title"
-                class="favorite-poster" />
+            <div class="carousel-card" (click)="router.navigate(['/movies', movie.tmdbId])">
+              <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title" class="card-poster" />
               <div class="favorite-overlay">
                 <span class="material-symbols-outlined">visibility</span>
               </div>
             </div>
             }
           </div>
+          @if (isMoviesFavoritesScrollable()) {
           <button class="carousel-btn carousel-btn--right" (click)="scrollCarousel($event, 'right')"
             aria-label="Scroll right">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
+          }
         </div>
       </div>
       }
@@ -418,25 +440,28 @@
           }
         </div>
         <div class="carousel-container">
+          @if (isTvFavoritesScrollable()) {
           <button class="carousel-btn carousel-btn--left" (click)="scrollCarousel($event, 'left')"
             aria-label="Scroll left">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <div class="favorites-grid" #tvFavoritesGrid>
+          }
+          <div class="carousel-grid" #tvFavoritesGrid>
             @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
-            <div class="favorite-item" (click)="router.navigate(['/tv', show.tmdbId])">
-              <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name"
-                class="favorite-poster" />
+            <div class="carousel-card" (click)="router.navigate(['/tv', show.tmdbId])">
+              <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="card-poster" />
               <div class="favorite-overlay">
                 <span class="material-symbols-outlined">visibility</span>
               </div>
             </div>
             }
           </div>
+          @if (isTvFavoritesScrollable()) {
           <button class="carousel-btn carousel-btn--right" (click)="scrollCarousel($event, 'right')"
             aria-label="Scroll right">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
+          }
         </div>
       </div>
       }

@@ -1002,12 +1002,14 @@ app-mood-timeline {
   }
 }
 
-.favorites-grid {
+.carousel-grid {
   display: flex;
   gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  width: 100%;
+  justify-content: space-between;
   padding: 8px 4px 16px;
 
   // Custom Scrollbar
@@ -1034,7 +1036,7 @@ app-mood-timeline {
 }
 
 // Card sizing for horizontal scroll - all devices
-.favorites-grid>.favorite-item {
+.carousel-grid>.carousel-card {
   flex-shrink: 0;
   width: 140px;
   scroll-snap-align: start;
@@ -1048,7 +1050,22 @@ app-mood-timeline {
   }
 }
 
-.favorite-item {
+// Badge Item sizing in carousel
+.carousel-grid>.badge-item {
+  flex-shrink: 0;
+  width: 140px;
+  scroll-snap-align: start;
+
+  @media (min-width: 768px) {
+    width: 160px;
+  }
+
+  @media (min-width: 1024px) {
+    width: 180px;
+  }
+}
+
+.carousel-card {
   position: relative;
   aspect-ratio: 2 / 3;
   border-radius: 12px;
@@ -1065,14 +1082,14 @@ app-mood-timeline {
   }
 }
 
-.favorite-poster {
+.card-poster {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: all 0.3s ease;
 }
 
-.favorite-item:hover .favorite-poster {
+.carousel-card:hover .card-poster {
   filter: brightness(0.7);
 }
 
@@ -1086,7 +1103,7 @@ app-mood-timeline {
   transition: opacity 0.3s ease;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 50%);
 
-  .favorite-item:hover & {
+  .carousel-card:hover & {
     opacity: 1;
   }
 
@@ -1907,209 +1924,147 @@ app-mood-timeline {
 }
 
 // Premium Deck - 5 Card Grid on large screens, Horizontal Slider on smaller
-.premium-deck-grid {
-  display: flex;
-  gap: 16px;
-  padding: 8px 0;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none; // Firefox
-
-  &::-webkit-scrollbar {
-    display: none; // Chrome, Safari
-  }
-
-  // On large screens (enough space for 5 cards), use grid
-  @media (min-width: 1025px) {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    overflow-x: visible;
-    scroll-snap-type: none;
-  }
-}
-
-// Card sizing for horizontal scroll
-.premium-deck-grid>.premium-card {
-  flex-shrink: 0;
-  width: 140px; // Fixed width for carousel cards
-  scroll-snap-align: start;
-
-  @media (min-width: 480px) {
-    width: 160px;
-  }
-
-  @media (min-width: 768px) {
-    width: 180px;
-  }
-
-  // On large screens, let grid control sizing
-  @media (min-width: 1025px) {
-    width: auto;
-    flex-shrink: 1;
-  }
-}
-
-.premium-card {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  aspect-ratio: 2/3;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  }
-
-  // Dimmed/Rated state
-  &.rated {
-    .card-content {
-      opacity: 0.35;
-      filter: grayscale(60%);
-    }
-
-    .feedback-buttons {
-      opacity: 0;
-      pointer-events: none;
-    }
-  }
-
-  // Replace overlay (shown when card is rated)
-  .replace-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 4;
-  }
-
-  .replace-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 16px 20px;
-    background: rgba(123, 97, 255, 0.9);
-    border: none;
-    border-radius: 12px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s;
-    backdrop-filter: blur(8px);
-
-    .material-symbols-outlined {
-      font-size: 28px;
-    }
-
-    span:not(.material-symbols-outlined):not(.quota-badge) {
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .quota-badge {
-      font-size: 0.75rem;
-      opacity: 0.8;
-    }
-
-    &:hover:not(:disabled) {
-      background: rgba(123, 97, 255, 1);
-      transform: scale(1.05);
-    }
-
-    &:disabled {
-      background: rgba(100, 100, 100, 0.6);
-      cursor: not-allowed;
-    }
-  }
-
+// Dimmed/Rated state
+// Premium Deck specific states for carousel-card
+.carousel-card.rated {
   .card-content {
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-    transition: opacity 0.3s, filter 0.3s;
-
-    .rec-poster {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    opacity: 0.35;
+    filter: grayscale(60%);
   }
 
-  .rec-score {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(123, 97, 255, 0.9);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-    z-index: 2;
-  }
-
-  // Feedback buttons at bottom of card
   .feedback-buttons {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    transition: opacity 0.3s;
-    z-index: 3;
-    opacity: 0; // Hidden by default
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.carousel-card:hover .feedback-buttons {
+  opacity: 1;
+}
+
+.feedback-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  transition: opacity 0.3s;
+  z-index: 3;
+  opacity: 0; // Hidden by default
+}
+
+.feedback-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+
+  .material-symbols-outlined {
+    font-size: 22px;
   }
 
-  // Show feedback buttons on hover
-  &:hover .feedback-buttons {
-    opacity: 1;
-  }
+  &.like {
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
 
-  .feedback-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    backdrop-filter: blur(8px);
-
-    .material-symbols-outlined {
-      font-size: 22px;
-    }
-
-    &.like {
-      background: rgba(76, 175, 80, 0.8);
-      color: white;
-
-      &:hover {
-        background: rgba(76, 175, 80, 1);
-        transform: scale(1.1);
-      }
-    }
-
-    &.dislike {
-      background: rgba(244, 67, 54, 0.8);
-      color: white;
-
-      &:hover {
-        background: rgba(244, 67, 54, 1);
-        transform: scale(1.1);
-      }
+    &:hover {
+      background: rgba(76, 175, 80, 1);
+      transform: scale(1.1);
     }
   }
+
+  &.dislike {
+    background: rgba(244, 67, 54, 0.8);
+    color: white;
+
+    &:hover {
+      background: rgba(244, 67, 54, 1);
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Replace overlay (shown when card is rated)
+.replace-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.replace-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 20px;
+  background: rgba(123, 97, 255, 0.9);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+
+  .material-symbols-outlined {
+    font-size: 28px;
+  }
+
+  span:not(.material-symbols-outlined):not(.quota-badge) {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .quota-badge {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(123, 97, 255, 1);
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    background: rgba(100, 100, 100, 0.6);
+    cursor: not-allowed;
+  }
+}
+
+.card-content {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: opacity 0.3s, filter 0.3s;
+}
+
+.rec-score {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(123, 97, 255, 0.9);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  z-index: 2;
 }
 
 .timeline-container {
@@ -2374,26 +2329,7 @@ app-mood-timeline {
 }
 
 // Badges Slider
-.badges-slider-container {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: relative;
-}
 
-.badges-slider {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none; // Hide scrollbar for Firefox
-  padding: 8px 4px;
-  flex: 1;
-
-  &::-webkit-scrollbar {
-    display: none; // Hide scrollbar for Chrome/Safari
-  }
-}
 
 .slider-btn {
   display: flex;

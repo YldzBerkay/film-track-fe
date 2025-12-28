@@ -312,12 +312,11 @@
   display: none;
   position: sticky;
   top: 88px;
-  display: flex;
   flex-direction: column;
   gap: 32px;
 
   @media (min-width: 1024px) {
-    display: block;
+    display: flex;
   }
 }
 
@@ -393,7 +392,6 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 32px;
 }
 
 .nav-item {
@@ -422,12 +420,6 @@
   .material-symbols-outlined {
     font-size: 24px;
   }
-}
-
-// Check-in card styles removed
-
-.lists-section {
-  margin-top: 32px;
 }
 
 .lists-header {
@@ -554,6 +546,10 @@
   position: sticky;
   top: 64px;
   z-index: 10;
+
+  @media (max-width: 767px) {
+    top: 56px;
+  }
 }
 
 .feed-tab {
@@ -867,7 +863,6 @@
   display: none;
   position: sticky;
   top: 88px;
-  display: flex;
   flex-direction: column;
   gap: 32px;
 

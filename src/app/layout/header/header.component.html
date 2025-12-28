@@ -69,7 +69,9 @@
                 </div>
                 }
             </div>
-            <div class="profile-wrapper">
+            
+            <!-- Profile Menu (Desktop Only) -->
+            <div class="profile-wrapper desktop-only">
                 @let currentUser = user();
                 <div class="profile-avatar" (click)="toggleProfileMenu($event)">
                     @if (currentUser?.avatar) {
@@ -93,6 +95,63 @@
                         <div class="profile-menu-item" (click)="onLogout()">
                             <span class="material-symbols-outlined">logout</span>
                             <span>{{ 'header.logout' | translate }}</span>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- Hamburger Menu (Mobile/Tablet Only) -->
+            <div class="mobile-menu-wrapper">
+                <button class="icon-btn hamburger-btn" (click)="toggleMobileMenu($event)"
+                    [class.active]="showMobileMenu()">
+                    <span class="material-symbols-outlined">{{ showMobileMenu() ? 'close' : 'menu' }}</span>
+                </button>
+
+                @if (showMobileMenu()) {
+                <div class="mobile-menu">
+                    <div class="mobile-menu-body">
+                        <!-- Navigation Items (from Sidebar) -->
+                        <div class="menu-section">
+                            <div class="menu-section-title">{{ 'header.navigation' | translate }}</div>
+                            <div class="profile-menu-item" (click)="router.navigate(['/dashboard']); closeMobileMenu()">
+                                <span class="material-symbols-outlined">home</span>
+                                <span>{{ 'nav.home' | translate }}</span>
+                            </div>
+                            <div class="profile-menu-item" (click)="router.navigate(['/movies']); closeMobileMenu()">
+                                <span class="material-symbols-outlined">movie</span>
+                                <span>{{ 'nav.films' | translate }}</span>
+                            </div>
+                            <div class="profile-menu-item" (click)="router.navigate(['/tv-shows']); closeMobileMenu()">
+                                <span class="material-symbols-outlined">tv</span>
+                                <span>{{ 'nav.tvShows' | translate }}</span>
+                            </div>
+                            <div class="profile-menu-item"
+                                (click)="router.navigate(['/profile'], {queryParams: {tab: 'lists'}}); closeMobileMenu()">
+                                <span class="material-symbols-outlined">list</span>
+                                <span>{{ 'nav.lists' | translate }}</span>
+                            </div>
+                            <div class="profile-menu-item" (click)="router.navigate(['/journal']); closeMobileMenu()">
+                                <span class="material-symbols-outlined">edit_note</span>
+                                <span>{{ 'nav.journal' | translate }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Profile Items -->
+                        <div class="menu-section">
+                            <div class="menu-section-title">{{ 'header.user' | translate }}</div>
+                            <div class="profile-menu-item" (click)="router.navigate(['/profile']); closeMobileMenu()">
+                                <span class="material-symbols-outlined">person</span>
+                                <span>{{ 'header.profile' | translate }}</span>
+                            </div>
+                            <div class="profile-menu-item" (click)="toggleLanguage()">
+                                <span class="material-symbols-outlined">language</span>
+                                <span>{{ currentLanguage() === 'en' ? 'Türkçe' : 'English' }}</span>
+                            </div>
+                            <div class="profile-menu-item logout" (click)="onLogout()">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>{{ 'header.logout' | translate }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

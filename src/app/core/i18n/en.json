@@ -14,7 +14,9 @@
         "noNotifications": "No notifications yet",
         "clearAll": "Clear all",
         "profile": "Profile",
-        "logout": "Logout"
+        "logout": "Logout",
+        "navigation": "Navigation",
+        "user": "User"
     },
     "search": {
         "resultsFor": "Search Results for \"{{query}}\"",

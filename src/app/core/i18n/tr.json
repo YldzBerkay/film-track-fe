@@ -14,7 +14,9 @@
         "noNotifications": "Henüz bildirim yok",
         "clearAll": "Tümünü Temizle",
         "profile": "Profil",
-        "logout": "Çıkış Yap"
+        "logout": "Çıkış Yap",
+        "navigation": "Navigasyon",
+        "user": "Kullanıcı"
     },
     "search": {
         "resultsFor": "\"{{query}}\" için Arama Sonuçları",

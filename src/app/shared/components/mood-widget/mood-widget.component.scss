@@ -13,6 +13,12 @@
     user-select: none;
     cursor: default;
 
+    // Compact on mobile (icon only)
+    @media (max-width: 767px) {
+        padding: 8px;
+        gap: 0;
+    }
+
     &:hover {
         background: rgba(40, 40, 40, 0.8);
         border-color: var(--mood-color);
@@ -33,6 +39,11 @@
     color: #e0e0e0;
     position: relative;
     z-index: 1;
+
+    // Hide label on mobile, show only icon
+    @media (max-width: 767px) {
+        display: none;
+    }
 }
 
 .pulse-ring {
