@@ -18,10 +18,12 @@ export class RateDialogComponent {
     hoverRating = signal<number>(0);
     selectedRating = signal<number>(0);
 
-    ngOnChanges(): void {
-        if (this.isOpen && this.initialRating) {
-            this.selectedRating.set(this.initialRating);
-        } else if (!this.isOpen) {
+    ngOnChanges(changes: any): void {
+        if (changes.initialRating && this.initialRating !== null) {
+            this.selectedRating.set(this.initialRating || 0);
+        }
+
+        if (changes.isOpen && !this.isOpen) {
             this.selectedRating.set(0);
             this.hoverRating.set(0);
         }

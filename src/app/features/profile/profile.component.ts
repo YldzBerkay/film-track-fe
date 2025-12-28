@@ -9,6 +9,7 @@ import { MoodService, MoodVector, MoodTimelineEntry, MoodComparison } from '../.
 import { RecommendationService, MoodRecommendation } from '../../core/services/recommendation.service';
 import { MoodChartComponent } from '../../shared/components/mood-chart/mood-chart.component';
 import { MoodTimelineComponent } from '../../shared/components/mood-timeline/mood-timeline.component';
+import { RateDialogComponent } from '../../shared/components/rate-dialog/rate-dialog.component';
 import { HeaderComponent } from '../../layout/header/header.component';
 import { ShareDialogComponent } from '../../shared/components/share-dialog/share-dialog.component';
 import { EditFavoritesDialogComponent } from '../../shared/components/edit-favorites-dialog/edit-favorites-dialog.component';
@@ -26,7 +27,7 @@ type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, WatchedReportsDialogComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, WatchedReportsDialogComponent, TranslatePipe, RateDialogComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -690,10 +691,9 @@ export class ProfileComponent implements OnInit {
   /**
    * Confirm rating from dialog - submits feedback and adds to watched list
    */
-  confirmRating(): void {
+  onRateRec(rating: number): void {
     const movie = this.ratingDialogMovie();
     const action = this.ratingDialogAction();
-    const rating = this.selectedRating();
 
     if (!movie) return;
 

@@ -1012,37 +1012,7 @@
 
 <!-- Rating Dialog -->
 @if (showRatingDialog() && ratingDialogMovie()) {
-<div class="rating-dialog-overlay" (click)="cancelRating()">
-  <div class="rating-dialog" (click)="$event.stopPropagation()">
-    <div class="rating-dialog-header">
-      <img [src]="tmdbService.getPosterUrl(ratingDialogMovie()!.posterPath, 'w200')" class="dialog-poster" />
-      <div class="dialog-info">
-        <h3>{{ ratingDialogMovie()!.title }}</h3>
-        <p class="dialog-action" [class.like]="ratingDialogAction() === 'like'"
-          [class.dislike]="ratingDialogAction() === 'dislike'">
-          <span class="material-symbols-outlined">{{ ratingDialogAction() === 'like' ? 'thumb_up' : 'thumb_down'
-            }}</span>
-          {{ ratingDialogAction() === 'like' ? ('profile.like' | translate) : ('profile.dislike' | translate) }}
-        </p>
-      </div>
-    </div>
-
-    <div class="rating-section">
-      <p class="rating-label">{{ 'profile.rateThisMovie' | translate }}</p>
-      <div class="star-rating">
-        @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
-        <button class="star-btn" [class.active]="star <= selectedRating()" (click)="selectedRating.set(star)">
-          <span class="material-symbols-outlined">{{ star <= selectedRating() ? 'star' : 'star_border' }}</span>
-        </button>
-        }
-      </div>
-      <span class="rating-value">{{ selectedRating() }}/10</span>
-    </div>
-
-    <div class="rating-dialog-actions">
-      <button class="btn-cancel" (click)="cancelRating()">{{ 'common.cancel' | translate }}</button>
-      <button class="btn-confirm" (click)="confirmRating()">{{ 'profile.addToWatched' | translate }}</button>
-    </div>
-  </div>
-</div>
+<app-rate-dialog [isOpen]="showRatingDialog()" [title]="ratingDialogMovie()!.title" [initialRating]="selectedRating()"
+  (close)="cancelRating()" (save)="onRateRec($event)">
+</app-rate-dialog>
 }
