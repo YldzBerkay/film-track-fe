@@ -721,141 +721,21 @@
         </div>
         }
       </div>
-      } @else if (activeTab() === 'settings' && isOwnProfile()) {
+      } @else if (activeTab() === 'settings') {
       <!-- Settings Tab Content -->
-      <div class="settings-tab-content">
-        <!-- Import Watch History Card -->
-        <div class="settings-card">
-          <div class="settings-card-header">
-            <span class="material-symbols-outlined">upload_file</span>
-            <h3>{{ 'settings.importTitle' | translate }}</h3>
-          </div>
-          <div class="settings-card-body">
-            <p class="settings-description">{{ 'settings.importInstructions' | translate }}</p>
-
-            <!-- Conflict Handling Option -->
-            <div class="conflict-option">
-              <label class="checkbox-label">
-                <input type="checkbox" [checked]="overwriteExisting()"
-                  (change)="overwriteExisting.set(!overwriteExisting())">
-                <span class="checkbox-custom"></span>
-                <span class="checkbox-text">{{ 'settings.overwriteExisting' | translate }}</span>
-              </label>
-              <p class="option-hint">{{ 'settings.overwriteHint' | translate }}</p>
-            </div>
-
-            <div class="import-section">
-              <input type="file" #csvInput (change)="onCsvFileSelected($event)" accept=".csv" hidden>
-              <button class="import-btn" (click)="csvInput.click()" [disabled]="isImporting()">
-                @if (isImporting()) {
-                <span class="spinner-small"></span>
-                <span>{{ 'settings.importProcessing' | translate }}</span>
-                } @else {
-                <span class="material-symbols-outlined">file_upload</span>
-                <span>{{ 'settings.selectCsv' | translate }}</span>
-                }
-              </button>
-            </div>
-
-            @if (importResult()) {
-            <div class="import-result">
-              @if (importResult()!.importedCount > 0) {
-              <div class="result-success">
-                <span class="material-symbols-outlined">check_circle</span>
-                <span>{{ 'settings.importSuccess' | translate:{ count: importResult()!.importedCount } }}</span>
-              </div>
-              }
-              @if (importResult()!.skippedCount > 0) {
-              <div class="result-info">
-                <span class="material-symbols-outlined">info</span>
-                <span>{{ 'settings.importSkipped' | translate:{ count: importResult()!.skippedCount } }}</span>
-              </div>
-              }
-              @if (importResult()!.failedCount > 0) {
-              <div class="result-warning">
-                <span class="material-symbols-outlined">warning</span>
-                <span>{{ 'settings.importFailed' | translate:{ count: importResult()!.failedCount } }}</span>
-                <button class="toggle-details-btn" (click)="toggleFailedItems()">
-                  {{ (showFailedItems() ? 'settings.hideFailed' : 'settings.showFailed') | translate }}
-                </button>
-              </div>
-              @if (showFailedItems()) {
-              <ul class="failed-items-list">
-                @for (item of importResult()!.failedItems; track item) {
-                <li>{{ item }}</li>
-                }
-              </ul>
-              }
-              }
-            </div>
-            }
-            @if (importResult()?.estimatedProcessingSeconds && importResult()!.estimatedProcessingSeconds > 0) {
-            <div class="processing-notification">
-              <span class="material-symbols-outlined">schedule</span>
-              <div class="notification-content">
-                <p class="notification-title">{{ 'settings.moodProcessingTitle' | translate }}</p>
-                <p class="notification-text">{{ 'settings.moodProcessingMessage' | translate:{ minutes:
-                  getEstimatedMinutes() } }}</p>
-              </div>
-            </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Password Update Card -->
-      <div class="settings-card">
-        <div class="settings-card-header">
-          <span class="material-symbols-outlined">lock</span>
-          <h3>{{ 'settings.passwordTitle' | translate }}</h3>
-        </div>
-        <div class="settings-card-body">
-          <div class="form-group">
-            <label>{{ 'settings.currentPassword' | translate }}</label>
-            <input type="password" [ngModel]="passwordData().oldPassword"
-              (ngModelChange)="updatePasswordField('oldPassword', $event)" placeholder="******" class="form-input">
-          </div>
-
-          <div class="form-group">
-            <label>{{ 'settings.newPassword' | translate }}</label>
-            <input type="password" [ngModel]="passwordData().newPassword"
-              (ngModelChange)="updatePasswordField('newPassword', $event)" placeholder="******" class="form-input">
-          </div>
-
-          <div class="form-group">
-            <label>{{ 'settings.confirmPassword' | translate }}</label>
-            <input type="password" [ngModel]="passwordData().confirmPassword"
-              (ngModelChange)="updatePasswordField('confirmPassword', $event)" placeholder="******" class="form-input">
-          </div>
-
-          @if (passwordMessage()) {
-          <div class="message-alert" [class.success]="passwordMessage()?.type === 'success'"
-            [class.error]="passwordMessage()?.type === 'error'">
-            {{ passwordMessage()?.text }}
-          </div>
-          }
-
-          <button class="settings-btn" (click)="updatePassword()" [disabled]="isUpdatingPassword()">
-            @if (isUpdatingPassword()) {
-            <span class="spinner-small"></span>
-            } @else {
-            <span class="material-symbols-outlined">save</span>
-            }
-            {{ 'settings.updatePassword' | translate }}
-          </button>
-        </div>
-      </div>
-
-      <!-- TMDB Legal Footer -->
-      <div class="tmdb-legal-footer">
-        <img [src]="tmdbService.tmdbLogoUrl" alt="TMDB" class="tmdb-logo">
-        <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
-        <small>ZELOG © {{ currentYear }}</small>
-      </div>
+      <app-profile-settings></app-profile-settings>
       }
     </div>
   </div>
 </div>
+
+<!-- TMDB Legal Footer -->
+<div class="tmdb-legal-footer">
+  <img [src]="tmdbService.tmdbLogoUrl" alt="TMDB" class="tmdb-logo">
+  <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  <small>ZELOG © {{ currentYear }}</small>
+</div>
+}
 
 <!-- Followers/Following Dialog -->
 @if (showUserListDialog()) {
@@ -1002,6 +882,7 @@
     </div>
   </div>
 </div>
+}
 
 <!-- Mood Comparison Dialog -->
 @if (showComparisonDialog()) {
@@ -1073,8 +954,6 @@
     </div>
   </div>
 </div>
-}
-}
 }
 <app-share-dialog [isOpen]="showShareDialog()" [profile]="profile()" [moodData]="moodData()" [badges]="badges()"
   [close]="closeShareDialog">

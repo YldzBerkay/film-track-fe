@@ -30,6 +30,7 @@ import { TabNavigationComponent, TabItem } from '../../shared/components/tab-nav
 import { AppCarouselComponent } from '../../shared/components/app-carousel/app-carousel.component';
 import { MediaCardComponent } from '../../shared/components/media-card/media-card.component';
 import { ProfileStateService } from '../../core/services/profile-state.service';
+import { ProfileSettingsComponent } from './tabs/profile-settings/profile-settings.component';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'settings';
 
@@ -55,7 +56,8 @@ type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'set
     ProfileStatsComponent,
     TabNavigationComponent,
     AppCarouselComponent,
-    MediaCardComponent
+    MediaCardComponent,
+    ProfileSettingsComponent
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',

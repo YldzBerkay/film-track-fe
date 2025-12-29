@@ -1,9 +1,154 @@
 .settings-container {
-    padding-top: 16px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    max-width: 600px;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+
+    .subscription-card {
+        .subscription-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+
+            .status-section {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+
+                @media (min-width: 640px) {
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    font-size: 0.95rem;
+
+                    &.free {
+                        background-color: var(--surface-hover);
+                        color: var(--text-secondary);
+                        border: 1px solid var(--border-color);
+                    }
+
+                    &.premium {
+                        background: linear-gradient(135deg, #FFD700, #FDB931);
+                        color: #1a1a1a;
+                        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+
+                        .material-symbols-outlined {
+                            font-variation-settings: 'FILL' 1;
+                        }
+                    }
+                }
+
+                .expiry-date {
+                    color: var(--text-secondary);
+                    font-size: 0.9rem;
+                }
+            }
+
+            .redeem-section {
+                border-top: 1px solid var(--border-color);
+                padding-top: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+
+                label {
+                    color: var(--text-primary);
+                    font-weight: 500;
+                }
+
+                .input-group {
+                    display: flex;
+                    gap: 0.75rem;
+
+                    input {
+                        flex: 1;
+                        padding: 0.75rem 1rem;
+                        border-radius: 8px;
+                        background-color: var(--surface-hover);
+                        border: 1px solid var(--border-color);
+                        color: var(--text-primary);
+                        font-size: 0.95rem;
+                        transition: all 0.2s ease;
+
+                        &:focus {
+                            outline: none;
+                            border-color: var(--primary-color);
+                            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+                        }
+
+                        &:disabled {
+                            opacity: 0.7;
+                            cursor: not-allowed;
+                        }
+                    }
+
+                    .redeem-btn {
+                        padding: 0 1.5rem;
+                        border-radius: 8px;
+                        background-color: var(--primary-color);
+                        color: white;
+                        border: none;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 100px;
+
+                        &:hover:not(:disabled) {
+                            background-color: var(--primary-hover);
+                            transform: translateY(-1px);
+                        }
+
+                        &:disabled {
+                            background-color: var(--surface-hover);
+                            color: var(--text-disabled);
+                            cursor: not-allowed;
+                        }
+                    }
+                }
+
+                .message {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    margin-top: 0.5rem;
+                    animation: slideDown 0.3s ease-out;
+
+                    &.success {
+                        background-color: rgba(var(--success-rgb), 0.1);
+                        color: var(--success-color);
+                        border: 1px solid rgba(var(--success-rgb), 0.2);
+                    }
+
+                    &.error {
+                        background-color: rgba(var(--error-rgb), 0.1);
+                        color: var(--error-color);
+                        border: 1px solid rgba(var(--error-rgb), 0.2);
+                    }
+
+                    .material-symbols-outlined {
+                        font-size: 1.25rem;
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Settings Card

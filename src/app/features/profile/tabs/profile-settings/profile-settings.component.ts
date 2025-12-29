@@ -10,6 +10,8 @@ import { TranslatePipe, TranslationService } from '../../../../core/i18n';
 import { ProfileStateService } from '../../../../core/services/profile-state.service';
 import { UserService } from '../../../../core/services/user.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { SubscriptionService } from '../../../../core/services/subscription.service';
+import { SubscriptionTier } from '../../../../core/models/subscription.types';
 
 interface ImportResult {
     importedCount: number;
@@ -39,6 +41,7 @@ export class ProfileSettingsComponent {
     private authService = inject(AuthService);
     private translationService = inject(TranslationService);
 
+
     isOwnProfile = this.profileState.isOwnProfile;
 
     // CSV Import state
@@ -53,6 +56,51 @@ export class ProfileSettingsComponent {
     passwordMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
     currentYear = new Date().getFullYear();
+
+    // Subscription state
+    promoCode = signal('');
+    isRedeeming = signal(false);
+    subscriptionMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
+    user = this.authService.user;
+    SubscriptionTier = SubscriptionTier; // For template access
+    private subscriptionService = inject(SubscriptionService);
+
+    // ... existing methods ...
+
+    async redeemCode(): Promise<void> {
+        const code = this.promoCode().trim();
+        if (!code) {
+            this.subscriptionMessage.set({
+                type: 'error',
+                text: this.translationService.t('settings.codeRequired')
+            });
+            return;
+        }
+
+        this.isRedeeming.set(true);
+        this.subscriptionMessage.set(null);
+
+        this.subscriptionService.redeem(code).subscribe({
+            next: (response) => {
+                if (response.success) {
+                    this.subscriptionMessage.set({
+                        type: 'success',
+                        text: this.translationService.t('settings.redeemSuccess')
+                    });
+                    this.authService.refreshAccessToken().subscribe();
+                    this.promoCode.set('');
+                }
+                this.isRedeeming.set(false);
+            },
+            error: (err) => {
+                this.subscriptionMessage.set({
+                    type: 'error',
+                    text: err.error?.message || this.translationService.t('settings.redeemFailed')
+                });
+                this.isRedeeming.set(false);
+            }
+        });
+    }
 
     onCsvFileSelected(event: Event): void {
         const input = event.target as HTMLInputElement;

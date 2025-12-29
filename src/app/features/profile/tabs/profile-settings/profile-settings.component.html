@@ -1,5 +1,56 @@
 @if (isOwnProfile()) {
 <div class="settings-container">
+    <!-- Subscription & Billing Section -->
+    <div class="settings-card subscription-card">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">card_membership</span>
+            <h3>{{ 'settings.subscriptionTitle' | translate }}</h3>
+        </div>
+
+        <div class="subscription-content">
+            <div class="status-section">
+                <span>{{ 'settings.currentPlan' | translate }}:</span>
+                @if (user()?.subscription?.tier === SubscriptionTier.PREMIUM || user()?.subscription?.tier ===
+                SubscriptionTier.PREMIUM_PLUS) {
+                <span class="badge premium">
+                    <span class="material-symbols-outlined">workspace_premium</span>
+                    {{ 'settings.premiumMember' | translate }}
+                </span>
+                @if (user()?.subscription?.expiresAt) {
+                <p class="expiry-date">
+                    {{ 'settings.validUntil' | translate }}: {{ user()?.subscription?.expiresAt | date:'mediumDate' }}
+                </p>
+                }
+                } @else {
+                <span class="badge free">{{ 'settings.freePlan' | translate }}</span>
+                }
+            </div>
+
+            <div class="redeem-section">
+                <label for="promoCode">{{ 'settings.havePromoCode' | translate }}</label>
+                <div class="input-group">
+                    <input type="text" id="promoCode" [ngModel]="promoCode()" (ngModelChange)="promoCode.set($event)"
+                        placeholder="PROMO2025" [disabled]="isRedeeming()" />
+                    <button class="redeem-btn" (click)="redeemCode()" [disabled]="isRedeeming() || !promoCode()">
+                        @if (isRedeeming()) {
+                        <div class="spinner-small"></div>
+                        } @else {
+                        {{ 'settings.redeem' | translate }}
+                        }
+                    </button>
+                </div>
+
+                @if (subscriptionMessage(); as msg) {
+                <div class="message" [class.success]="msg.type === 'success'" [class.error]="msg.type === 'error'">
+                    <span class="material-symbols-outlined">{{ msg.type === 'success' ? 'check_circle' : 'error'
+                        }}</span>
+                    <span>{{ msg.text }}</span>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
     <!-- CSV Import Section -->
     <div class="settings-card">
         <div class="settings-card-header">
