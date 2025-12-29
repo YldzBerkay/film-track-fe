@@ -48,6 +48,12 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'bookmarks',
+    loadComponent: () =>
+      import('./features/bookmarks/bookmarks.component').then((m) => m.BookmarksComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'movie/:id',
     loadComponent: () =>
       import('./features/movies/movie-detail/movie-detail.component').then(

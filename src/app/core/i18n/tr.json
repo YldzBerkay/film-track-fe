@@ -5,6 +5,7 @@
         "tvShows": "Diziler",
         "lists": "Listeler",
         "journal": "Günlük",
+        "bookmarks": "Kaydedilenler",
         "myProfile": "Profilim"
     },
     "header": {
@@ -461,5 +462,11 @@
         "reviewed": "inceledi",
         "watchedEpisode": "bölüm izledi",
         "moodPick": "Mood Seçimi"
+    },
+    "bookmarks": {
+        "subtitle": "Kaydettiğiniz aktiviteler ve incelemeler",
+        "empty": "Henüz kayıt yok",
+        "emptyHint": "Daha sonra erişmek için akıştan aktiviteleri kaydedin",
+        "remove": "Kaydı kaldır"
     }
 }

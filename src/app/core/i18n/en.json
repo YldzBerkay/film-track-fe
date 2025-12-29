@@ -5,6 +5,7 @@
         "tvShows": "TV Shows",
         "lists": "Lists",
         "journal": "Journal",
+        "bookmarks": "Bookmarks",
         "myProfile": "My Profile"
     },
     "header": {
@@ -461,5 +462,11 @@
         "reviewed": "reviewed",
         "watchedEpisode": "watched episode",
         "moodPick": "Mood Pick"
+    },
+    "bookmarks": {
+        "subtitle": "Your saved activities and reviews",
+        "empty": "No bookmarks yet",
+        "emptyHint": "Save activities from the feed to access them later",
+        "remove": "Remove bookmark"
     }
 }

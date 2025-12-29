@@ -1,0 +1,45 @@
+<app-dashboard-layout activeNav="bookmarks">
+    <header class="page-header">
+        <h1 class="page-title">
+            <span class="material-symbols-outlined">bookmark</span>
+            {{ 'nav.bookmarks' | translate }}
+        </h1>
+        <p class="page-subtitle">{{ 'bookmarks.subtitle' | translate }}</p>
+    </header>
+
+    <div class="feed-content">
+        @if (isLoading() && activities().length === 0) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>{{ 'common.loading' | translate }}</p>
+        </div>
+        } @else if (activities().length === 0) {
+        <div class="empty-state">
+            <span class="material-symbols-outlined empty-icon">bookmark_border</span>
+            <h2>{{ 'bookmarks.empty' | translate }}</h2>
+            <p>{{ 'bookmarks.emptyHint' | translate }}</p>
+        </div>
+        } @else {
+        @for (activity of activities(); track activity._id) {
+        <div class="bookmark-item">
+            <app-activity-card [activity]="activity" [viewMode]="'feed'"></app-activity-card>
+            <button class="remove-btn" (click)="removeBookmark(activity)" title="{{ 'bookmarks.remove' | translate }}">
+                <span class="material-symbols-outlined">bookmark_remove</span>
+            </button>
+        </div>
+        }
+
+        @if (hasMore()) {
+        <div class="load-more-container">
+            <button class="load-more-btn" (click)="loadMore()" [disabled]="isLoading()">
+                @if (isLoading()) {
+                {{ 'common.loading' | translate }}
+                } @else {
+                {{ 'profile.loadMore' | translate }}
+                }
+            </button>
+        </div>
+        }
+        }
+    </div>
+</app-dashboard-layout>
