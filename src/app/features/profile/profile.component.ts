@@ -112,7 +112,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   isPremiumDeckScrollable = signal(false);
   isMoviesFavoritesScrollable = signal(false);
   isTvFavoritesScrollable = signal(false);
-  isActivitiesScrollable = signal(false);
 
   // Followers/Following dialog state
   showUserListDialog = signal(false);
@@ -239,13 +238,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       }
     });
 
-    // Check scrollability when profile loads
-    effect(() => {
-      const p = this.profile();
-      if (p?.recentActivities?.length) {
-        setTimeout(() => this.checkActivitiesScrollable(), 0);
-      }
-    });
+
   }
 
   reloadLanguageDependentContent(): void {
@@ -1149,27 +1142,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     }
   }
 
-  @ViewChild('activitiesContainer') activitiesContainer!: ElementRef<HTMLDivElement>;
 
-  scrollActivities(direction: 'left' | 'right'): void {
-    if (!this.activitiesContainer) return;
-
-    const container = this.activitiesContainer.nativeElement;
-    const scrollAmount = 300;
-
-    if (direction === 'left') {
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  }
-
-  private checkActivitiesScrollable(): void {
-    if (this.activitiesContainer?.nativeElement) {
-      const el = this.activitiesContainer.nativeElement;
-      this.isActivitiesScrollable.set(el.scrollWidth > el.clientWidth);
-    }
-  }
 
   openMoodComparison(): void {
     const profileData = this.profile();

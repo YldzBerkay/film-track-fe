@@ -1010,7 +1010,7 @@ app-mood-timeline {
   scroll-behavior: smooth;
   width: 100%;
   justify-content: space-between;
-  padding: 8px 4px 16px;
+  padding: 15px 5px 10px;
 
   // Custom Scrollbar
   scrollbar-width: thin;
@@ -1138,6 +1138,8 @@ app-mood-timeline {
 .activity-card {
   flex-shrink: 0;
   width: 260px;
+  aspect-ratio: auto;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   gap: 12px;

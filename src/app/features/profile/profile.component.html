@@ -471,55 +471,7 @@
       }
 
       <!-- Recent Activity Section -->
-      @if (profileData.recentActivities.length > 0) {
-      <div class="activity-section">
-        <div class="section-header">
-          <h2 class="section-title">
-            <span class="material-symbols-outlined section-icon">history</span>
-            {{ 'profile.recentActivity' | translate }}
-          </h2>
-          <a class="section-view-all" href="#">
-            {{ 'profile.viewAll' | translate }}
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </a>
-        </div>
-        <div class="carousel-container">
-          @if (isActivitiesScrollable()) {
-          <button class="carousel-btn carousel-btn--left" (click)="scrollActivities('left')">
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-          }
 
-          <div class="carousel-grid" #activitiesContainer>
-            @for (activity of profileData.recentActivities; track activity._id) {
-            <div class="carousel-card activity-card">
-              <div class="activity-image">
-                <img [src]="tmdbService.getPosterUrl(activity.mediaPosterPath, 'w500')" [alt]="activity.mediaTitle" />
-                @if (activity.rating) {
-                <div class="activity-rating-badge">
-                  <span class="material-symbols-outlined">star</span>
-                  <span>{{ activity.rating.toFixed(1) }}</span>
-                </div>
-                }
-              </div>
-              <div class="activity-info">
-                <h3 class="activity-title">{{ activity.mediaTitle }}</h3>
-                <div class="activity-meta">
-                  <span class="activity-time">{{ getTimeAgo(activity.createdAt) }}</span>
-                </div>
-              </div>
-            </div>
-            }
-          </div>
-
-          @if (isActivitiesScrollable()) {
-          <button class="carousel-btn carousel-btn--right" (click)="scrollActivities('right')">
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-          }
-        </div>
-      </div>
-      }
       } @else if (activeTab() === 'lists') {
       <!-- Lists Tab Content -->
       <div class="lists-tab-content">
