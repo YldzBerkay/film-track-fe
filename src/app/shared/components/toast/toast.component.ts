@@ -2,6 +2,7 @@ import { Component, inject, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SocketService, Notification } from '../../../core/services/socket.service';
 import { TranslatePipe } from '../../../core/i18n';
+import { ToastService, ToastMessage } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-toast',
@@ -18,6 +19,15 @@ import { TranslatePipe } from '../../../core/i18n';
               }
               @case ('like') {
                 <span class="material-symbols-outlined">favorite</span>
+              }
+              @case ('error') {
+                <span class="material-symbols-outlined">error</span>
+              }
+              @case ('warning') {
+                <span class="material-symbols-outlined">warning</span>
+              }
+              @case ('success') {
+                <span class="material-symbols-outlined">check_circle</span>
               }
               @default {
                 <span class="material-symbols-outlined">notifications</span>
@@ -77,6 +87,10 @@ import { TranslatePipe } from '../../../core/i18n';
       border-left: 3px solid #ff6b6b;
     }
 
+    .toast--error {
+      border-left: 3px solid #ff4444;
+    }
+
     .toast-icon {
       width: 40px;
       height: 40px;
@@ -97,6 +111,14 @@ import { TranslatePipe } from '../../../core/i18n';
       
       .material-symbols-outlined {
         color: #ff6b6b;
+      }
+    }
+
+    .toast--error .toast-icon {
+      background: rgba(255, 68, 68, 0.15);
+      
+      .material-symbols-outlined {
+        color: #ff4444;
       }
     }
 
@@ -137,21 +159,31 @@ import { TranslatePipe } from '../../../core/i18n';
 })
 export class ToastComponent {
   private socketService = inject(SocketService);
+  private toastService = inject(ToastService);
 
-  currentToast = signal<Notification | null>(null);
+  // Use a unified type for toast display
+  currentToast = signal<any | null>(null);
   private toastTimeout: any;
 
   constructor() {
-    // React to NEW real-time notifications only (not ones loaded from DB)
+    // React to NEW real-time notifications from Socket
     effect(() => {
       const newNotification = this.socketService.newNotification();
       if (newNotification) {
         this.showToast(newNotification);
       }
     });
+
+    // React to local ToastService signals
+    effect(() => {
+      const localToast = this.toastService.toast();
+      if (localToast) {
+        this.showToast(localToast);
+      }
+    });
   }
 
-  showToast(notification: Notification): void {
+  showToast(notification: Notification | any): void {
     this.currentToast.set(notification);
 
     // Auto-dismiss after 5 seconds

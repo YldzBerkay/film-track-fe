@@ -17,11 +17,11 @@ export class InteractionService {
 
     constructor(private http: HttpClient) { }
 
-    toggleReaction(targetId: string, targetType: 'activity' | 'comment', reactionType: 'like' | 'dislike'): Observable<ApiResponse<ReactionResponse>> {
+    toggleReaction(targetId: string, targetType: 'activity' | 'comment', action: 'like' | 'dislike' | 'none'): Observable<ApiResponse<ReactionResponse>> {
         return this.http.post<ApiResponse<ReactionResponse>>(`${this.apiUrl}/reaction`, {
             targetId,
             targetType,
-            reactionType
+            action
         });
     }
 }

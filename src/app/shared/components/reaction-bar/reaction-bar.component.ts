@@ -1,13 +1,14 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, Subscription } from 'rxjs';
-import { debounceTime, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
 import { InteractionService } from '../../../core/services/interaction.service';
+import { ToastService } from '../../../core/services/toast.service';
 
-interface VoteAction {
+interface ReactionPayload {
+    action: 'like' | 'dislike' | 'none';
     targetId: string;
     targetType: 'activity' | 'comment';
-    reactionType: 'like' | 'dislike';
 }
 
 @Component({
@@ -18,107 +19,152 @@ interface VoteAction {
     styleUrls: ['./reaction-bar.component.scss']
 })
 export class ReactionBarComponent implements OnInit, OnDestroy {
-    @Input() likesCount: number = 0;
-    @Input() dislikesCount: number = 0;
-    @Input() userVote: 'like' | 'dislike' | null = null;
     @Input() targetId!: string;
     @Input() targetType!: 'activity' | 'comment';
 
-    // Debounce subject for vote actions
-    private voteSubject = new Subject<VoteAction>();
-    private voteSubscription?: Subscription;
+    // Inputs for initial state - using setters to init signals
+    @Input() set likesCount(val: number) {
+        this._initialLikes = val;
+        if (this.currentStatus() === 'none') this.displayLikes.set(val); // Only set if not already modified?
+        // Actually, inputs might update from parent when list refreshes.
+        // We should respect parent update BUT if user is interacting, we might have local conflict.
+        // For now, accept parent input as truth if we are not "dirty"? 
+        // Or simpler: Just update _initial and re-calc.
+        this.updateCounts();
+    }
+    @Input() set dislikesCount(val: number) {
+        this._initialDislikes = val;
+        this.updateCounts();
+    }
+    @Input() set userVote(val: 'like' | 'dislike' | null) {
+        const status = val || 'none';
+        this._initialVote = status;
+        this.serverState = status; // Assume input mirrors server
 
-    // Store previous state for revert on error
-    private previousState = {
-        likesCount: 0,
-        dislikesCount: 0,
-        userVote: null as 'like' | 'dislike' | null
-    };
+        // If we are not actively voting (or maybe even if we are?), sync current status?
+        // If user is clicking, we shouldn't jump?
+        // But usually input updates happen on load.
+        // Let's set currentStatus only if it's the first load or explicit refresh.
+        // For simplicity: Update signals.
+        this.currentStatus.set(status);
+        this.updateCounts();
+    }
 
-    isVoting = false;
+    // Internal state management
+    private _initialLikes = 0;
+    private _initialDislikes = 0;
+    private _initialVote: 'like' | 'dislike' | 'none' = 'none';
 
-    constructor(private interactionService: InteractionService) { }
+    // Signals for UI
+    currentStatus = signal<'like' | 'dislike' | 'none'>('none');
+    displayLikes = signal(0);
+    displayDislikes = signal(0);
+
+    isVoting = signal(false);
+
+    private reactionSubject = new Subject<ReactionPayload>();
+    private subscription?: Subscription;
+
+    // Track the last confirmed server state
+    private serverState: 'like' | 'dislike' | 'none' = 'none';
+
+    constructor(
+        private interactionService: InteractionService,
+        private toastService: ToastService
+    ) { }
 
     ngOnInit(): void {
-        // Subscribe to debounced vote actions
-        this.voteSubscription = this.voteSubject.pipe(
-            debounceTime(1000), // Wait 1 second after the LAST click
-            switchMap(action => this.interactionService.toggleReaction(
-                action.targetId,
-                action.targetType,
-                action.reactionType
-            ))
+        this.subscription = this.reactionSubject.pipe(
+            debounceTime(1000), // Wait for user to settle
+            distinctUntilChanged((prev, curr) => prev.action === curr.action), // Don't send if same as last sent
+            switchMap(payload => {
+                this.isVoting.set(true);
+                return this.interactionService.toggleReaction(payload.targetId, payload.targetType, payload.action);
+            })
         ).subscribe({
             next: (res) => {
-                this.isVoting = false;
+                this.isVoting.set(false);
                 if (res.success && res.data) {
-                    // Sync with server truth
-                    this.likesCount = res.data.likesCount;
-                    this.dislikesCount = res.data.dislikesCount;
-                    this.userVote = res.data.userVote;
+                    // Sync successful
+                    this.serverState = res.data.userVote || 'none';
+                    // Optional: Update initial baselines from server response to be precise
+                    if (res.data.likesCount !== undefined) this._initialLikes = res.data.likesCount;
+                    if (res.data.dislikesCount !== undefined) this._initialDislikes = res.data.dislikesCount;
+                    // Note: We need to adjust _initialLikes carefully. 
+                    // The server response includes the user's vote.
+                    // Our calculate logic assumes _initial is "without user vote"? No, usually Input is "current total".
+                    // Let's rely on standard inputs or just use returned values if they match state.
+
+                    if (this.currentStatus() === this.serverState) {
+                        this.displayLikes.set(res.data.likesCount);
+                        this.displayDislikes.set(res.data.dislikesCount);
+                    }
                 }
             },
             error: (err) => {
-                this.isVoting = false;
-                // Revert optimistic UI on error
-                this.revertOptimisticUI();
+                this.isVoting.set(false);
+                // Rollback UI to last known server state
+                this.currentStatus.set(this.serverState);
+                this.updateCounts();
 
                 if (err.status === 429) {
-                    console.warn('Rate limited: Too many reaction attempts');
+                    const msg = err.error?.message || 'Rate limit exceeded';
+                    this.toastService.show(msg, 'error');
+                } else {
+                    this.toastService.show('Connection failed, vote reverted', 'error');
                 }
             }
         });
     }
 
     ngOnDestroy(): void {
-        this.voteSubscription?.unsubscribe();
+        this.subscription?.unsubscribe();
     }
 
-    vote(type: 'like' | 'dislike') {
-        // Store previous state before optimistic update
-        this.previousState = {
-            likesCount: this.likesCount,
-            dislikesCount: this.dislikesCount,
-            userVote: this.userVote
-        };
+    onReact(action: 'like' | 'dislike') {
+        const oldState = this.currentStatus();
+        let newState: 'like' | 'dislike' | 'none' = action;
 
-        // Optimistic UI Update (immediate)
-        if (this.userVote === type) {
-            // Toggle OFF
-            this.userVote = null;
-            if (type === 'like') this.likesCount--;
-            else this.dislikesCount--;
-        } else {
-            // Toggle ON (or Switch)
-            if (this.userVote === 'like') {
-                // Switching from Like to Dislike
-                this.likesCount--;
-                this.dislikesCount++;
-            } else if (this.userVote === 'dislike') {
-                // Switching from Dislike to Like
-                this.dislikesCount--;
-                this.likesCount++;
-            } else {
-                // New Vote
-                if (type === 'like') this.likesCount++;
-                else this.dislikesCount++;
-            }
-            this.userVote = type;
+        if (oldState === action) {
+            newState = 'none'; // Toggle off
         }
 
-        this.isVoting = true;
+        // 1. Update UI Signal Immediately (Optimistic)
+        this.currentStatus.set(newState);
+        this.updateCounts();
 
-        // Push to debounced subject (NOT direct API call)
-        this.voteSubject.next({
+        // 2. Queue network request
+        this.reactionSubject.next({
+            action: newState,
             targetId: this.targetId,
-            targetType: this.targetType,
-            reactionType: type
+            targetType: this.targetType
         });
     }
 
-    private revertOptimisticUI(): void {
-        this.likesCount = this.previousState.likesCount;
-        this.dislikesCount = this.previousState.dislikesCount;
-        this.userVote = this.previousState.userVote;
+    private updateCounts() {
+        const current = this.currentStatus();
+        const initial = this._initialVote;
+
+        let likes = this._initialLikes;
+        let dislikes = this._initialDislikes;
+
+        // Logic:
+        // Start from _initial counts (which include _initialVote).
+        // If generic state changed, adjust generic counts.
+
+        // Remove initial vote contribution
+        if (initial === 'like') likes--;
+        if (initial === 'dislike') dislikes--;
+
+        // Add current vote contribution
+        if (current === 'like') likes++;
+        if (current === 'dislike') dislikes++;
+
+        // Safety: don't go below 0
+        if (likes < 0) likes = 0;
+        if (dislikes < 0) dislikes = 0;
+
+        this.displayLikes.set(likes);
+        this.displayDislikes.set(dislikes);
     }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal, OnChanges, SimpleChanges, Signal } from '@angular/core';
+import { Component, Input, OnInit, signal, OnChanges, SimpleChanges, Signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommentService, Comment } from '../../../../core/services/comment.service';
@@ -30,6 +30,7 @@ import { TranslatePipe } from '../../../../core/i18n';
 export class CommentListComponent implements OnChanges {
     @Input() activityId!: string;
     @Input() initialCount: number = 0;
+    @Output() commentAdded = new EventEmitter<void>();
 
     comments = signal<CommentNode[]>([]);
     isLoading = signal(false);
@@ -212,6 +213,7 @@ export class CommentListComponent implements OnChanges {
                     const newNode = this.mapToNode(res.data as Comment, 0);
                     this.comments.update(c => [newNode, ...c]);
                     this.newCommentText.set(''); // Clear only on success
+                    this.commentAdded.emit();
                 }
                 this.isSubmitting.set(false);
             },

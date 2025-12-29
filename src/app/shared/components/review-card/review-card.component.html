@@ -84,7 +84,8 @@
     <!-- Nested Comments -->
     @if (showComments()) {
     <div class="comments-section">
-        <app-comment-list [activityId]="activity._id" [initialCount]="activity.commentCount">
+        <app-comment-list [activityId]="activity._id" [initialCount]="activity.commentCount"
+            (commentAdded)="activity.commentCount = (activity.commentCount || 0) + 1">
         </app-comment-list>
     </div>
     }
