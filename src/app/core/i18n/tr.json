@@ -171,7 +171,8 @@
         "noReviews": "Henüz inceleme yok",
         "noComments": "Henüz yorum yok",
         "noRatings": "Henüz puanlama yok",
-        "noImports": "Henüz içe aktarım yok"
+        "noImports": "Henüz içe aktarım yok",
+        "noLikes": "Henüz beğeni yok. İncelemeleri ve listeleri beğenmeye başla!"
     },
     "privacy": {
         "everyone": "Herkes",

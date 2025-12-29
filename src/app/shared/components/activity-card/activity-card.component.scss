@@ -46,6 +46,52 @@
     }
 }
 
+// Reaction badge for likes tab
+.reaction-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+
+    .material-symbols-outlined {
+        font-size: 18px;
+        font-variation-settings: 'FILL' 1;
+    }
+
+    &.like {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    &.dislike {
+        background: rgba(100, 116, 139, 0.15);
+        color: #64748b;
+        border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+}
+
+// Wrapper for review cards with reaction badge
+.review-card-wrapper {
+    position: relative;
+
+    &.clickable {
+        cursor: pointer;
+    }
+
+    .reaction-badge {
+        top: 16px;
+        right: 16px;
+    }
+}
+
+
 // Clickable wrapper for review cards
 .clickable {
     cursor: pointer;

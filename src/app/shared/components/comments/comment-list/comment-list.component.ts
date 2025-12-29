@@ -41,6 +41,7 @@ export class CommentListComponent implements OnChanges {
     // New Comment Input
     newCommentText = signal('');
     isSubmitting = signal(false);
+    errorMessage = signal<string | null>(null);
 
     constructor(
         private commentService: CommentService,
@@ -199,6 +200,8 @@ export class CommentListComponent implements OnChanges {
         if (!text || this.isSubmitting()) return;
 
         this.isSubmitting.set(true);
+        this.errorMessage.set(null); // Clear previous error
+
         this.commentService.createComment({
             activityId: this.activityId,
             text
@@ -208,11 +211,20 @@ export class CommentListComponent implements OnChanges {
                     // Add to top of list (Level 0)
                     const newNode = this.mapToNode(res.data as Comment, 0);
                     this.comments.update(c => [newNode, ...c]);
-                    this.newCommentText.set('');
+                    this.newCommentText.set(''); // Clear only on success
                 }
                 this.isSubmitting.set(false);
             },
-            error: () => this.isSubmitting.set(false)
+            error: (err) => {
+                this.isSubmitting.set(false);
+                // Show error from backend (rate limit, duplicate, etc.)
+                const message = err.error?.message || 'Failed to post comment. Please try again.';
+                this.errorMessage.set(message);
+                // Do NOT clear text - user shouldn't lose what they wrote
+
+                // Auto-clear error after 5 seconds
+                setTimeout(() => this.errorMessage.set(null), 5000);
+            }
         });
     }
 

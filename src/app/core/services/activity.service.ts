@@ -169,5 +169,13 @@ export class ActivityService {
 
     return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/saved`, { params });
   }
+
+  getUserLikedActivities(userId: string, page: number = 1, limit: number = 20): Observable<ApiResponse<FeedResponse>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/user/${userId}/likes`, { params });
+  }
 }
 

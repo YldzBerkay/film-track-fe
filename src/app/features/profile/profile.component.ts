@@ -129,6 +129,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   activityFilter = signal<'ALL' | 'REVIEWS' | 'COMMENTS' | 'RATINGS' | 'IMPORTS'>('ALL');
   activityPage = signal(1);
   hasMoreActivities = signal(true);
+
+  // Likes Tab State
+  likedActivities = signal<Activity[]>([]);
+  isLoadingLikes = signal(false);
+  likesPage = signal(1);
+  hasMoreLikes = signal(true);
+
   moodData = signal<MoodVector | null>(null);
   isLoadingMood = signal(false);
   moodTimeline = signal<MoodTimelineEntry[]>([]);
@@ -431,6 +438,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (this.activeTab() === 'activities') {
       this.loadActivities();
     }
+    if (this.activeTab() === 'likes') {
+      this.loadLikedActivities();
+    }
 
     // Load mood data if viewing own profile
     if (this.isOwnProfile()) {
@@ -633,6 +643,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       this.loadActivities();
     }
 
+    if (tab === 'likes' && this.likedActivities().length === 0) {
+      this.loadLikedActivities();
+    }
+
     // Update URL query params without navigation
     this.router.navigate([], {
       relativeTo: this.route,
@@ -680,6 +694,36 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (!this.isLoadingActivities() && this.hasMoreActivities()) {
       this.activityPage.update(p => p + 1);
       this.loadActivities();
+    }
+  }
+
+  loadLikedActivities(): void {
+    const profile = this.profile();
+    if (!profile) return;
+
+    const targetUserId = profile.user.id;
+    this.isLoadingLikes.set(true);
+
+    this.activityService.getUserLikedActivities(targetUserId, this.likesPage(), 20).subscribe({
+      next: (res) => {
+        if (res.success) {
+          if (this.likesPage() === 1) {
+            this.likedActivities.set(res.data.activities);
+          } else {
+            this.likedActivities.update(a => [...a, ...res.data.activities]);
+          }
+          this.hasMoreLikes.set(res.data.pagination.page < res.data.pagination.totalPages);
+        }
+        this.isLoadingLikes.set(false);
+      },
+      error: () => this.isLoadingLikes.set(false)
+    });
+  }
+
+  loadMoreLikes(): void {
+    if (!this.isLoadingLikes() && this.hasMoreLikes()) {
+      this.likesPage.update(p => p + 1);
+      this.loadLikedActivities();
     }
   }
 

@@ -55,6 +55,18 @@ export interface User {
     title: string;
   };
   blacklistedMovies?: number[];
+  moodProfile?: {
+    adrenaline: number;
+    melancholy: number;
+    joy: number;
+    tension: number;
+    intellect: number;
+    romance: number;
+    wonder: number;
+    nostalgia: number;
+    darkness: number;
+    inspiration: number;
+  };
 }
 
 @Injectable({

@@ -17,6 +17,7 @@ export class ActivityCardComponent {
     @Input({ required: true }) activity!: Activity;
     @Input() viewMode: 'feed' | 'detail' = 'feed';
     @Input() highlightCommentId?: string;
+    @Input() showReaction?: 'like' | 'dislike'; // Show reaction badge when set
 
     private router = inject(Router);
     tmdbService = inject(TMDBService);

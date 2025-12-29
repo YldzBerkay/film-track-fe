@@ -689,6 +689,38 @@
         </div>
         }
       </div>
+      } @else if (activeTab() === 'likes') {
+      <!-- Likes Tab Content -->
+      <div class="likes-tab-content">
+        @if (isLoadingLikes() && likedActivities().length === 0) {
+        <div class="activities-loading">
+          <div class="spinner"></div>
+        </div>
+        } @else if (likedActivities().length > 0) {
+        <div class="activities-list">
+          @for (activity of likedActivities(); track activity._id) {
+          <app-activity-card [activity]="activity" showReaction="like"></app-activity-card>
+          }
+        </div>
+
+        @if (hasMoreLikes()) {
+        <div class="load-more-container">
+          <button class="load-more-btn" (click)="loadMoreLikes()" [disabled]="isLoadingLikes()">
+            @if (isLoadingLikes()) {
+            <span class="spinner-small"></span>
+            } @else {
+            {{ 'profile.loadMore' | translate }}
+            }
+          </button>
+        </div>
+        }
+        } @else {
+        <div class="activities-empty">
+          <span class="material-symbols-outlined">favorite_border</span>
+          <p>{{ 'profile.noLikes' | translate }}</p>
+        </div>
+        }
+      </div>
       } @else if (activeTab() === 'settings' && isOwnProfile()) {
       <!-- Settings Tab Content -->
       <div class="settings-tab-content">

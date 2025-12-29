@@ -1,7 +1,12 @@
 @switch (activity.type) {
 @case ('review') {
 <!-- Full Review Card - Review card has its own click handling -->
-<div (click)="onCardClick()" [class.clickable]="viewMode === 'feed'">
+<div class="review-card-wrapper" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
+    @if (showReaction) {
+    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
+        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
+    </div>
+    }
     <app-review-card [activity]="activity" [isFeedView]="viewMode === 'feed'" [viewMode]="viewMode"
         [highlightCommentId]="highlightCommentId" (click)="onInteractiveClick($event)"></app-review-card>
 </div>
@@ -10,6 +15,11 @@
 @case ('rating') {
 <!-- Mini Rating Card -->
 <div class="activity-card mini-card rating-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
+    @if (showReaction) {
+    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
+        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
+    </div>
+    }
     <div class="mini-icon rating-icon">
         <span class="material-symbols-outlined">star</span>
     </div>
@@ -47,6 +57,11 @@
 @case ('comment') {
 <!-- Comment Activity Card -->
 <div class="activity-card mini-card comment-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
+    @if (showReaction) {
+    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
+        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
+    </div>
+    }
     <div class="mini-icon comment-icon">
         <span class="material-symbols-outlined">{{ activity.parentId ? 'reply' : 'chat_bubble' }}</span>
     </div>
@@ -105,6 +120,11 @@
 @case ('bulk_import') {
 <!-- Bulk Import Summary -->
 <div class="activity-card mini-card import-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
+    @if (showReaction) {
+    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
+        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
+    </div>
+    }
     <div class="mini-icon import-icon">
         <span class="material-symbols-outlined">folder_open</span>
     </div>
@@ -132,6 +152,11 @@
 @case ('movie_watched') {
 <!-- Simple Watched Log -->
 <div class="activity-card mini-card watched-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
+    @if (showReaction) {
+    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
+        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
+    </div>
+    }
     <div class="mini-icon watched-icon">
         <span class="material-symbols-outlined">visibility</span>
     </div>
