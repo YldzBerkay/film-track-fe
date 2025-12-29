@@ -1,92 +1,115 @@
-<div class="search-container">
-    <div class="search-header">
-        <button class="back-btn" (click)="goBack()">
-            <span class="material-symbols-outlined">arrow_back</span>
-            {{ 'search.back' | translate }}
-        </button>
-        <h1>{{ 'search.resultsFor' | translate:{ query: query() } }}</h1>
-    </div>
+<div class="search-page-container">
+    <!-- Floating Ambient Orbs -->
+    <div class="floating-orb floating-orb--primary"></div>
+    <div class="floating-orb floating-orb--accent"></div>
+    <div class="floating-orb floating-orb--secondary"></div>
 
-    <div class="search-tabs">
-        <button class="tab-btn" [class.active]="activeTab() === 'movies'" (click)="setActiveTab('movies')">
-            {{ 'nav.films' | translate }}
-            <span class="count">{{ movieResults().length }}</span>
-        </button>
-        <button class="tab-btn" [class.active]="activeTab() === 'tv'" (click)="setActiveTab('tv')">
-            {{ 'nav.tvShows' | translate }}
-            <span class="count">{{ tvResults().length }}</span>
-        </button>
-        <button class="tab-btn" [class.active]="activeTab() === 'people'" (click)="setActiveTab('people')">
-            {{ 'search.people' | translate }}
-            <span class="count">{{ userResults().length }}</span>
-        </button>
-    </div>
+    <app-header></app-header>
 
-    <div class="results-content">
-        @if (isLoading()) {
-        <div class="loading-spinner">
-            <div class="spinner"></div>
+    <div class="search-container">
+        <div class="search-header">
+            <button class="back-btn" (click)="goBack()">
+                <span class="material-symbols-outlined">arrow_back</span>
+                {{ 'search.back' | translate }}
+            </button>
+            <h1>{{ 'search.resultsFor' | translate:{ query: query() } }}</h1>
         </div>
-        } @else {
-        <!-- Movies Tab -->
-        @if (activeTab() === 'movies') {
-        <div class="results-grid">
-            @for (movie of movieResults(); track movie.id) {
-            <div class="result-card" [routerLink]="['/movie', movie.id]">
-                <div class="poster-wrapper">
-                    <img [src]="getPosterUrl(movie.poster_path)" [alt]="movie.title" loading="lazy">
+
+        <div class="search-tabs">
+            <button class="tab-btn" [class.active]="activeTab() === 'movies'" (click)="setActiveTab('movies')">
+                {{ 'nav.films' | translate }}
+                <span class="count">{{ movieTotal() }}</span>
+            </button>
+            <button class="tab-btn" [class.active]="activeTab() === 'tv'" (click)="setActiveTab('tv')">
+                {{ 'nav.tvShows' | translate }}
+                <span class="count">{{ tvTotal() }}</span>
+            </button>
+            <button class="tab-btn" [class.active]="activeTab() === 'people'" (click)="setActiveTab('people')">
+                {{ 'search.people' | translate }}
+                <span class="count">{{ peopleTotal() }}</span>
+            </button>
+        </div>
+
+        <div class="results-content">
+            @if (isLoading()) {
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            } @else {
+            <!-- Movies Tab -->
+            @if (activeTab() === 'movies') {
+            <div class="results-grid">
+                @for (movie of movieResults(); track movie.id) {
+                <div class="result-card" [routerLink]="['/movie', movie.id]">
+                    <div class="poster-wrapper">
+                        <img [src]="getPosterUrl(movie.poster_path)" [alt]="movie.title" loading="lazy">
+                    </div>
+                    <div class="card-info">
+                        <h3>{{ movie.title }}</h3>
+                        <span class="year">{{ movie.release_date | date:'yyyy' }}</span>
+                    </div>
                 </div>
-                <div class="card-info">
-                    <h3>{{ movie.title }}</h3>
-                    <span class="year">{{ movie.release_date | date:'yyyy' }}</span>
-                </div>
+                }
+                @if (movieResults().length === 0) {
+                <div class="no-results">{{ 'search.noMovies' | translate }}</div>
+                }
             </div>
             }
-            @if (movieResults().length === 0) {
-            <div class="no-results">{{ 'search.noMovies' | translate }}</div>
-            }
-        </div>
-        }
 
-        <!-- TV Shows Tab -->
-        @if (activeTab() === 'tv') {
-        <div class="results-grid">
-            @for (show of tvResults(); track show.id) {
-            <div class="result-card" [routerLink]="['/tv', show.id]">
-                <div class="poster-wrapper">
-                    <img [src]="getPosterUrl(show.poster_path)" [alt]="show.name" loading="lazy">
+            <!-- TV Shows Tab -->
+            @if (activeTab() === 'tv') {
+            <div class="results-grid">
+                @for (show of tvResults(); track show.id) {
+                <div class="result-card" [routerLink]="['/tv', show.id]">
+                    <div class="poster-wrapper">
+                        <img [src]="getPosterUrl(show.poster_path)" [alt]="show.name" loading="lazy">
+                    </div>
+                    <div class="card-info">
+                        <h3>{{ show.name }}</h3>
+                        <span class="year">{{ show.first_air_date | date:'yyyy' }}</span>
+                    </div>
                 </div>
-                <div class="card-info">
-                    <h3>{{ show.name }}</h3>
-                    <span class="year">{{ show.first_air_date | date:'yyyy' }}</span>
-                </div>
+                }
+                @if (tvResults().length === 0) {
+                <div class="no-results">{{ 'search.noTvShows' | translate }}</div>
+                }
             </div>
             }
-            @if (tvResults().length === 0) {
-            <div class="no-results">{{ 'search.noTvShows' | translate }}</div>
-            }
-        </div>
-        }
 
-        <!-- People Tab (Now Users) -->
-        @if (activeTab() === 'people') {
-        <div class="results-grid people-grid">
-            @for (user of userResults(); track user.id) {
-            <div class="result-card person-card" [routerLink]="['/profile', user.username]">
-                <div class="poster-wrapper profile-wrapper">
-                    <img [src]="getAvatarUrl(user)" [alt]="user.username" loading="lazy">
+            <!-- People Tab (Now Users) -->
+            @if (activeTab() === 'people') {
+            <div class="results-grid people-grid">
+                @for (user of userResults(); track user.id) {
+                <div class="result-card person-card" [routerLink]="['/profile', user.username]">
+                    <div class="poster-wrapper profile-wrapper">
+                        <img [src]="getAvatarUrl(user)" [alt]="user.username" loading="lazy">
+                    </div>
+                    <div class="card-info">
+                        <h3>{{ user.name || user.username }}</h3>
+                        <span class="department">@{{ user.username }}</span>
+                    </div>
                 </div>
-                <div class="card-info">
-                    <h3>{{ user.name || user.username }}</h3>
-                    <span class="department">@{{ user.username }}</span>
-                </div>
+                }
+                @if (userResults().length === 0) {
+                <div class="no-results">{{ 'search.noUsers' | translate }}</div>
+                }
             </div>
             }
-            @if (userResults().length === 0) {
-            <div class="no-results">{{ 'search.noUsers' | translate }}</div>
+
+            <!-- Pagination -->
+            @if (totalPages() > 1) {
+            <div class="pagination">
+                <button class="page-btn" [disabled]="currentPage() === 1" (click)="changePage(currentPage() - 1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <span class="page-info">{{ currentPage() }} / {{ totalPages() }}</span>
+                <button class="page-btn" [disabled]="currentPage() === totalPages()"
+                    (click)="changePage(currentPage() + 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+            }
             }
         </div>
-        }
-        }
     </div>
 </div>

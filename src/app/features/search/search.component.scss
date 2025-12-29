@@ -1,8 +1,102 @@
+.search-page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background);
+    color: var(--color-text-main);
+    position: relative;
+    overflow-x: hidden;
+
+    // Gradient overlay
+    &::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 224, 84, 0.04) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 40% at 80% 60%, rgba(123, 97, 255, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+}
+
+// Floating Orbs
+.floating-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+
+    &--primary {
+        width: 500px;
+        height: 500px;
+        background: var(--color-primary);
+        top: -10%;
+        right: -10%;
+        animation: orb-float-1 25s ease-in-out infinite;
+    }
+
+    &--accent {
+        width: 400px;
+        height: 400px;
+        background: var(--color-accent);
+        bottom: 10%;
+        left: -10%;
+        animation: orb-float-2 30s ease-in-out infinite;
+    }
+
+    &--secondary {
+        width: 350px;
+        height: 350px;
+        background: #FF8000;
+        top: 50%;
+        left: 30%;
+        animation: orb-float-1 28s ease-in-out infinite reverse;
+    }
+}
+
+@keyframes orb-float-1 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    33% {
+        transform: translate(30px, -50px) rotate(10deg);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) rotate(-5deg);
+    }
+}
+
+@keyframes orb-float-2 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    33% {
+        transform: translate(-30px, 50px) rotate(-10deg);
+    }
+
+    66% {
+        transform: translate(20px, -20px) rotate(5deg);
+    }
+}
+
 .search-container {
     padding: 2rem;
     max-width: 1400px;
     margin: 0 auto;
     color: #fff;
+    position: relative; // Ensure content is above background
+    z-index: 1;
+    width: 100%; // Ensure full width within container
 }
 
 
@@ -121,8 +215,8 @@
 
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
 }
 
 .result-card {
@@ -167,6 +261,7 @@
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -179,15 +274,7 @@
     }
 }
 
-.people-grid {
-    .poster-wrapper {
-        // keeping same aspect ratio for consistency, or we could change it
-    }
-
-    .poster-wrapper img {
-        // Profile pics often cover differently, but 'cover' is usually fine
-    }
-}
+// .people-grid styles removed as they were empty placeholders
 
 .loading-spinner {
     display: flex;
@@ -215,5 +302,56 @@
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-bottom: 2rem;
+
+    .page-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        &:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+
+        .material-symbols-outlined {
+            font-size: 1.5rem;
+        }
+    }
+
+    .page-info {
+        font-size: 1rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.6);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 1px;
     }
 }
