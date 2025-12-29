@@ -15,13 +15,25 @@ import { WatchedListService, WatchedList } from '../../core/services/watched-lis
 type FeedType = 'following' | 'friends' | 'global';
 
 import { RecommendationService, MealtimeRecommendation, DailyPick, Friend, FriendMealtimeRecommendation, MoodRecommendation } from '../../core/services/recommendation.service';
+import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
+import { CommentListComponent } from '../../shared/components/comments/comment-list/comment-list.component';
 
 import { CreateListDialogComponent } from '../../shared/components/create-list-dialog/create-list-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DialogComponent, HeaderComponent, TranslatePipe, CreateListDialogComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TimeAgoPipe,
+    CommentListComponent,
+    HeaderComponent,
+    DialogComponent,
+    TranslatePipe,
+    CreateListDialogComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -442,5 +454,63 @@ export class DashboardComponent implements OnInit {
   getPosterUrl(path: string): string {
     if (!path) return '';
     return `https://image.tmdb.org/t/p/w300${path}`;
+  }
+
+  // Social Features
+  expandedActivityId = signal<string | null>(null);
+  commentText = signal<string>('');
+  isSubmittingComment = signal(false);
+
+  isLiked(activity: Activity): boolean {
+    const userId = this.user()?.id;
+    return userId ? (activity.likes || []).includes(userId) : false;
+  }
+
+  toggleLike(activity: Activity): void {
+    if (!this.isAuthenticated()) return;
+
+    const isLiked = this.isLiked(activity);
+
+    // Optimistic update
+    this.activities.update(list => list.map(a => {
+      if (a._id === activity._id) {
+        const userId = this.user()?.id!;
+        const likes = isLiked
+          ? (a.likes || []).filter(id => id !== userId)
+          : [...(a.likes || []), userId];
+        return { ...a, likes };
+      }
+      return a;
+    }));
+
+    const action$ = isLiked
+      ? this.activityService.unlikeActivity(activity._id)
+      : this.activityService.likeActivity(activity._id);
+
+    action$.subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          // Update with server data
+          this.activities.update(list => list.map(a =>
+            a._id === activity._id ? response.data : a
+          ));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to toggle like', err);
+        // Revert optimistic update
+        this.activities.update(list => list.map(a =>
+          a._id === activity._id ? activity : a
+        ));
+      }
+    });
+  }
+
+  toggleComments(activityId: string): void {
+    if (this.expandedActivityId() === activityId) {
+      this.expandedActivityId.set(null);
+    } else {
+      this.expandedActivityId.set(activityId);
+    }
   }
 }

@@ -1,0 +1,85 @@
+<div class="comments-container">
+    <!-- New Comment Input (Top) -->
+    <div class="new-comment-box">
+        <div class="avatar-small"
+            [style.background-image]="'url(' + (currentUser()?.avatar || 'assets/default-avatar.png') + ')'"></div>
+        <div class="input-wrapper">
+            <input type="text" [ngModel]="newCommentText()" (ngModelChange)="newCommentText.set($event)"
+                (keydown.enter)="submitComment($event)" placeholder="Add a comment..." [disabled]="isSubmitting()">
+            <button class="post-btn" [disabled]="!newCommentText().trim() || isSubmitting()" (click)="submitComment()">
+                Post
+            </button>
+        </div>
+    </div>
+
+    <!-- Comments List -->
+    <div class="comments-list">
+        @for (comment of comments(); track comment._id) {
+        <div class="comment-item" [class.is-reply]="comment.level > 0">
+
+            <!-- Indentation Spacer (if level 1) -->
+            @if (comment.level > 0) {
+            <div class="spacer"></div>
+            }
+
+            <div class="comment-content-wrapper">
+                <div class="comment-avatar"
+                    [style.background-image]="'url(' + (comment.userId.avatar || 'assets/default-avatar.png') + ')'">
+                </div>
+
+                <div class="comment-body">
+                    <div class="comment-header">
+                        <span class="username">{{ comment.userId.username }}</span>
+                        <span class="time">{{ comment.createdAt | timeAgo }}</span>
+                    </div>
+
+                    <p class="comment-text">
+                        @if (comment.replyToUser && comment.level > 0 && comment.parentId !== comment.rootId) {
+                        <span class="reply-tag">@{{ comment.replyToUser.username }}</span>
+                        }
+                        {{ comment.text }}
+                    </p>
+
+                    <div class="comment-actions">
+                        <button class="text-btn">Like</button>
+                        <button class="text-btn" (click)="toggleReplyInput(comment)">Reply</button>
+                        @if ((comment.likes || []).length > 0) {
+                        <span class="likes-count">{{ comment.likes.length }} likes</span>
+                        }
+                    </div>
+
+                    <!-- View Replies Link (Only for Level 0) -->
+                    @if (comment.level === 0 && comment.replyCount > 0 && !comment.isExpanded) {
+                    <button class="view-replies-btn" (click)="toggleReplies(comment)">
+                        <span class="dash">—</span> View {{ comment.replyCount }} replies
+                    </button>
+                    }
+                    @if (comment.level === 0 && comment.isExpanded && !comment.isLoadingReplies) {
+                    <button class="view-replies-btn" (click)="toggleReplies(comment)">
+                        <span class="dash">—</span> Hide replies
+                    </button>
+                    }
+
+                    <!-- Reply Input -->
+                    @if (comment.showReplyInput) {
+                    <div class="reply-input-box">
+                        @if (comment.level > 0) {
+                        <span class="replying-to">Replying to @{{ comment.userId.username }}</span>
+                        }
+                        <div class="input-row">
+                            <input type="text" [(ngModel)]="comment.replyText" (keydown.enter)="submitReply(comment)"
+                                placeholder="Reply..." autoFocus>
+                            <button (click)="submitReply(comment)" [disabled]="!comment.replyText.trim()">Post</button>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        @if (isLoading()) {
+        <div class="loading-spinner">Loading comments...</div>
+        }
+    </div>
+</div>

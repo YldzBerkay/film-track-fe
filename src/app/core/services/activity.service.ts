@@ -23,6 +23,8 @@ export interface Activity {
   genres?: string[];
   createdAt: string;
   updatedAt: string;
+  likes: string[]; // Array of user IDs
+  commentCount: number;
 }
 
 export interface FeedResponse {
@@ -85,6 +87,18 @@ export class ActivityService {
     genres?: string[];
   }): Observable<ApiResponse<Activity>> {
     return this.http.post<ApiResponse<Activity>>(`${this.apiUrl}`, data);
+  }
+
+  likeActivity(activityId: string): Observable<ApiResponse<Activity>> {
+    return this.http.post<ApiResponse<Activity>>(`${this.apiUrl}/${activityId}/like`, {});
+  }
+
+  unlikeActivity(activityId: string): Observable<ApiResponse<Activity>> {
+    return this.http.post<ApiResponse<Activity>>(`${this.apiUrl}/${activityId}/unlike`, {});
+  }
+
+  commentOnActivity(activityId: string, text: string): Observable<ApiResponse<Activity>> {
+    return this.http.post<ApiResponse<Activity>>(`${this.apiUrl}/${activityId}/comments`, { text });
   }
 }
 

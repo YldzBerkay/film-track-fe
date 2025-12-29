@@ -207,18 +207,26 @@
             </div>
 
             <div class="activity-actions">
-              <button class="action-btn">
-                <span class="material-symbols-outlined">favorite</span>
-                <span>0</span>
+              <button class="action-btn" [class.active]="isLiked(activity)" (click)="toggleLike(activity)">
+                <span class="material-symbols-outlined">{{ isLiked(activity) ? 'favorite' : 'favorite_border' }}</span>
+                <span>{{ (activity.likes || []).length || 0 }}</span>
               </button>
-              <button class="action-btn">
+              <button class="action-btn" (click)="toggleComments(activity._id)">
                 <span class="material-symbols-outlined">chat_bubble</span>
-                <span>0 comments</span>
+                <span>{{ activity.commentCount || 0 }}</span>
               </button>
               <button class="action-btn bookmark-btn">
                 <span class="material-symbols-outlined">bookmark_add</span>
               </button>
             </div>
+
+            <!-- Comments Section -->
+            @if (expandedActivityId() === activity._id) {
+            <div class="comments-section">
+              <app-comment-list [activityId]="activity._id" [initialCount]="activity.commentCount || 0">
+              </app-comment-list>
+            </div>
+            }
           </article>
           }
           }
