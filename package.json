@@ -32,6 +32,7 @@
     "@angular/material": "^21.0.5",
     "@angular/platform-browser": "^21.0.0",
     "@angular/router": "^21.0.0",
+    "aws-amplify": "^6.15.9",
     "chart.js": "^4.5.1",
     "html2canvas": "^1.4.1",
     "ng2-charts": "^8.0.0",
@@ -43,12 +44,18 @@
     "@angular/build": "^21.0.3",
     "@angular/cli": "^21.0.3",
     "@angular/compiler-cli": "^21.0.0",
+    "@aws-amplify/backend": "^1.19.0",
+    "@aws-amplify/backend-cli": "^1.8.1",
     "@types/html2canvas": "^0.5.35",
     "autoprefixer": "^10.4.23",
+    "aws-cdk-lib": "^2.216.0",
+    "constructs": "^10.4.4",
+    "esbuild": "^0.27.2",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "~5.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.8"
   }
 }
