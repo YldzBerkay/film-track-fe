@@ -58,7 +58,7 @@
                         </button>
                         <button class="report-btn" (click)="onReport.emit()">
                             <span class="material-symbols-outlined">analytics</span>
-                            <span>Report</span>
+                            <span>{{ 'profile.report' | translate }}</span>
                         </button>
                         } @else {
                         @if (isFollowing()) {

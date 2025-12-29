@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, finalize, switchMap, throwError, map } from 'rxjs';
 import { Router } from '@angular/router';
+import { SubscriptionTier } from '../models/subscription.types';
 
 export interface RegisterRequest {
   username: string;
@@ -47,6 +48,11 @@ export interface User {
   avatar?: string;
   banner?: string;
   email: string;
+  subscription?: {
+    tier: SubscriptionTier;
+    startedAt: string;
+    expiresAt: string | null;
+  };
   onboardingCompleted?: boolean;
   streak?: number;
   mastery?: {

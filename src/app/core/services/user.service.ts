@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { SubscriptionTier } from '../models/subscription.types';
 
 export interface UserProfile {
   user: {
@@ -10,6 +11,11 @@ export interface UserProfile {
     avatar: string | null;
     banner: string | null;
     email: string;
+    subscription: {
+      tier: SubscriptionTier;
+      startedAt: string;
+      expiresAt: string | null;
+    };
     stats: {
       moviesWatched: number;
       episodesWatched: number;
