@@ -37,27 +37,49 @@
 <!-- Comment Activity Card -->
 <div class="activity-card mini-card comment-card">
     <div class="mini-icon comment-icon">
-        <span class="material-symbols-outlined">chat_bubble</span>
+        <span class="material-symbols-outlined">{{ activity.parentId ? 'reply' : 'chat_bubble' }}</span>
     </div>
     <div class="mini-content">
         <div class="mini-header">
             <span class="mini-user">
                 <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
             </span>
+            @if (activity.parentId) {
+            <!-- It's a reply -->
+            @if (activity.replyToUser) {
+            <span class="mini-action">{{ 'activity.repliedTo' | translate }}</span>
+            <a [routerLink]="['/profile', activity.replyToUser.username]" class="reply-target">@{{
+                activity.replyToUser.username }}</a>
+            <span class="mini-action">{{ 'activity.on' | translate }}</span>
+            } @else {
+            <span class="mini-action">{{ 'activity.repliedToComment' | translate }}</span>
+            }
+            } @else {
+            <!-- Root comment -->
             <span class="mini-action">{{ 'activity.commentedOn' | translate }}</span>
-            <span class="target-type">{{ (activity['originalActivityType'] === 'review' ? 'activity.reviewOf' :
+            <span class="target-type">{{ (activity.originalActivityType === 'review' ? 'activity.reviewOf' :
                 'activity.postOf') | translate }}</span>
+            }
             <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
         </div>
 
+        @if (activity.parentId && activity.parentCommentText) {
+        <!-- Show parent comment snippet for context -->
+        <div class="parent-comment-snippet">
+            <span class="material-symbols-outlined">format_quote</span>
+            <span class="snippet-text">{{ activity.parentCommentText | slice:0:80 }}{{ activity.parentCommentText.length
+                > 80 ? '...' : '' }}</span>
+        </div>
+        }
+
         <div class="comment-bubble">
-            <span class="quote-mark">“</span>
-            {{ activity['commentText'] }}
-            <span class="quote-mark">”</span>
+            <span class="quote-mark">"</span>
+            {{ activity.commentText }}
+            <span class="quote-mark">"</span>
         </div>
 
         <div class="mini-meta">
-            <span class="time">{{ activity['commentCreatedAt'] | date:'short' }}</span>
+            <span class="time">{{ activity.createdAt | date:'short' }}</span>
         </div>
     </div>
     <a [routerLink]="mediaLink" class="mini-poster">

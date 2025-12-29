@@ -65,6 +65,7 @@ export interface MoodRecommendation {
     moodSimilarity: number;
     moodMatchType: 'match' | 'shift';
     score?: number;
+    mediaType?: 'movie' | 'tv';
 }
 
 @Injectable({
@@ -138,6 +139,15 @@ export class RecommendationService {
             tmdbId,
             title,
             action
+        });
+    }
+
+    sendRLFeedback(tmdbId: number, mediaType: string, feedback: number, rating: number): Observable<ApiResponse<void>> {
+        return this.http.post<ApiResponse<void>>(`${this.apiUrl}/rl-feedback`, {
+            tmdbId,
+            mediaType,
+            feedback,
+            rating
         });
     }
 

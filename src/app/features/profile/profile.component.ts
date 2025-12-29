@@ -12,6 +12,8 @@ import { MoodTimelineComponent } from '../../shared/components/mood-timeline/moo
 import { RateDialogComponent } from '../../shared/components/rate-dialog/rate-dialog.component';
 import { HeaderComponent } from '../../layout/header/header.component';
 import { ShareDialogComponent } from '../../shared/components/share-dialog/share-dialog.component';
+import { ActivityCardComponent } from '../../shared/components/activity-card/activity-card.component';
+import { ActivityService, Activity } from '../../core/services/activity.service';
 import { EditFavoritesDialogComponent } from '../../shared/components/edit-favorites-dialog/edit-favorites-dialog.component';
 import { FavoritesService, FavoriteMovie, FavoriteTvShow } from '../../core/services/favorites.service';
 import { LanguageService } from '../../core/services/language.service';
@@ -22,12 +24,12 @@ import { EditListDialogComponent, ListItem } from '../../shared/components/edit-
 import { WatchedReportsDialogComponent } from '../../shared/components/watched-reports-dialog/watched-reports-dialog.component';
 import { forkJoin } from 'rxjs';
 
-type TabType = 'profile' | 'watchlist' | 'lists' | 'reviews' | 'likes' | 'settings';
+type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'settings';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, WatchedReportsDialogComponent, TranslatePipe, RateDialogComponent],
+  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, WatchedReportsDialogComponent, TranslatePipe, RateDialogComponent, ActivityCardComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -40,6 +42,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   authService = inject(AuthService);
   tmdbService = inject(TMDBService);
   moodService = inject(MoodService);
+  activityService = inject(ActivityService);
   recommendationService = inject(RecommendationService);
   favoritesService = inject(FavoritesService);
   languageService = inject(LanguageService);
@@ -51,6 +54,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
   activeTab = signal<TabType>('profile');
+
+  // Activity Feed State
+  activities = signal<Activity[]>([]);
+  isLoadingActivities = signal(false);
+  activityFilter = signal<'ALL' | 'REVIEWS' | 'COMMENTS' | 'RATINGS' | 'IMPORTS'>('ALL');
+  activityPage = signal(1);
+  hasMoreActivities = signal(true);
   moodData = signal<MoodVector | null>(null);
   isLoadingMood = signal(false);
   moodTimeline = signal<MoodTimelineEntry[]>([]);
@@ -267,8 +277,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
     // Read tab from query params
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
-    if (tabParam && ['profile', 'lists', 'reviews', 'likes'].includes(tabParam)) {
+    if (tabParam && ['profile', 'lists', 'activities', 'likes'].includes(tabParam)) {
       this.activeTab.set(tabParam as TabType);
+    } else if (tabParam === 'reviews') {
+      // Legacy redirect
+      this.activeTab.set('activities');
+    }
+
+    // Initialize data based on active tab
+    if (this.activeTab() === 'activities') {
+      this.loadActivities();
     }
 
     // Load mood data if viewing own profile
@@ -342,6 +360,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
               banner: response.data.user.banner || undefined
             });
           }
+          // Load activities if on activities tab
+          if (this.activeTab() === 'activities') {
+            this.loadActivities();
+          }
         } else {
           this.error.set('Profile not found');
         }
@@ -368,6 +390,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             avatar: response.data.user.avatar || undefined,
             banner: response.data.user.banner || undefined
           });
+          // Load activities if on activities tab
+          if (this.activeTab() === 'activities') {
+            this.loadActivities();
+          }
         } else {
           this.error.set('Failed to load profile');
         }
@@ -438,12 +464,60 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   onTabChange(tab: TabType): void {
     this.activeTab.set(tab);
+
+    // Load data for specific tabs if needed
+    if (tab === 'activities' && this.activities().length === 0) {
+      this.loadActivities();
+    }
+
     // Update URL query params without navigation
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab },
       queryParamsHandling: ''
     });
+  }
+
+  setActivityFilter(filter: 'ALL' | 'REVIEWS' | 'COMMENTS' | 'RATINGS' | 'IMPORTS'): void {
+    if (this.activityFilter() === filter) return;
+
+    this.activityFilter.set(filter);
+    this.activityPage.set(1);
+    this.activities.set([]);
+    this.hasMoreActivities.set(true);
+    this.loadActivities();
+  }
+
+  loadActivities(): void {
+    const profile = this.profile();
+    if (!profile) return; // Should not happen if loaded
+
+    // Use profile user ID (for both own profile and others)
+    const targetUserId = profile.user.id;
+
+    this.isLoadingActivities.set(true);
+
+    this.activityService.getProfileActivities(targetUserId, this.activityPage(), 20, this.activityFilter()).subscribe({
+      next: (res) => {
+        if (res.success) {
+          if (this.activityPage() === 1) {
+            this.activities.set(res.data.activities);
+          } else {
+            this.activities.update(current => [...current, ...res.data.activities]);
+          }
+          this.hasMoreActivities.set(res.data.pagination.page < res.data.pagination.totalPages);
+        }
+        this.isLoadingActivities.set(false);
+      },
+      error: () => this.isLoadingActivities.set(false)
+    });
+  }
+
+  loadMoreActivities(): void {
+    if (!this.isLoadingActivities() && this.hasMoreActivities()) {
+      this.activityPage.update(p => p + 1);
+      this.loadActivities();
+    }
   }
 
   getTimeAgo(dateString: string): string {
@@ -835,44 +909,44 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   /**
    * Confirm rating from dialog - submits feedback and adds to watched list
    */
-  onRateRec(rating: number): void {
+  onRateRec(event: { rating: number; review?: string }): void {
     const movie = this.ratingDialogMovie();
-    const action = this.ratingDialogAction();
-
     if (!movie) return;
 
+    const action = this.ratingDialogAction();
+    const { rating } = event; // We only use rating for now
+
     // Add to rated set for UI feedback
-    const newSet = new Set(this.ratedCards());
-    newSet.add(movie.tmdbId);
-    this.ratedCards.set(newSet);
+    this.ratedCards.update(set => {
+      const newSet = new Set(set);
+      newSet.add(movie.tmdbId);
+      return newSet;
+    });
 
     // Close dialog
     this.showRatingDialog.set(false);
 
-    // Submit feedback to backend (trains AI)
-    this.recommendationService.submitFeedback(movie.tmdbId, movie.title, action).subscribe({
-      next: () => {
-        console.log(`[Feedback] ${action.toUpperCase()} sent for ${movie.title}`);
-      },
-      error: (err) => {
-        console.error('[Feedback] Error:', err);
-      }
-    });
+    // Determine feedback based on action and rating
+    const feedbackValue = action === 'like' ? 1 : -1;
 
-    // Add to watched list with rating
-    this.watchedListService.addItem({
-      tmdbId: movie.tmdbId,
-      mediaType: 'movie',
-      title: movie.title,
-      posterPath: movie.posterPath,
-      runtime: 120, // Default runtime, could be fetched
-      rating: rating
-    }).subscribe({
+    // Use sendRLFeedback if available, or fallback to submitFeedback + watched items
+    this.recommendationService.sendRLFeedback(
+      movie.tmdbId,
+      movie.mediaType || 'movie', // Fallback if mediaType missing
+      feedbackValue,
+      rating
+    ).subscribe({
       next: () => {
-        console.log(`[Watched] Added ${movie.title} with rating ${rating}`);
+        // Success - handle quota if needed
+        if (action === 'dislike') {
+          this.replacementQuota.update(q => ({
+            ...q,
+            remaining: Math.max(0, q.remaining - 1)
+          }));
+        }
       },
-      error: (err) => {
-        console.error('[Watched] Error:', err);
+      error: (err: any) => {
+        console.error('[Feedback] Error:', err);
       }
     });
   }
@@ -1370,5 +1444,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   toggleFailedItems(): void {
     this.showFailedItems.set(!this.showFailedItems());
   }
+
+
 }
 

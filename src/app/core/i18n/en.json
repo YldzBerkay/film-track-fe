@@ -158,7 +158,19 @@
         "dragToReorder": "Drag items to reorder",
         "removeFromFavorites": "Remove from favorites",
         "sliderView": "Slider View",
-        "listView": "List View"
+        "listView": "List View",
+        "activities": "Activities",
+        "filterAll": "All",
+        "filterReviews": "Reviews",
+        "filterComments": "Comments",
+        "filterRatings": "Ratings",
+        "filterImports": "Imports",
+        "loadMore": "Load More",
+        "noActivities": "No activities yet",
+        "noReviews": "No reviews yet",
+        "noComments": "No comments yet",
+        "noRatings": "No ratings yet",
+        "noImports": "No imports yet"
     },
     "privacy": {
         "everyone": "Everyone",
@@ -431,5 +443,17 @@
         "level": "Level",
         "toNextLevel": "{{xp}} XP to next level",
         "xp": "XP"
+    },
+    "activity": {
+        "rated": "rated",
+        "watched": "watched",
+        "commentedOn": "commented on",
+        "reviewOf": "review of",
+        "postOf": "post of",
+        "repliedTo": "replied to",
+        "repliedToComment": "replied to a comment on",
+        "on": "on",
+        "importedHistory": "imported watch history",
+        "itemsImported": "items imported"
     }
 }

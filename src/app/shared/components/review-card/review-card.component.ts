@@ -24,6 +24,7 @@ import { Activity } from '../../../core/services/activity.service';
 })
 export class ReviewCardComponent {
     @Input({ required: true }) activity!: Activity;
+    @Input() isFeedView = false;
 
     private authService = inject(AuthService);
     currentUser = computed(() => this.authService.user());

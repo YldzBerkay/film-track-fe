@@ -158,7 +158,19 @@
         "dragToReorder": "Sıralamak için sürükleyin",
         "removeFromFavorites": "Favorilerden kaldır",
         "sliderView": "Slider Görünümü",
-        "listView": "Liste Görünümü"
+        "listView": "Liste Görünümü",
+        "activities": "Aktiviteler",
+        "filterAll": "Hepsi",
+        "filterReviews": "İncelemeler",
+        "filterComments": "Yorumlar",
+        "filterRatings": "Puanlamalar",
+        "filterImports": "İçe Aktarımlar",
+        "loadMore": "Daha Fazla",
+        "noActivities": "Henüz aktivite yok",
+        "noReviews": "Henüz inceleme yok",
+        "noComments": "Henüz yorum yok",
+        "noRatings": "Henüz puanlama yok",
+        "noImports": "Henüz içe aktarım yok"
     },
     "privacy": {
         "everyone": "Herkes",
@@ -431,5 +443,17 @@
         "level": "Seviye",
         "toNextLevel": "sonraki seviyeye {{xp}} XP",
         "xp": "XP"
+    },
+    "activity": {
+        "rated": "puanladı",
+        "watched": "izledi",
+        "commentedOn": "yorum yaptı",
+        "reviewOf": "incelemesine",
+        "postOf": "paylaşımına",
+        "repliedTo": "yanıtladı",
+        "repliedToComment": "bir yorumu yanıtladı",
+        "on": "üzerinde",
+        "importedHistory": "izleme geçmişini içe aktardı",
+        "itemsImported": "içerik içe aktarıldı"
     }
 }

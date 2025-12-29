@@ -151,9 +151,9 @@
       <button class="tab-item" [class.active]="activeTab() === 'lists'" (click)="onTabChange('lists')" type="button">
         <span>{{ 'profile.listsTab' | translate }}</span>
       </button>
-      <button class="tab-item" [class.active]="activeTab() === 'reviews'" (click)="onTabChange('reviews')"
+      <button class="tab-item" [class.active]="activeTab() === 'activities'" (click)="onTabChange('activities')"
         type="button">
-        <span>{{ 'profile.reviewsTab' | translate }}</span>
+        <span>{{ 'profile.activities' | translate }}</span>
       </button>
       <button class="tab-item" [class.active]="activeTab() === 'likes'" (click)="onTabChange('likes')" type="button">
         <span>{{ 'profile.likesTab' | translate }}</span>
@@ -813,6 +813,76 @@
             <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
           </a>
           }
+        </div>
+        }
+      </div>
+      } @else if (activeTab() === 'activities') {
+      <div class="activities-tab-content">
+        <!-- Filter Bar -->
+        <div class="activity-filters">
+          <div class="chip-list">
+            <button class="chip" [class.active]="activityFilter() === 'ALL'" (click)="setActivityFilter('ALL')">
+              {{ 'profile.filterAll' | translate }}
+            </button>
+            <button class="chip" [class.active]="activityFilter() === 'REVIEWS'" (click)="setActivityFilter('REVIEWS')">
+              {{ 'profile.filterReviews' | translate }}
+            </button>
+            <button class="chip" [class.active]="activityFilter() === 'COMMENTS'"
+              (click)="setActivityFilter('COMMENTS')">
+              {{ 'profile.filterComments' | translate }}
+            </button>
+            <button class="chip" [class.active]="activityFilter() === 'RATINGS'" (click)="setActivityFilter('RATINGS')">
+              {{ 'profile.filterRatings' | translate }}
+            </button>
+            <button class="chip" [class.active]="activityFilter() === 'IMPORTS'" (click)="setActivityFilter('IMPORTS')">
+              {{ 'profile.filterImports' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity List -->
+        @if (isLoadingActivities() && activities().length === 0) {
+        <div class="activities-loading">
+          <div class="spinner"></div>
+        </div>
+        } @else if (activities().length > 0) {
+        <div class="activities-list">
+          @for (activity of activities(); track activity._id) {
+          <app-activity-card [activity]="activity"></app-activity-card>
+          }
+        </div>
+
+        @if (hasMoreActivities()) {
+        <div class="load-more-container">
+          <button class="load-more-btn" (click)="loadMoreActivities()" [disabled]="isLoadingActivities()">
+            @if (isLoadingActivities()) {
+            <span class="spinner-small"></span>
+            } @else {
+            {{ 'profile.loadMore' | translate }}
+            }
+          </button>
+        </div>
+        }
+        } @else {
+        <div class="activities-empty">
+          <span class="material-symbols-outlined">
+            @switch (activityFilter()) {
+            @case ('REVIEWS') { rate_review }
+            @case ('COMMENTS') { chat_bubble }
+            @case ('RATINGS') { star }
+            @case ('IMPORTS') { folder_open }
+            @default { history }
+            }
+          </span>
+          <p>
+            @switch (activityFilter()) {
+            @case ('REVIEWS') { {{ 'profile.noReviews' | translate }} }
+            @case ('COMMENTS') { {{ 'profile.noComments' | translate }} }
+            @case ('RATINGS') { {{ 'profile.noRatings' | translate }} }
+            @case ('IMPORTS') { {{ 'profile.noImports' | translate }} }
+            @default { {{ 'profile.noActivities' | translate }} }
+            }
+          </p>
         </div>
         }
       </div>

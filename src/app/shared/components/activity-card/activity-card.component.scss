@@ -1,109 +1,152 @@
-@use '../../../../styles/variables' as *;
-
 .activity-card {
-    margin-bottom: 24px;
+    margin-bottom: 0; // Handled by gap in parent list
 
     &.mini-card {
         display: flex;
         gap: 16px;
-        padding: 16px;
-        background: rgba($surface, 0.5);
+        padding: 20px;
+        background: rgba(30, 30, 30, 0.6); // Darker glass base
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border-radius: 16px;
-        border: 1px solid rgba($white, 0.05);
-        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2); // Elevate it
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+
+        // Subtle gradient overlay
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+            pointer-events: none;
+        }
 
         &:hover {
-            background: rgba($surface, 0.8);
-            border-color: rgba($primary, 0.3);
-            transform: translateY(-2px);
+            background: rgba(40, 40, 40, 0.8);
+            border-color: rgba(0, 224, 84, 0.3); // Primary color manually applied or var if strict
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
     }
 }
 
 .mini-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px; // Squircle instead of circle
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-weight: bold;
+    transition: transform 0.3s ease;
 
     span {
-        font-size: 20px;
+        font-size: 22px;
     }
 
     &.rating-icon {
-        background: rgba($warning, 0.1);
-        color: $warning;
+        background: rgba(255, 193, 7, 0.15); // Warning color
+        color: #ffc107;
+        box-shadow: 0 0 15px rgba(255, 193, 7, 0.15);
     }
 
     &.comment-icon {
-        background: rgba($info, 0.1);
-        color: $info;
+        background: rgba(59, 130, 246, 0.15); // Info color
+        color: #3b82f6;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
     }
 
     &.import-icon {
-        background: rgba($success, 0.1);
-        color: $success;
+        background: rgba(0, 224, 84, 0.15); // Success/Primary color
+        color: var(--color-primary);
+        box-shadow: 0 0 15px rgba(0, 224, 84, 0.15);
     }
 
     &.watched-icon {
-        background: rgba($primary, 0.1);
-        color: $primary;
+        background: rgba(0, 224, 84, 0.15); // Primary color
+        color: var(--color-primary);
+        box-shadow: 0 0 15px rgba(0, 224, 84, 0.15);
     }
+}
+
+.activity-card:hover .mini-icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .mini-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    min-width: 0; // Prevent flex overflow
 }
 
 .mini-header {
     line-height: 1.5;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    color: var(--color-text-secondary); // Use distinct color for text parts
 
     a {
-        color: $white;
+        color: var(--color-text-main);
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 600;
+        transition: color 0.2s ease;
 
         &:hover {
-            color: $primary;
-            text-decoration: underline;
+            color: var(--color-primary);
         }
     }
 
     .mini-user a {
-        font-weight: 600;
+        font-weight: 700;
+        margin-right: 4px;
     }
 
     .mini-action {
-        color: $text-secondary;
+        color: var(--color-text-muted);
         margin: 0 4px;
+        font-weight: 400;
     }
 
     .target-type {
-        color: $text-secondary;
+        color: var(--color-text-muted);
         margin-right: 4px;
+        font-style: italic;
+    }
+
+    .mini-media {
+        color: var(--color-text-main);
+        border-bottom: 1px dotted rgba(255, 255, 255, 0.3);
+
+        &:hover {
+            border-bottom-color: var(--color-primary);
+        }
     }
 }
 
 .mini-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     font-size: 0.85rem;
-    color: $text-secondary;
+    color: var(--color-text-muted);
 
     .rating-badge {
         display: flex;
         align-items: center;
-        gap: 4px;
-        color: $warning;
-        font-weight: 600;
+        gap: 6px;
+        color: #ffc107; // Warning
+        font-weight: 700;
+        background: rgba(255, 193, 7, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
 
         span {
             font-size: 16px;
@@ -112,16 +155,25 @@
     }
 
     .dot {
-        opacity: 0.5;
+        opacity: 0.3;
+        font-size: 20px;
+        line-height: 0;
+    }
+
+    .time {
+        font-feature-settings: "tnum";
     }
 }
 
 .mini-poster {
-    width: 48px;
-    height: 72px;
-    border-radius: 4px;
+    width: 52px;
+    height: 78px;
+    border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
 
     img {
         width: 100%;
@@ -130,27 +182,68 @@
     }
 
     &:hover {
-        opacity: 0.8;
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.3);
     }
 }
 
 /* Comment Bubble */
 .comment-bubble {
-    background: rgba($white, 0.05);
-    padding: 12px;
-    border-radius: 0 12px 12px 12px;
-    color: $text-primary;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 14px 18px;
+    border-radius: 0 16px 16px 16px;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: 1.6;
     position: relative;
-    border-left: 2px solid $info;
-    margin-top: 4px;
+    border-left: 3px solid #3b82f6; // Info color
+    margin-top: 2px;
     font-style: italic;
 
     .quote-mark {
-        color: rgba($info, 0.5);
-        font-size: 1.2rem;
+        color: rgba(59, 130, 246, 0.5); // Info color subtle
+        font-size: 1.4rem;
         font-weight: bold;
+        vertical-align: -4px;
+        margin: 0 4px;
+    }
+}
+
+/* Parent Comment Snippet (for replies) */
+.parent-comment-snippet {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border-left: 2px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 8px;
+
+    .material-symbols-outlined {
+        font-size: 18px;
+        color: var(--color-text-muted);
+        opacity: 0.6;
+    }
+
+    .snippet-text {
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+        font-style: italic;
+        line-height: 1.4;
+    }
+}
+
+/* Reply Target Link */
+.reply-target {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.8;
+        text-decoration: underline;
     }
 }
 
@@ -158,19 +251,23 @@
 .import-stats {
     display: flex;
     gap: 12px;
+    margin-top: 4px;
 
     .stat-badge {
         display: flex;
         align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        background: rgba($white, 0.05);
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(0, 224, 84, 0.1); // Success/Primary
+        border: 1px solid rgba(0, 224, 84, 0.2);
         border-radius: 20px;
-        font-size: 0.85rem;
-        color: $text-primary;
+        font-size: 0.9rem;
+        color: var(--color-text-main);
+        font-weight: 500;
 
         span {
-            font-size: 18px;
+            font-size: 20px; // Larger icon
+            color: var(--color-primary);
         }
     }
 }
@@ -178,21 +275,28 @@
 /* Responsive */
 @media (max-width: 576px) {
     .activity-card.mini-card {
-        padding: 12px;
+        padding: 16px;
         gap: 12px;
-    }
+        flex-wrap: wrap; // Allow poster to wrap on very small screens if needed
 
-    .mini-icon {
-        width: 32px;
-        height: 32px;
-
-        span {
-            font-size: 16px;
+        .mini-poster {
+            // Keep poster on right but adjust sizes
+            width: 40px;
+            height: 60px;
         }
     }
 
-    .mini-poster {
-        width: 40px;
-        height: 60px;
+    .mini-icon {
+        width: 36px;
+        height: 36px;
+
+        span {
+            font-size: 18px;
+        }
+    }
+
+    // On mobile, maybe hide poster if really tight, or adjust layout
+    .mini-content {
+        min-width: 0; // Fix text overflow
     }
 }

@@ -14,7 +14,7 @@ export interface Activity {
       title: string;
     };
   };
-  type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import';
+  type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import' | 'comment';
   mediaType: 'movie' | 'tv_show' | 'tv_episode';
   tmdbId: number;
   mediaTitle: string;
@@ -33,6 +33,18 @@ export interface Activity {
   likesCount: number;
   dislikesCount: number;
   commentCount: number;
+  // Virtual properties for comment activities
+  originalActivityType?: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import';
+  commentText?: string;
+  commentCreatedAt?: string;
+  // Reply-specific properties
+  parentId?: string;
+  parentCommentText?: string;
+  replyToUser?: {
+    _id: string;
+    username: string;
+    name: string;
+  };
 }
 
 export interface FeedResponse {
@@ -72,12 +84,26 @@ export class ActivityService {
     return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/feed`, { params });
   }
 
-  getUserActivities(page: number = 1, limit: number = 20): Observable<ApiResponse<FeedResponse>> {
+  getUserActivities(page: number = 1, limit: number = 20, filter: string = 'ALL'): Observable<ApiResponse<FeedResponse>> {
     const params = new HttpParams()
       .set('page', page.toString())
-      .set('limit', limit.toString());
+      .set('limit', limit.toString())
+      .set('filter', filter);
 
     return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/user`, { params });
+  }
+
+  getProfileActivities(userId: string, page: number = 1, limit: number = 20, filter: string = 'ALL'): Observable<ApiResponse<FeedResponse>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('filter', filter);
+
+    // Call /api/users/:userId/activities
+    // Note: apiUrl is 'http://localhost:3000/api/activities'
+    // We need to construct 'http://localhost:3000/api/users/:userId/activities'
+    const baseUrl = this.apiUrl.replace('/activities', '/users');
+    return this.http.get<ApiResponse<FeedResponse>>(`${baseUrl}/${userId}/activities`, { params });
   }
 
   createActivity(data: {

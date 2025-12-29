@@ -3226,3 +3226,212 @@ app-mood-timeline {
     opacity: 0.8;
   }
 }
+
+// Activity Feed Styles
+.activities-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.activity-filters {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 16px 0;
+  margin: 0 -2px; // Optical alignment
+
+  // Frosted glass effect for sticky header
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  .chip-list {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none; // Hide scrollbar Firefox
+
+    &::-webkit-scrollbar {
+      display: none; // Hide scrollbar Chrome/Safari
+    }
+  }
+
+  .chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      background: var(--color-primary);
+      color: #fff; // Always white text on primary
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(0, 224, 84, 0.3); // Primary glow
+    }
+  }
+}
+
+.activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 300px;
+  position: relative;
+  padding-left: 24px; // Space for timeline line
+  margin-top: 16px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom,
+        rgba(var(--color-primary-rgb), 0) 0%,
+        rgba(var(--color-primary-rgb), 0.3) 10%,
+        rgba(var(--color-primary-rgb), 0.3) 90%,
+        rgba(var(--color-primary-rgb), 0) 100%);
+    border-radius: 2px;
+  }
+
+  // Ensure content aligns within the timeline
+  app-activity-card {
+    position: relative;
+
+    // Timeline connector dot
+    &::before {
+      content: '';
+      position: absolute;
+      left: -29px; // Align with timeline line
+      top: 24px; // Align with card header roughly
+      width: 12px;
+      height: 12px;
+      background: rgba(var(--color-background-alt-rgb), 1);
+      border: 2px solid var(--color-primary);
+      border-radius: 50%;
+      z-index: 2;
+      box-shadow: 0 0 0 4px rgba(var(--color-background-rgb), 1); // "Mask" effect
+      transition: all 0.3s ease;
+    }
+
+    &:hover::before {
+      background: var(--color-primary);
+      box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.5);
+    }
+  }
+}
+
+.activities-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 0;
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--color-primary);
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+.activities-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+
+  .material-symbols-outlined {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding-bottom: 40px;
+
+  .load-more-btn {
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--color-text-main);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--color-text-secondary);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner-small {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--color-primary);
+      animation: spin 0.8s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
