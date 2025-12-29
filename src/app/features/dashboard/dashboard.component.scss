@@ -618,12 +618,20 @@
   padding: 20px;
   border: 1px solid var(--color-border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 }
 
 .activity-header {
   display: flex;
   gap: 16px;
   margin-bottom: 12px;
+
+  @media (max-width: 768px) {
+    gap: 12px;
+  }
 }
 
 .activity-user {
@@ -713,6 +721,12 @@
 
 .episodes-grid {
   margin-left: 56px;
+
+  @media (max-width: 768px) {
+    margin-left: 0; // Full width on mobile looks better for cards
+    margin-top: 12px;
+  }
+
   background-color: rgba(38, 38, 38, 0.3);
   border-radius: 8px;
   padding: 12px;
@@ -784,6 +798,11 @@
 .media-poster {
   flex-shrink: 0;
   width: 80px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+
   aspect-ratio: 2 / 3;
   border-radius: 8px;
   overflow: hidden;
@@ -826,19 +845,29 @@
 }
 
 .media-genres {
-  display: flex;
-  gap: 8px;
+  display: block; // Changed from flex to block for text truncation
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-top: auto;
-  flex-wrap: wrap;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .genre-tag {
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: var(--color-border);
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  border: 1px solid rgba(38, 38, 38, 0.5);
+  display: inline;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+
+  &:not(:last-child)::after {
+    content: "•";
+    margin: 0 6px;
+    opacity: 0.5;
+  }
 }
 
 .activity-actions {
@@ -848,6 +877,12 @@
   margin-top: 16px;
   padding-top: 12px;
   border-top: 1px solid rgba(38, 38, 38, 0.5);
+
+  @media (max-width: 768px) {
+    gap: 16px; // Tighter buttons
+    justify-content: space-between; // Distribute evenly or keep start?
+    // space-between often looks better on mobile specifically for actions
+  }
 }
 
 .action-btn {
