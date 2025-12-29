@@ -1,0 +1,272 @@
+.mood-section,
+.badges-section,
+.recommendations-section,
+.favorites-section {
+    margin-bottom: 48px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f1f1f1;
+    margin: 0;
+}
+
+.section-icon {
+    color: #00e054;
+    font-size: 28px;
+}
+
+// AI Locked State
+.ai-locked-state {
+    background: rgba(26, 31, 38, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.locked-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .material-symbols-outlined {
+        font-size: 40px;
+        color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+.locked-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #f1f1f1;
+}
+
+.locked-message {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 24px;
+    max-width: 400px;
+    margin-inline: auto;
+}
+
+.progress-container {
+    max-width: 300px;
+    margin: 0 auto 16px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00e054, #00c94b);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #00e054;
+}
+
+.remaining-hint {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+// Mood Charts Grid
+.mood-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.timeline-container {
+    position: relative;
+}
+
+.timeline-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 24, 28, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+
+    .overlay-content {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+
+        .material-symbols-outlined {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 0 0 8px;
+        }
+    }
+}
+
+.timeline-progress {
+    color: #00e054;
+    font-weight: 600;
+}
+
+.mood-charts-loading,
+.recommendations-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #00e054;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Badges
+.badge-item {
+    flex-shrink: 0;
+    width: 100px;
+    padding: 16px;
+    background: rgba(26, 31, 38, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.5;
+    filter: grayscale(0.5);
+    transition: all 0.2s ease;
+
+    &.earned {
+        opacity: 1;
+        filter: none;
+        border-color: rgba(0, 224, 84, 0.3);
+        background: rgba(0, 224, 84, 0.05);
+    }
+}
+
+.badge-icon {
+    font-size: 32px;
+}
+
+.badge-name {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.badge-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.badge-progress-bar {
+    height: 100%;
+    background: #00e054;
+    border-radius: 2px;
+}
+
+.badge-progress-text {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+// Mood Controls
+.mood-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.mood-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #f1f1f1;
+    }
+
+    &.active {
+        background: rgba(0, 224, 84, 0.1);
+        border-color: rgba(0, 224, 84, 0.3);
+        color: #00e054;
+    }
+
+    .material-symbols-outlined {
+        font-size: 18px;
+    }
+}
+
+// Recommendations Grid
+.recommendations-grid,
+.favorites-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.recommendations-empty {
+    text-align: center;
+    padding: 48px;
+    color: rgba(255, 255, 255, 0.5);
+}

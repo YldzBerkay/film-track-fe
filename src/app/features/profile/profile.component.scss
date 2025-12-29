@@ -149,54 +149,12 @@
   max-width: 1024px;
   margin: 32px auto 32px;
   padding: 0 24px;
-  border-bottom: 1px solid var(--color-border);
   position: relative;
   z-index: 1;
 }
 
-.tabs-container {
-  display: flex;
-  gap: 32px;
-  overflow-x: auto;
-  scrollbar-width: none;
-
-  @media (max-width: 767px) {
-    gap: 16px;
-    padding: 0 4px;
-  }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.tab-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 3px solid transparent;
-  padding-bottom: 16px;
-  color: var(--color-text-secondary);
-  font-size: 15px;
-  font-weight: 600;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:hover {
-    color: var(--color-text-main);
-  }
-
-  &.active {
-    border-bottom-color: var(--color-primary);
-    color: var(--color-text-main);
-  }
-}
+// Tab styles are now in TabNavigationComponent
+// Removed: .tabs-container, .tab-item
 
 .content-container {
   display: flex;
@@ -585,117 +543,8 @@ app-mood-timeline {
   }
 }
 
-// Activity Section
-.activity-section {
-  margin-top: 48px;
-}
-
-.activity-carousel {
-  position: relative;
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  padding-bottom: 16px;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  margin: 0 -24px;
-  padding: 0 24px 16px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.activity-card {
-  flex-shrink: 0;
-  width: 260px;
-  aspect-ratio: auto;
-  height: fit-content;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  cursor: pointer;
-  scroll-snap-align: start;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-  }
-}
-
-.activity-image {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  background-color: rgba(26, 31, 38, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.3s ease;
-  }
-
-  .activity-card:hover & img {
-    transform: scale(1.05);
-    filter: brightness(0.8);
-  }
-}
-
-.activity-rating-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
-  padding: 6px 10px;
-  border-radius: 9999px;
-  font-size: 13px;
-  color: var(--color-text-main);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid var(--color-border);
-  font-weight: 600;
-
-  .material-symbols-outlined {
-    font-size: 14px;
-    color: var(--color-primary);
-  }
-}
-
-.activity-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.activity-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text-main);
-  margin: 0;
-  line-height: 1.4;
-  transition: color 0.2s ease;
-
-  .activity-card:hover & {
-    color: var(--color-primary);
-  }
-}
-
-.activity-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.activity-time {
-  font-size: 13px;
-  color: var(--color-text-muted);
-}
+// Activity carousel styles removed - using ActivityCardComponent
+// Removed: .activity-section, .activity-carousel, .activity-card, .activity-image, etc.
 
 // Clickable stat cards
 .stat-card--clickable {

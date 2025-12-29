@@ -29,6 +29,7 @@ import { ProfileStatsComponent } from './components/profile-stats/profile-stats.
 import { TabNavigationComponent, TabItem } from '../../shared/components/tab-navigation/tab-navigation.component';
 import { AppCarouselComponent } from '../../shared/components/app-carousel/app-carousel.component';
 import { MediaCardComponent } from '../../shared/components/media-card/media-card.component';
+import { ProfileStateService } from '../../core/services/profile-state.service';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'settings';
 
@@ -75,6 +76,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   translationService = inject(TranslationService);
   private watchedListService = inject(WatchedListService);
   private watchlistService = inject(WatchlistService);
+  private profileState = inject(ProfileStateService);
 
   profile = signal<UserProfile | null>(null);
   isLoading = signal(true);
@@ -489,6 +491,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       next: (response) => {
         if (response.success && response.data) {
           this.profile.set(response.data);
+          // Sync with ProfileStateService for child routes
+          this.profileState.setProfile(response.data);
+          this.profileState.setIsOwnProfile(this.isOwnProfile());
           // Set follow status from API response
           if (response.data.isFollowedByMe !== undefined) {
             this.isFollowing.set(response.data.isFollowedByMe);
@@ -533,6 +538,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       next: (response) => {
         if (response.success && response.data) {
           this.profile.set(response.data);
+          // Sync with ProfileStateService for child routes
+          this.profileState.setProfile(response.data);
+          this.profileState.setIsOwnProfile(true);
           this.authService.updateUser({
             name: response.data.user.name,
             avatar: response.data.user.avatar || undefined,

@@ -1,0 +1,289 @@
+<div class="library-container">
+    <!-- View Toggle -->
+    <div class="view-toggle">
+        <button class="toggle-btn" [class.active]="viewMode() === 'slider'" (click)="viewMode.set('slider')">
+            <span class="material-symbols-outlined">view_carousel</span>
+            <span>{{ 'profile.sliderView' | translate }}</span>
+        </button>
+        <button class="toggle-btn" [class.active]="viewMode() === 'list'" (click)="viewMode.set('list')">
+            <span class="material-symbols-outlined">list</span>
+            <span>{{ 'profile.listView' | translate }}</span>
+        </button>
+    </div>
+
+    @if (viewMode() === 'slider') {
+    <!-- Watched List -->
+    @if (watched(); as watchedList) {
+    <div class="list-card">
+        <div class="list-card-header">
+            <div class="list-card-title">
+                <span class="material-symbols-outlined list-icon">visibility</span>
+                <h3>{{ 'watched.title' | translate }}</h3>
+                <span class="list-badge">{{ watchedList.items.length }}</span>
+            </div>
+            <div class="list-card-actions">
+                @if (isOwnProfile()) {
+                <div class="privacy-dropdown-container">
+                    <button class="privacy-btn" (click)="togglePrivacyDropdown('watched', $event)">
+                        <span class="material-symbols-outlined">{{ getPrivacyIcon(watchedList.privacyStatus) }}</span>
+                    </button>
+                    @if (activePrivacyDropdown() === 'watched') {
+                    <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                        <button class="privacy-option" [class.active]="watchedList.privacyStatus === 0"
+                            (click)="updateWatchedPrivacy(0)">
+                            <span class="material-symbols-outlined">public</span>
+                            <span>{{ 'privacy.everyone' | translate }}</span>
+                        </button>
+                        <button class="privacy-option" [class.active]="watchedList.privacyStatus === 1"
+                            (click)="updateWatchedPrivacy(1)">
+                            <span class="material-symbols-outlined">group</span>
+                            <span>{{ 'privacy.friends' | translate }}</span>
+                        </button>
+                        <button class="privacy-option" [class.active]="watchedList.privacyStatus === 2"
+                            (click)="updateWatchedPrivacy(2)">
+                            <span class="material-symbols-outlined">lock</span>
+                            <span>{{ 'privacy.nobody' | translate }}</span>
+                        </button>
+                    </div>
+                    }
+                </div>
+                }
+                <button class="expand-btn" routerLink="/lists/watched">
+                    <span>{{ 'profile.viewAll' | translate }}</span>
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        @if (watchedList.items.length > 0) {
+        <div class="list-slider-container">
+            <button class="slider-btn prev" (click)="scrollList(watchedContainer, 'left')">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="list-slider" #watchedContainer>
+                @for (item of watchedList.items.slice(0, 20); track item.tmdbId) {
+                <div class="list-poster-card"
+                    (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
+                    @if (item.posterPath) {
+                    <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title"
+                        class="poster-img" />
+                    } @else {
+                    <div class="poster-placeholder">
+                        <span class="material-symbols-outlined">movie</span>
+                    </div>
+                    }
+                    <div class="poster-overlay">
+                        <span class="material-symbols-outlined">play_circle</span>
+                    </div>
+                </div>
+                }
+            </div>
+            <button class="slider-btn next" (click)="scrollList(watchedContainer, 'right')">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+        } @else {
+        <div class="list-empty">
+            <span class="material-symbols-outlined">movie</span>
+            <p>{{ 'watched.empty' | translate }}</p>
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Default Watchlist -->
+    @if (defaultWatchlist(); as watchlist) {
+    <div class="list-card">
+        <div class="list-card-header">
+            <div class="list-card-title">
+                <span class="material-symbols-outlined list-icon">bookmark</span>
+                <h3>{{ 'watchlist.title' | translate }}</h3>
+                <span class="list-badge">{{ watchlist.items.length }}</span>
+            </div>
+            <div class="list-card-actions">
+                @if (isOwnProfile()) {
+                <div class="privacy-dropdown-container">
+                    <button class="privacy-btn" (click)="togglePrivacyDropdown('watchlist', $event)">
+                        <span class="material-symbols-outlined">{{ getPrivacyIcon(watchlist.privacyStatus) }}</span>
+                    </button>
+                    @if (activePrivacyDropdown() === 'watchlist') {
+                    <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                        <button class="privacy-option" [class.active]="watchlist.privacyStatus === 0"
+                            (click)="updateWatchlistPrivacy(watchlist._id, 0)">
+                            <span class="material-symbols-outlined">public</span>
+                            <span>{{ 'privacy.everyone' | translate }}</span>
+                        </button>
+                        <button class="privacy-option" [class.active]="watchlist.privacyStatus === 1"
+                            (click)="updateWatchlistPrivacy(watchlist._id, 1)">
+                            <span class="material-symbols-outlined">group</span>
+                            <span>{{ 'privacy.friends' | translate }}</span>
+                        </button>
+                        <button class="privacy-option" [class.active]="watchlist.privacyStatus === 2"
+                            (click)="updateWatchlistPrivacy(watchlist._id, 2)">
+                            <span class="material-symbols-outlined">lock</span>
+                            <span>{{ 'privacy.nobody' | translate }}</span>
+                        </button>
+                    </div>
+                    }
+                </div>
+                }
+                <button class="expand-btn" routerLink="/lists/watchlist">
+                    <span>{{ 'profile.viewAll' | translate }}</span>
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        @if (watchlist.items.length > 0) {
+        <div class="list-slider-container">
+            <button class="slider-btn prev" (click)="scrollList(watchlistContainer, 'left')">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="list-slider" #watchlistContainer>
+                @for (item of watchlist.items.slice(0, 20); track item.tmdbId) {
+                <div class="list-poster-card"
+                    (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
+                    @if (item.posterPath) {
+                    <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title"
+                        class="poster-img" />
+                    } @else {
+                    <div class="poster-placeholder">
+                        <span class="material-symbols-outlined">movie</span>
+                    </div>
+                    }
+                    <div class="poster-overlay">
+                        <span class="material-symbols-outlined">play_circle</span>
+                    </div>
+                </div>
+                }
+            </div>
+            <button class="slider-btn next" (click)="scrollList(watchlistContainer, 'right')">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+        } @else {
+        <div class="list-empty">
+            <span class="material-symbols-outlined">bookmark_border</span>
+            <p>{{ 'watchlist.empty' | translate }}</p>
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Custom Lists -->
+    @for (list of customWatchlists(); track list._id) {
+    <div class="list-card">
+        <div class="list-card-header">
+            <div class="list-card-title">
+                <span class="material-symbols-outlined list-icon">{{ list.icon || 'list' }}</span>
+                <h3>{{ list.name }}</h3>
+                <span class="list-badge">{{ list.items.length }}</span>
+            </div>
+            <div class="list-card-actions">
+                @if (isOwnProfile()) {
+                <div class="privacy-dropdown-container">
+                    <button class="privacy-btn" (click)="togglePrivacyDropdown(list._id, $event)">
+                        <span class="material-symbols-outlined">{{ getPrivacyIcon(list.privacyStatus) }}</span>
+                    </button>
+                    @if (activePrivacyDropdown() === list._id) {
+                    <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                        <button class="privacy-option" [class.active]="list.privacyStatus === 0"
+                            (click)="updateWatchlistPrivacy(list._id, 0)">
+                            <span class="material-symbols-outlined">public</span>
+                            <span>{{ 'privacy.everyone' | translate }}</span>
+                        </button>
+                        <button class="privacy-option" [class.active]="list.privacyStatus === 1"
+                            (click)="updateWatchlistPrivacy(list._id, 1)">
+                            <span class="material-symbols-outlined">group</span>
+                            <span>{{ 'privacy.friends' | translate }}</span>
+                        </button>
+                        <button class="privacy-option" [class.active]="list.privacyStatus === 2"
+                            (click)="updateWatchlistPrivacy(list._id, 2)">
+                            <span class="material-symbols-outlined">lock</span>
+                            <span>{{ 'privacy.nobody' | translate }}</span>
+                        </button>
+                    </div>
+                    }
+                </div>
+                }
+                <button class="expand-btn" [routerLink]="['/lists', list._id]">
+                    <span>{{ 'profile.viewAll' | translate }}</span>
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        @if (list.items.length > 0) {
+        <div class="list-slider-container">
+            <div class="list-slider" [id]="'list-' + list._id">
+                @for (item of list.items.slice(0, 20); track item.tmdbId) {
+                <div class="list-poster-card"
+                    (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
+                    @if (item.posterPath) {
+                    <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title"
+                        class="poster-img" />
+                    } @else {
+                    <div class="poster-placeholder">
+                        <span class="material-symbols-outlined">movie</span>
+                    </div>
+                    }
+                    <div class="poster-overlay">
+                        <span class="material-symbols-outlined">play_circle</span>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        } @else {
+        <div class="list-empty">
+            <span class="material-symbols-outlined">{{ list.icon || 'list' }}</span>
+            <p>{{ 'watchlist.emptyList' | translate }}</p>
+        </div>
+        }
+    </div>
+    }
+    } @else {
+    <!-- Compact List View -->
+    <div class="compact-list-view">
+        @if (watched(); as watchedList) {
+        <a class="compact-list-item" routerLink="/lists/watched">
+            <div class="compact-list-icon">
+                <span class="material-symbols-outlined">visibility</span>
+            </div>
+            <div class="compact-list-info">
+                <span class="compact-list-name">{{ 'watched.title' | translate }}</span>
+                <span class="compact-list-count">{{ watchedList.items.length }} {{ 'watchlist.items' | translate
+                    }}</span>
+            </div>
+            <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
+        </a>
+        }
+
+        @if (defaultWatchlist(); as watchlist) {
+        <a class="compact-list-item" routerLink="/lists/watchlist">
+            <div class="compact-list-icon">
+                <span class="material-symbols-outlined">bookmark</span>
+            </div>
+            <div class="compact-list-info">
+                <span class="compact-list-name">{{ 'watchlist.title' | translate }}</span>
+                <span class="compact-list-count">{{ watchlist.items.length }} {{ 'watchlist.items' | translate }}</span>
+            </div>
+            <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
+        </a>
+        }
+
+        @for (list of customWatchlists(); track list._id) {
+        <a class="compact-list-item" [routerLink]="['/lists', list._id]">
+            <div class="compact-list-icon">
+                <span class="material-symbols-outlined">{{ list.icon || 'list' }}</span>
+            </div>
+            <div class="compact-list-info">
+                <span class="compact-list-name">{{ list.name }}</span>
+                <span class="compact-list-count">{{ list.items.length }} {{ 'watchlist.items' | translate }}</span>
+            </div>
+            <span class="material-symbols-outlined compact-list-arrow">chevron_right</span>
+        </a>
+        }
+    </div>
+    }
+</div>

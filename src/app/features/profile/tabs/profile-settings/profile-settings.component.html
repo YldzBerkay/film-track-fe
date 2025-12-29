@@ -1,0 +1,149 @@
+@if (isOwnProfile()) {
+<div class="settings-container">
+    <!-- CSV Import Section -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">file_upload</span>
+            <h3>{{ 'settings.importWatchHistory' | translate }}</h3>
+        </div>
+        <p class="settings-description">{{ 'settings.importDescription' | translate }}</p>
+
+        <div class="import-form">
+            <label class="overwrite-toggle">
+                <input type="checkbox" [checked]="overwriteExisting()"
+                    (change)="overwriteExisting.set(!overwriteExisting())" />
+                <span>{{ 'settings.overwriteExisting' | translate }}</span>
+            </label>
+
+            <div class="file-upload-area">
+                <input type="file" id="csvUpload" accept=".csv" (change)="onCsvFileSelected($event)"
+                    class="file-input" />
+                <label for="csvUpload" class="file-upload-label" [class.disabled]="isImporting()">
+                    @if (isImporting()) {
+                    <div class="spinner-small"></div>
+                    <span>{{ 'settings.importing' | translate }}</span>
+                    } @else {
+                    <span class="material-symbols-outlined">upload_file</span>
+                    <span>{{ 'settings.selectCsvFile' | translate }}</span>
+                    }
+                </label>
+            </div>
+
+            <div class="import-hint">
+                <span class="material-symbols-outlined">info</span>
+                <span>{{ 'settings.csvHint' | translate }}</span>
+            </div>
+        </div>
+
+        @if (importResult(); as result) {
+        <div class="import-result" [class.success]="result.failedCount === 0" [class.partial]="result.failedCount > 0">
+            <div class="result-summary">
+                <div class="result-item">
+                    <span class="result-label">{{ 'settings.imported' | translate }}</span>
+                    <span class="result-value success">{{ result.importedCount }}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">{{ 'settings.skipped' | translate }}</span>
+                    <span class="result-value">{{ result.skippedCount }}</span>
+                </div>
+                @if (result.failedCount > 0) {
+                <div class="result-item">
+                    <span class="result-label">{{ 'settings.failed' | translate }}</span>
+                    <span class="result-value error">{{ result.failedCount }}</span>
+                </div>
+                }
+            </div>
+
+            @if (result.estimatedProcessingSeconds) {
+            <p class="processing-note">
+                <span class="material-symbols-outlined">schedule</span>
+                {{ 'settings.processingNote' | translate:{ mins: getEstimatedMinutes() } }}
+            </p>
+            }
+
+            @if (result.failedItems?.length) {
+            <button class="toggle-failed-btn" (click)="toggleFailedItems()">
+                <span class="material-symbols-outlined">{{ showFailedItems() ? 'expand_less' : 'expand_more' }}</span>
+                {{ 'settings.showFailedItems' | translate }} ({{ result.failedItems.length }})
+            </button>
+
+            @if (showFailedItems()) {
+            <div class="failed-items-list">
+                @for (item of result.failedItems; track item) {
+                <span class="failed-item">{{ item }}</span>
+                }
+            </div>
+            }
+            }
+        </div>
+        }
+    </div>
+
+    <!-- Password Change Section -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">lock</span>
+            <h3>{{ 'settings.changePassword' | translate }}</h3>
+        </div>
+
+        <div class="password-form">
+            <div class="form-group">
+                <label for="oldPassword">{{ 'settings.currentPassword' | translate }}</label>
+                <input type="password" id="oldPassword" [value]="passwordData().oldPassword"
+                    (input)="updatePasswordField('oldPassword', $any($event.target).value)"
+                    [placeholder]="'settings.currentPasswordPlaceholder' | translate" />
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword">{{ 'settings.newPassword' | translate }}</label>
+                <input type="password" id="newPassword" [value]="passwordData().newPassword"
+                    (input)="updatePasswordField('newPassword', $any($event.target).value)"
+                    [placeholder]="'settings.newPasswordPlaceholder' | translate" />
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">{{ 'settings.confirmPassword' | translate }}</label>
+                <input type="password" id="confirmPassword" [value]="passwordData().confirmPassword"
+                    (input)="updatePasswordField('confirmPassword', $any($event.target).value)"
+                    [placeholder]="'settings.confirmPasswordPlaceholder' | translate" />
+            </div>
+
+            @if (passwordMessage(); as msg) {
+            <div class="password-message" [class.success]="msg.type === 'success'" [class.error]="msg.type === 'error'">
+                <span class="material-symbols-outlined">{{ msg.type === 'success' ? 'check_circle' : 'error' }}</span>
+                <span>{{ msg.text }}</span>
+            </div>
+            }
+
+            <button class="update-password-btn" (click)="updatePassword()" [disabled]="isUpdatingPassword()">
+                @if (isUpdatingPassword()) {
+                <div class="spinner-small"></div>
+                } @else {
+                <span class="material-symbols-outlined">save</span>
+                }
+                {{ 'settings.updatePassword' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Account Info Section -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">account_circle</span>
+            <h3>{{ 'settings.accountInfo' | translate }}</h3>
+        </div>
+
+        <div class="account-info">
+            <div class="info-row">
+                <span class="info-label">{{ 'settings.memberSince' | translate }}</span>
+                <span class="info-value">{{ currentYear }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+} @else {
+<div class="settings-not-available">
+    <span class="material-symbols-outlined">lock</span>
+    <p>{{ 'settings.notYourProfile' | translate }}</p>
+</div>
+}

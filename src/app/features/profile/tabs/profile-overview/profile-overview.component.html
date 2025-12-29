@@ -1,0 +1,152 @@
+@if (isOwnProfile()) {
+<!-- Mood Charts Section -->
+<div class="mood-section">
+    <div class="section-header">
+        <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">psychology</span>
+            {{ 'profile.cinematicMood' | translate }}
+        </h2>
+    </div>
+
+    @if (aiThresholdNotMet() && aiThresholdMeta()) {
+    <div class="ai-locked-state">
+        <div class="locked-icon">
+            <span class="material-symbols-outlined">lock</span>
+        </div>
+        <h3 class="locked-title">{{ 'profile.aiLocked' | translate }}</h3>
+        <p class="locked-message">{{ 'profile.aiLockedMessage' | translate }}</p>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill"
+                    [style.width.%]="(aiThresholdMeta()!.currentCount / aiThresholdMeta()!.requiredCount) * 100"></div>
+            </div>
+            <span class="progress-text">{{ aiThresholdMeta()!.currentCount }} / {{ aiThresholdMeta()!.requiredCount
+                }}</span>
+        </div>
+        <p class="remaining-hint">{{ 'profile.aiLockedRemaining' | translate:{ remaining: aiThresholdMeta()!.remaining }
+            }}</p>
+    </div>
+    } @else {
+    @defer (on viewport) {
+    <div class="mood-charts-grid">
+        <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
+        <div class="timeline-container">
+            <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
+            @if (!hasEnoughTimelineData()) {
+            <div class="timeline-overlay">
+                <div class="overlay-content">
+                    <span class="material-symbols-outlined">info</span>
+                    <p>{{ 'profile.timelineInfo' | translate }}</p>
+                    <span class="timeline-progress">{{ moodTimeline().length }}/3 {{ 'profile.days' | translate
+                        }}</span>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    } @placeholder {
+    <div class="mood-charts-loading">
+        <div class="spinner"></div>
+    </div>
+    }
+    }
+</div>
+
+<!-- Badges Section -->
+<div class="badges-section">
+    <div class="section-header">
+        <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">workspace_premium</span>
+            {{ 'profile.moodBadges' | translate }}
+        </h2>
+    </div>
+    <app-carousel [items]="badges()" [loading]="isLoadingBadges()"
+        [emptyMessage]="'profile.earnBadgesHint' | translate">
+        @for (badge of badges(); track trackByBadgeId($index, badge)) {
+        <div class="badge-item" [class.earned]="badge.earnedAt" [title]="badge.description">
+            <span class="badge-icon">{{ badge.icon }}</span>
+            @if (!badge.earnedAt && badge.progress !== undefined && badge.threshold) {
+            <div class="badge-progress">
+                <div class="badge-progress-bar" [style.width.%]="(badge.progress / badge.threshold) * 100"></div>
+            </div>
+            <span class="badge-progress-text">{{ badge.progress }}/{{ badge.threshold }}</span>
+            }
+            <span class="badge-name">{{ badge.name }}</span>
+        </div>
+        }
+    </app-carousel>
+</div>
+
+<!-- Mood Recommendations Section -->
+<div class="recommendations-section">
+    <div class="section-header">
+        <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">movie_filter</span>
+            {{ 'profile.forYourMood' | translate }}
+        </h2>
+        <div class="mood-controls">
+            <button class="mood-toggle-btn" (click)="toggleMoodRecsMode()">
+                <span class="material-symbols-outlined">{{ moodRecsMode() === 'match' ? 'favorite' : 'swap_horiz'
+                    }}</span>
+                {{ (moodRecsMode() === 'match' ? 'profile.match' : 'profile.shift') | translate }}
+            </button>
+            <button class="mood-toggle-btn" [class.active]="includeWatched()" (click)="toggleIncludeWatched()">
+                <span class="material-symbols-outlined">{{ includeWatched() ? 'visibility' : 'visibility_off' }}</span>
+                {{ (includeWatched() ? 'profile.all' : 'profile.unwatched') | translate }}
+            </button>
+        </div>
+    </div>
+
+    @if (isLoadingRecommendations()) {
+    <div class="recommendations-loading">
+        <div class="spinner"></div>
+    </div>
+    } @else if (moodRecommendations().length > 0) {
+    <div class="recommendations-grid">
+        @for (rec of moodRecommendations(); track rec.tmdbId) {
+        <app-media-card [title]="rec.title" [posterPath]="rec.posterPath" [matchScore]="rec.score"
+            (cardClick)="router.navigate(['/movies', rec.tmdbId])" />
+        }
+    </div>
+    } @else {
+    <div class="recommendations-empty">
+        <p>{{ 'profile.noMoodRecs' | translate }}</p>
+    </div>
+    }
+</div>
+}
+
+<!-- Favorites Sections (visible to all) -->
+@if (user()?.favoriteMovies?.length) {
+<div class="favorites-section">
+    <div class="section-header">
+        <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">movie</span>
+            {{ 'profile.directorsMovieCut' | translate }}
+        </h2>
+    </div>
+    <div class="favorites-grid">
+        @for (movie of user()!.favoriteMovies; track movie.tmdbId) {
+        <app-media-card [title]="movie.title" [posterPath]="movie.posterPath"
+            (cardClick)="router.navigate(['/movies', movie.tmdbId])" />
+        }
+    </div>
+</div>
+}
+
+@if (user()?.favoriteTvShows?.length) {
+<div class="favorites-section">
+    <div class="section-header">
+        <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">tv</span>
+            {{ 'profile.directorsTvCut' | translate }}
+        </h2>
+    </div>
+    <div class="favorites-grid">
+        @for (show of user()!.favoriteTvShows; track show.tmdbId) {
+        <app-media-card [title]="show.name" [posterPath]="show.posterPath"
+            (cardClick)="router.navigate(['/tv', show.tmdbId])" />
+        }
+    </div>
+</div>
+}

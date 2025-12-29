@@ -1,0 +1,370 @@
+.library-container {
+    padding-top: 16px;
+}
+
+// View Toggle
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #f1f1f1;
+    }
+
+    &.active {
+        background: rgba(0, 224, 84, 0.1);
+        border-color: rgba(0, 224, 84, 0.3);
+        color: #00e054;
+    }
+
+    .material-symbols-outlined {
+        font-size: 20px;
+    }
+}
+
+// List Card
+.list-card {
+    background: rgba(26, 31, 38, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+}
+
+.list-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.list-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #f1f1f1;
+    }
+}
+
+.list-icon {
+    font-size: 24px;
+    color: #00e054;
+}
+
+.list-badge {
+    background: rgba(0, 224, 84, 0.1);
+    color: #00e054;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.list-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+// Privacy Dropdown
+.privacy-dropdown-container {
+    position: relative;
+}
+
+.privacy-btn {
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .material-symbols-outlined {
+        font-size: 20px;
+    }
+}
+
+.privacy-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: rgba(26, 31, 38, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+    min-width: 160px;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.privacy-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #f1f1f1;
+    }
+
+    &.active {
+        background: rgba(0, 224, 84, 0.1);
+        color: #00e054;
+    }
+
+    .material-symbols-outlined {
+        font-size: 18px;
+    }
+}
+
+.expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #00e054;
+    }
+
+    .material-symbols-outlined {
+        font-size: 16px;
+    }
+}
+
+// List Slider
+.list-slider-container {
+    position: relative;
+}
+
+.list-slider {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding: 4px 0;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(20, 24, 28, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f1f1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+
+    &.prev {
+        left: -16px;
+    }
+
+    &.next {
+        right: -16px;
+    }
+
+    &:hover {
+        background: rgba(0, 224, 84, 0.2);
+        border-color: #00e054;
+        color: #00e054;
+    }
+}
+
+// Poster Card
+.list-poster-card {
+    flex-shrink: 0;
+    width: 120px;
+    aspect-ratio: 2/3;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.05);
+
+        .poster-overlay {
+            opacity: 1;
+        }
+    }
+}
+
+.poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.poster-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 31, 38, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.3);
+
+    .material-symbols-outlined {
+        font-size: 32px;
+    }
+}
+
+.poster-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    .material-symbols-outlined {
+        font-size: 32px;
+        color: #00e054;
+    }
+}
+
+// List Empty
+.list-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: rgba(255, 255, 255, 0.5);
+
+    .material-symbols-outlined {
+        font-size: 40px;
+        margin-bottom: 12px;
+        opacity: 0.5;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+}
+
+// Compact List View
+.compact-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.compact-list-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: rgba(26, 31, 38, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(26, 31, 38, 0.8);
+        border-color: rgba(0, 224, 84, 0.2);
+    }
+}
+
+.compact-list-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 224, 84, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .material-symbols-outlined {
+        font-size: 24px;
+        color: #00e054;
+    }
+}
+
+.compact-list-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.compact-list-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f1f1f1;
+}
+
+.compact-list-count {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.compact-list-arrow {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 24px;
+}
