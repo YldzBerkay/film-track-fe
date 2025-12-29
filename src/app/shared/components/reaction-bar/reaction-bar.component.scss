@@ -1,0 +1,56 @@
+.reaction-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    /* Glass effect base */
+    border-radius: 20px;
+    padding: 2px;
+    overflow: hidden;
+    /* border: 1px solid rgba(255, 255, 255, 0.1); */
+
+    .divider {
+        width: 1px;
+        height: 16px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 0 2px;
+    }
+
+    .reaction-btn {
+        background: transparent;
+        border: none;
+        color: #aaa;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        border-radius: 18px;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+        }
+
+        &.active.like-btn {
+            color: #4CAF50;
+            /* Green */
+            /* background: rgba(76, 175, 80, 0.1); */
+        }
+
+        &.active.dislike-btn {
+            color: #F44336;
+            /* Red */
+            /* background: rgba(244, 67, 54, 0.1); */
+        }
+
+        .icon {
+            font-size: 1rem;
+        }
+
+        .count {
+            font-weight: 600;
+        }
+    }
+}

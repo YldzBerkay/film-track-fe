@@ -29,8 +29,12 @@
 
                 <div class="comment-body">
                     <div class="comment-header">
-                        <span class="username">{{ comment.userId.username }}</span>
-                        <span class="time">{{ comment.createdAt | timeAgo }}</span>
+                        <span class="username">{{ comment.userId.name || comment.userId.username }}</span>
+                        <!-- Title Badge -->
+                        <span class="user-title" *ngIf="comment.userId.mastery?.title">
+                            • {{ 'masterRank.' + comment.userId.mastery?.title | translate }}
+                        </span>
+                        <span class="time-ago">{{ comment.createdAt | timeAgo }}</span>
                     </div>
 
                     <p class="comment-text">
@@ -41,11 +45,12 @@
                     </p>
 
                     <div class="comment-actions">
-                        <button class="text-btn">Like</button>
+                        <app-reaction-bar [targetId]="comment._id" [targetType]="'comment'"
+                            [likesCount]="comment.likesCount || 0" [dislikesCount]="comment.dislikesCount || 0"
+                            [userVote]="comment.userVote || null">
+                        </app-reaction-bar>
+
                         <button class="text-btn" (click)="toggleReplyInput(comment)">Reply</button>
-                        @if ((comment.likes || []).length > 0) {
-                        <span class="likes-count">{{ comment.likes.length }} likes</span>
-                        }
                     </div>
 
                     <!-- View Replies Link (Only for Level 0) -->

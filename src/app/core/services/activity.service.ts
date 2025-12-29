@@ -8,6 +8,11 @@ export interface Activity {
     _id: string;
     username: string;
     name: string;
+    mastery?: {
+      score: number;
+      level: number;
+      title: string;
+    };
   };
   type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import';
   mediaType: 'movie' | 'tv_show' | 'tv_episode';
@@ -24,6 +29,9 @@ export interface Activity {
   createdAt: string;
   updatedAt: string;
   likes: string[]; // Array of user IDs
+  dislikes: string[];
+  likesCount: number;
+  dislikesCount: number;
   commentCount: number;
 }
 

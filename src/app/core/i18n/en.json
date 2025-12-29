@@ -400,5 +400,14 @@
         "newPassword": "New Password",
         "confirmPassword": "Confirm Password",
         "updatePassword": "Update Password"
+    },
+    "masterRank": {
+        "novice": "Novice",
+        "ticketHolder": "Ticket Holder",
+        "movieBuff": "Movie Buff",
+        "criticAmateur": "Amateur Critic",
+        "cinephile": "Cinephile",
+        "cultureGuardian": "Culture Guardian",
+        "grandmaster": "Grandmaster"
     }
 }

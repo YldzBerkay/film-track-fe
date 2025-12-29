@@ -5,6 +5,8 @@ import { CommentService, Comment } from '../../../../core/services/comment.servi
 import { AuthService, User } from '../../../../core/services/auth.service';
 import { TimeAgoPipe } from '../../../pipes/time-ago.pipe';
 
+import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
+
 // Helper interface for rendering
 interface CommentNode extends Comment {
     level: number;
@@ -13,12 +15,15 @@ interface CommentNode extends Comment {
     isLoadingReplies: boolean;
     showReplyInput: boolean;
     replyText: string;
+    userVote?: 'like' | 'dislike' | null;
 }
+
+import { TranslatePipe } from '../../../../core/i18n';
 
 @Component({
     selector: 'app-comment-list',
     standalone: true,
-    imports: [CommonModule, FormsModule, TimeAgoPipe],
+    imports: [CommonModule, FormsModule, TimeAgoPipe, ReactionBarComponent, TranslatePipe],
     templateUrl: './comment-list.component.html',
     styleUrls: ['./comment-list.component.scss']
 })
@@ -67,6 +72,14 @@ export class CommentListComponent implements OnChanges {
     }
 
     mapToNode(comment: Comment, level: number): CommentNode {
+        const userId = this.currentUser()?.id;
+        let vote: 'like' | 'dislike' | null = null;
+
+        if (userId) {
+            if (comment.likes && comment.likes.includes(userId)) vote = 'like';
+            else if (comment.dislikes && comment.dislikes.includes(userId)) vote = 'dislike';
+        }
+
         return {
             ...comment,
             level,
@@ -74,7 +87,8 @@ export class CommentListComponent implements OnChanges {
             isExpanded: false,
             isLoadingReplies: false,
             showReplyInput: false,
-            replyText: ''
+            replyText: '',
+            userVote: vote
         };
     }
 

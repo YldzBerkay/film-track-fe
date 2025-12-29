@@ -11,6 +11,11 @@ export interface Comment {
         username: string;
         name?: string;
         avatar?: string;
+        mastery?: {
+            score: number;
+            level: number;
+            title: string;
+        };
     };
     activityId: string;
     parentId: string | null;
@@ -22,6 +27,9 @@ export interface Comment {
     };
     replyCount: number;
     likes: string[];
+    dislikes: string[];
+    likesCount: number;
+    dislikesCount: number;
     createdAt: string;
     updatedAt: string;
 }

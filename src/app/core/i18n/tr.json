@@ -384,5 +384,14 @@
         "newPassword": "Yeni Şifre",
         "confirmPassword": "Şifreyi Onayla",
         "updatePassword": "Şifreyi Güncelle"
+    },
+    "masterRank": {
+        "novice": "Acemi İzleyici",
+        "ticketHolder": "Biletçi",
+        "movieBuff": "Film Tutkunu",
+        "criticAmateur": "Amatör Eleştirmen",
+        "cinephile": "Sinefil",
+        "cultureGuardian": "Kültür Bekçisi",
+        "grandmaster": "Sinema Üstadı"
     }
 }

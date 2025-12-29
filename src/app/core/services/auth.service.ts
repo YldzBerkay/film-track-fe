@@ -19,6 +19,13 @@ export interface AuthResponse {
     id: string;
     username: string;
     name?: string;
+    blacklistedMovies: number[];
+    mastery: {
+      score: number;
+      level: number;
+      title: string;
+    };
+    createdAt: string;
     avatar?: string;
     banner?: string;
     email: string;
@@ -42,6 +49,12 @@ export interface User {
   email: string;
   onboardingCompleted?: boolean;
   streak?: number;
+  mastery?: {
+    score: number;
+    level: number;
+    title: string;
+  };
+  blacklistedMovies?: number[];
 }
 
 @Injectable({

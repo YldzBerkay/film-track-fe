@@ -19,6 +19,7 @@ import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
 import { CommentListComponent } from '../../shared/components/comments/comment-list/comment-list.component';
 
 import { CreateListDialogComponent } from '../../shared/components/create-list-dialog/create-list-dialog.component';
+import { ReactionBarComponent } from '../../shared/components/reaction-bar/reaction-bar.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,13 +33,16 @@ import { CreateListDialogComponent } from '../../shared/components/create-list-d
     HeaderComponent,
     DialogComponent,
     TranslatePipe,
-    CreateListDialogComponent
+    CreateListDialogComponent,
+    ReactionBarComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
+  // ...
+
   private authService = inject(AuthService);
   private activityService = inject(ActivityService);
   private recommendationService = inject(RecommendationService);
@@ -461,9 +465,17 @@ export class DashboardComponent implements OnInit {
   commentText = signal<string>('');
   isSubmittingComment = signal(false);
 
-  isLiked(activity: Activity): boolean {
+  getUserVote(activity: Activity): 'like' | 'dislike' | null {
     const userId = this.user()?.id;
-    return userId ? (activity.likes || []).includes(userId) : false;
+    if (!userId) return null;
+
+    if (activity.likes && activity.likes.includes(userId)) return 'like';
+    if (activity.dislikes && activity.dislikes.includes(userId)) return 'dislike';
+    return null;
+  }
+
+  isLiked(activity: Activity): boolean {
+    return this.getUserVote(activity) === 'like';
   }
 
   toggleLike(activity: Activity): void {
