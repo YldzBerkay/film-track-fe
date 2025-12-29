@@ -50,6 +50,8 @@ export interface Activity {
   };
   // For comment activities, reference to the root activity
   activityId?: string | { _id: string };
+  // Bookmark status
+  isBookmarked?: boolean;
 }
 
 export interface FeedResponse {
@@ -154,6 +156,18 @@ export class ActivityService {
 
   getActivityById(activityId: string): Observable<ApiResponse<Activity>> {
     return this.http.get<ApiResponse<Activity>>(`${this.apiUrl}/${activityId}`);
+  }
+
+  toggleBookmark(activityId: string): Observable<ApiResponse<{ bookmarked: boolean }>> {
+    return this.http.post<ApiResponse<{ bookmarked: boolean }>>(`${this.apiUrl}/${activityId}/bookmark`, {});
+  }
+
+  getSavedActivities(page: number = 1, limit: number = 20): Observable<ApiResponse<FeedResponse>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/saved`, { params });
   }
 }
 

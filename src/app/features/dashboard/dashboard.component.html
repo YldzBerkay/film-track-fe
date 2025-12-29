@@ -214,8 +214,11 @@
                 <span class="material-symbols-outlined">chat_bubble</span>
                 <span>{{ activity.commentCount || 0 }}</span>
               </button>
-              <button class="action-btn bookmark-btn">
-                <span class="material-symbols-outlined">bookmark_add</span>
+              <button class="action-btn bookmark-btn" [class.active]="isActivityBookmarked(activity._id)"
+                (click)="toggleBookmark(activity)"
+                [title]="isActivityBookmarked(activity._id) ? 'Remove bookmark' : 'Bookmark'">
+                <span class="material-symbols-outlined">{{ isActivityBookmarked(activity._id) ? 'bookmark' :
+                  'bookmark_border' }}</span>
               </button>
             </div>
 

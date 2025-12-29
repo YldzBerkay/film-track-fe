@@ -127,6 +127,7 @@ export class DashboardComponent implements OnInit {
     this.loadMealtimePick();
     this.loadMoodRecommendations();
     this.loadLists();
+    this.loadSavedActivityIds();
   }
 
   openCreateListDialog(): void {
@@ -504,5 +505,73 @@ export class DashboardComponent implements OnInit {
     } else {
       this.expandedActivityId.set(activityId);
     }
+  }
+
+  // Bookmark state - track bookmarked activity IDs
+  bookmarkedActivities = signal<Set<string>>(new Set());
+
+  loadSavedActivityIds(): void {
+    this.activityService.getSavedActivities(1, 100).subscribe({
+      next: (response) => {
+        if (response.success && response.data?.activities) {
+          const ids = new Set(response.data.activities.map(a => a._id));
+          this.bookmarkedActivities.set(ids);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load saved activities:', err);
+      }
+    });
+  }
+
+  isActivityBookmarked(activityId: string): boolean {
+    return this.bookmarkedActivities().has(activityId);
+  }
+
+  toggleBookmark(activity: Activity): void {
+    if (!this.isAuthenticated()) return;
+
+    const activityId = activity._id;
+    const isCurrentlyBookmarked = this.isActivityBookmarked(activityId);
+
+    // Optimistic update
+    this.bookmarkedActivities.update(set => {
+      const newSet = new Set(set);
+      if (isCurrentlyBookmarked) {
+        newSet.delete(activityId);
+      } else {
+        newSet.add(activityId);
+      }
+      return newSet;
+    });
+
+    this.activityService.toggleBookmark(activityId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Update based on server response
+          this.bookmarkedActivities.update(set => {
+            const newSet = new Set(set);
+            if (response.data.bookmarked) {
+              newSet.add(activityId);
+            } else {
+              newSet.delete(activityId);
+            }
+            return newSet;
+          });
+        }
+      },
+      error: () => {
+        // Revert optimistic update on error
+        this.bookmarkedActivities.update(set => {
+          const newSet = new Set(set);
+          if (isCurrentlyBookmarked) {
+            newSet.add(activityId);
+          } else {
+            newSet.delete(activityId);
+          }
+          return newSet;
+        });
+      }
+    });
   }
 }

@@ -14,7 +14,6 @@ import { TranslatePipe } from '../../../core/i18n';
     styleUrl: './activity-card.component.scss'
 })
 export class ActivityCardComponent {
-    // Force recompile
     @Input({ required: true }) activity!: Activity;
     @Input() viewMode: 'feed' | 'detail' = 'feed';
     @Input() highlightCommentId?: string;
@@ -64,4 +63,3 @@ export class ActivityCardComponent {
         event.stopPropagation();
     }
 }
-
