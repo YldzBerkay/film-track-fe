@@ -459,6 +459,7 @@
         "importedHistory": "imported watch history",
         "itemsImported": "items imported",
         "reviewed": "reviewed",
-        "watchedEpisode": "watched episode"
+        "watchedEpisode": "watched episode",
+        "moodPick": "Mood Pick"
     }
 }

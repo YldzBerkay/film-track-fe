@@ -147,6 +147,12 @@
         </div>
         <div class="mini-meta">
             <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
+            @if (activity.isMoodPick) {
+            <span class="mood-pick-badge" title="You liked this from your Mood Recommendations">
+                <span class="material-symbols-outlined">auto_awesome</span>
+                <span class="mood-text">{{ 'activity.moodPick' | translate }}</span>
+            </span>
+            }
         </div>
     </div>
     <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">

@@ -133,7 +133,15 @@
                     imported watch history
                     }
                   </p>
-                  <p class="activity-time">{{ getTimeAgo(activity.createdAt) }}</p>
+                  <div class="activity-time-row">
+                    <p class="activity-time">{{ getTimeAgo(activity.createdAt) }}</p>
+                    @if (activity.isMoodPick) {
+                    <span class="mood-pick-badge" title="You liked this from your Mood Recommendations">
+                      <span class="material-symbols-outlined">auto_awesome</span>
+                      <span class="mood-text">{{ 'activity.moodPick' | translate }}</span>
+                    </span>
+                    }
+                  </div>
                 </div>
               </div>
               @if (activity.rating) {

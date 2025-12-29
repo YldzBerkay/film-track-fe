@@ -459,6 +459,7 @@
         "importedHistory": "izleme geçmişini içe aktardı",
         "itemsImported": "içerik içe aktarıldı",
         "reviewed": "inceledi",
-        "watchedEpisode": "bölüm izledi"
+        "watchedEpisode": "bölüm izledi",
+        "moodPick": "Mood Seçimi"
     }
 }
