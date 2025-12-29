@@ -18,155 +18,23 @@
 
   <app-header></app-header>
 
-  <!-- Profile Hero Section -->
-  <div class="profile-hero">
-    <div class="hero-banner"
-      [style.background-image]="profileData.user.banner ? 'url(' + profileData.user.banner + ')' : 'none'"
-      [class.hero-banner--editable]="isOwnProfile()" (click)="isOwnProfile() && quickBannerInput.click()">
+  <!-- Profile Header Component -->
+  <app-profile-header [user]="profileData.user" [isOwnProfile]="isOwnProfile()" [isFollowing]="isFollowing()"
+    [isFollowLoading]="isFollowLoading()" [isBannerLoading]="isBannerLoading()" (onEdit)="openEditProfile()"
+    (onFollow)="followUser()" (onUnfollow)="unfollowUser()" (onShare)="openShareDialog()" (onReport)="openReports()"
+    (onCompareMood)="openMoodComparison()" (onBannerChange)="handleBannerUpload($event)" />
 
-      @if (isOwnProfile()) {
-      <div class="banner-edit-overlay">
-        <div class="overlay-content">
-          @if (isBannerLoading()) {
-          <div class="spinner-small"></div>
-          } @else {
-          <span class="material-symbols-outlined">photo_camera</span>
-          <span>{{ 'profile.changeBanner' | translate }}</span>
-          }
-        </div>
-      </div>
-      }
-      <input type="file" #quickBannerInput (change)="onBannerQuickUpload($event)" accept="image/*" hidden>
-    </div>
-    <div class="hero-content">
-      <div class="profile-header">
-        <div class="profile-avatar-section">
-          <div class="profile-avatar-large">
-            @if (profileData.user.avatar) {
-            <img [src]="profileData.user.avatar" alt="Profile Avatar" class="avatar-img-large">
-            } @else {
-            <div class="avatar-image"></div>
-            }
-            @if (isOwnProfile()) {
-            <button class="edit-avatar-btn" (click)="openEditProfile()">
-              <span class="material-symbols-outlined">edit</span>
-            </button>
-            }
-          </div>
-        </div>
-        <div class="profile-info">
-          <div class="profile-title-section">
-            <div>
-              <h1 class="profile-username">{{ profileData.user.name || profileData.user.username }}</h1>
-              <p class="profile-bio">@{{ profileData.user.username }}</p>
-            </div>
-            <div class="profile-buttons">
-              @if (isOwnProfile()) {
-              <button class="edit-profile-btn" (click)="openEditProfile()">
-                <span class="material-symbols-outlined">edit</span>
-                <span>{{ 'profile.editProfile' | translate }}</span>
-              </button>
-              <button class="share-profile-btn" (click)="openShareDialog()">
-                <span class="material-symbols-outlined">share</span>
-                <span>{{ 'profile.share' | translate }}</span>
-              </button>
-              <button class="report-btn" (click)="openReports()">
-                <span class="material-symbols-outlined">analytics</span>
-                <span>Report</span>
-              </button>
-              } @else {
-              @if (isFollowing()) {
-              <button class="follow-btn following" (click)="unfollowUser()" [disabled]="isFollowLoading()">
-                <span class="material-symbols-outlined">check</span>
-                <span>{{ 'profile.following' | translate }}</span>
-              </button>
-              } @else {
-              <button class="follow-btn" (click)="followUser()" [disabled]="isFollowLoading()">
-                <span class="material-symbols-outlined">person_add</span>
-                <span>{{ 'profile.follow' | translate }}</span>
-              </button>
-              }
-              <button class="compare-mood-btn" (click)="openMoodComparison()">
-                <span class="material-symbols-outlined">compare</span>
-                <span>{{ 'profile.compareMood' | translate }}</span>
-              </button>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Stats Component -->
+  <app-profile-stats [stats]="profileData.user.stats" [reviewCount]="profileData.reviewCount"
+    [followersCount]="profileData.user.followersCount" [followingCount]="profileData.user.followingCount"
+    (onFollowersClick)="openFollowers()" (onFollowingClick)="openFollowing()" />
 
-  <!-- Stats Grid -->
-  <div class="stats-section">
-    <div class="stats-grid">
-      <div class="stat-card stat-card--clickable hide-on-mobile" (click)="router.navigate(['/lists/watched'])">
-        <span class="stat-value">{{ profileData.user.stats.moviesWatched + profileData.user.stats.episodesWatched
-          }}</span>
-        <div class="stat-label">
-          <span class="material-symbols-outlined">movie</span>
-          <span>{{ 'profile.watched' | translate }}</span>
-        </div>
-      </div>
-      <div class="stat-card hide-on-mobile">
-        <span class="stat-value" style="font-size: 1.5rem;">{{ formatRuntime(profileData.user.stats.totalRuntime)
-          }}</span>
-        <div class="stat-label">
-          <span class="material-symbols-outlined">schedule</span>
-          <span>{{ 'profile.watchedTime' | translate }}</span>
-        </div>
-      </div>
-      <div class="stat-card hide-on-mobile">
-        <span class="stat-value">{{ profileData.reviewCount }}</span>
-        <div class="stat-label">
-          <span class="material-symbols-outlined">rate_review</span>
-          <span>{{ 'profile.reviews' | translate }}</span>
-        </div>
-      </div>
-      <div class="stat-card stat-card--clickable" (click)="openFollowers()">
-        <span class="stat-value">{{ formatNumber(profileData.user.followersCount) }}</span>
-        <div class="stat-label">
-          <span class="material-symbols-outlined">group</span>
-          <span>{{ 'profile.followers' | translate }}</span>
-        </div>
-      </div>
-      <div class="stat-card stat-card--clickable" (click)="openFollowing()">
-        <span class="stat-value">{{ profileData.user.followingCount }}</span>
-        <div class="stat-label">
-          <span class="material-symbols-outlined">person_add</span>
-          <span>{{ 'profile.following' | translate }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabs -->
+  <!-- Tab Navigation Component -->
   <div class="tabs-section">
-    <div class="tabs-container">
-      <button class="tab-item" [class.active]="activeTab() === 'profile'" (click)="onTabChange('profile')"
-        type="button">
-        <span>{{ 'profile.profile' | translate }}</span>
-      </button>
-      <button class="tab-item" [class.active]="activeTab() === 'lists'" (click)="onTabChange('lists')" type="button">
-        <span>{{ 'profile.listsTab' | translate }}</span>
-      </button>
-      <button class="tab-item" [class.active]="activeTab() === 'activities'" (click)="onTabChange('activities')"
-        type="button">
-        <span>{{ 'profile.activities' | translate }}</span>
-      </button>
-      <button class="tab-item" [class.active]="activeTab() === 'likes'" (click)="onTabChange('likes')" type="button">
-        <span>{{ 'profile.likesTab' | translate }}</span>
-      </button>
-      <button class="tab-item" [class.active]="activeTab() === 'settings'" (click)="onTabChange('settings')"
-        type="button">
-        <span>{{ 'profile.settingsTab' | translate }}</span>
-      </button>
-    </div>
+    <app-tab-navigation [tabs]="profileTabs" [activeTab]="activeTab()" (tabChanged)="onTabChange($event)" />
   </div>
 
   <!-- Content Section -->
-
   <div class="content-container">
     <div class="content-section">
       @if (activeTab() === 'profile') {
@@ -210,6 +78,8 @@
             } }}</p>
         </div>
         } @else {
+        <!-- Mood Charts with @defer for performance -->
+        @defer (on viewport) {
         <div class="mood-charts-grid">
           <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
 
@@ -227,6 +97,11 @@
             }
           </div>
         </div>
+        } @placeholder {
+        <div class="mood-charts-loading">
+          <div class="spinner"></div>
+        </div>
+        }
         }
       </div>
 
@@ -238,20 +113,9 @@
             {{ 'profile.moodBadges' | translate }}
           </h2>
         </div>
-        @if (isLoadingBadges()) {
-        <div class="badges-loading">
-          <div class="spinner"></div>
-        </div>
-        } @else if (badges().length > 0) {
-        <div class="carousel-container">
-          @if (isBadgesScrollable()) {
-          <button class="carousel-btn carousel-btn--left" (click)="scrollBadges('left')">
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-          }
-
-          <div class="carousel-grid" #badgesContainer>
-            @for (badge of badges(); track badge.id) {
+        <app-carousel [items]="badges()" [loading]="isLoadingBadges()"
+          [emptyMessage]="'profile.earnBadgesHint' | translate">
+          <ng-container *ngFor="let badge of badges(); trackBy: trackByBadgeId">
             <div class="badge-item" [class.earned]="badge.earnedAt" [title]="badge.description">
               <span class="badge-icon">{{ badge.icon }}</span>
               @if (!badge.earnedAt && badge.progress !== undefined && badge.threshold) {
@@ -262,20 +126,8 @@
               }
               <span class="badge-name">{{ badge.name }}</span>
             </div>
-            }
-          </div>
-
-          @if (isBadgesScrollable()) {
-          <button class="carousel-btn carousel-btn--right" (click)="scrollBadges('right')">
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-          }
-        </div>
-        } @else {
-        <div class="badges-empty">
-          <p>{{ 'profile.earnBadgesHint' | translate }}</p>
-        </div>
-        }
+          </ng-container>
+        </app-carousel>
       </div>
 
       <!-- Mood Recommendations Section -->
@@ -334,16 +186,10 @@
 
           <div class="carousel-grid" #premiumDeckGrid>
             @for (rec of moodRecommendations(); track rec.tmdbId) {
-            <div class="carousel-card" [class.rated]="isCardRated(rec.tmdbId)">
-              <!-- Card Content -->
-              <div class="card-content" (click)="router.navigate(['/movies', rec.tmdbId])">
-                <img [src]="tmdbService.getPosterUrl(rec.posterPath, 'w300')" [alt]="rec.title" class="card-poster" />
-                <div class="rec-score" [title]="'Match Score: ' + rec.score + '%'">
-                  {{ rec.score }}%
-                </div>
-              </div>
+            <app-media-card [title]="rec.title" [posterPath]="rec.posterPath" [matchScore]="rec.score"
+              [isRated]="isCardRated(rec.tmdbId)" (cardClick)="router.navigate(['/movies', rec.tmdbId])">
 
-              <!-- Feedback Buttons (visible when not rated) -->
+              <!-- Feedback Buttons (via content projection) -->
               @if (!isCardRated(rec.tmdbId)) {
               <div class="feedback-buttons">
                 <button class="feedback-btn like" (click)="rateCard(rec, 'like'); $event.stopPropagation()"
@@ -357,7 +203,7 @@
               </div>
               }
 
-              <!-- Replace Overlay (visible when rated) -->
+              <!-- Replace Overlay -->
               @if (isCardRated(rec.tmdbId)) {
               <div class="replace-overlay">
                 <button class="replace-btn" (click)="replaceCard(rec.tmdbId); $event.stopPropagation()"
@@ -368,7 +214,7 @@
                 </button>
               </div>
               }
-            </div>
+            </app-media-card>
             }
           </div>
 
@@ -386,6 +232,7 @@
         }
       </div>
       }
+
       <!-- Director's Cut (Movies) Section -->
       @if (profileData.user.favoriteMovies.length > 0) {
       <div class="favorites-section">
@@ -410,12 +257,8 @@
           }
           <div class="carousel-grid" #moviesFavoritesGrid>
             @for (movie of profileData.user.favoriteMovies; track movie.tmdbId) {
-            <div class="carousel-card" (click)="router.navigate(['/movies', movie.tmdbId])">
-              <img [src]="tmdbService.getPosterUrl(movie.posterPath, 'w300')" [alt]="movie.title" class="card-poster" />
-              <div class="favorite-overlay">
-                <span class="material-symbols-outlined">visibility</span>
-              </div>
-            </div>
+            <app-media-card [title]="movie.title" [posterPath]="movie.posterPath"
+              (cardClick)="router.navigate(['/movies', movie.tmdbId])" />
             }
           </div>
           @if (isMoviesFavoritesScrollable()) {
@@ -452,12 +295,8 @@
           }
           <div class="carousel-grid" #tvFavoritesGrid>
             @for (show of profileData.user.favoriteTvShows; track show.tmdbId) {
-            <div class="carousel-card" (click)="router.navigate(['/tv', show.tmdbId])">
-              <img [src]="tmdbService.getPosterUrl(show.posterPath, 'w300')" [alt]="show.name" class="card-poster" />
-              <div class="favorite-overlay">
-                <span class="material-symbols-outlined">visibility</span>
-              </div>
-            </div>
+            <app-media-card [title]="show.name" [posterPath]="show.posterPath"
+              (cardClick)="router.navigate(['/tv', show.tmdbId])" />
             }
           </div>
           @if (isTvFavoritesScrollable()) {
@@ -470,10 +309,8 @@
       </div>
       }
 
-      <!-- Recent Activity Section -->
-
       } @else if (activeTab() === 'lists') {
-      <!-- Lists Tab Content -->
+      <!-- Lists Tab Content (kept as-is for now) -->
       <div class="lists-tab-content">
         <!-- View Toggle -->
         <div class="lists-view-toggle">

@@ -1,0 +1,33 @@
+@if (loading()) {
+<div class="carousel-loading">
+    <div class="spinner"></div>
+</div>
+} @else if (items().length === 0) {
+<div class="carousel-empty">
+    <p>{{ emptyMessage() }}</p>
+</div>
+} @else {
+<div class="carousel-container">
+    @if (isScrollable()) {
+    <button class="carousel-btn carousel-btn--left" (click)="scroll('left')" aria-label="Scroll left" type="button">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+    }
+
+    <div class="carousel-grid" #container>
+        @if (itemTemplate) {
+        @for (item of items(); track $index) {
+        <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item, index: $index }"></ng-container>
+        }
+        } @else {
+        <ng-content></ng-content>
+        }
+    </div>
+
+    @if (isScrollable()) {
+    <button class="carousel-btn carousel-btn--right" (click)="scroll('right')" aria-label="Scroll right" type="button">
+        <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+    }
+</div>
+}

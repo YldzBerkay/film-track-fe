@@ -1,0 +1,48 @@
+<div class="stats-section">
+    <div class="stats-grid">
+        <!-- Watched -->
+        <div class="stat-card stat-card--clickable hide-on-mobile" (click)="navigateToWatched()">
+            <span class="stat-value">{{ totalWatched }}</span>
+            <div class="stat-label">
+                <span class="material-symbols-outlined">movie</span>
+                <span>{{ 'profile.watched' | translate }}</span>
+            </div>
+        </div>
+
+        <!-- Watch Time -->
+        <div class="stat-card hide-on-mobile">
+            <span class="stat-value stat-value--small">{{ formatRuntime(stats().totalRuntime) }}</span>
+            <div class="stat-label">
+                <span class="material-symbols-outlined">schedule</span>
+                <span>{{ 'profile.watchedTime' | translate }}</span>
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="stat-card hide-on-mobile">
+            <span class="stat-value">{{ reviewCount() }}</span>
+            <div class="stat-label">
+                <span class="material-symbols-outlined">rate_review</span>
+                <span>{{ 'profile.reviews' | translate }}</span>
+            </div>
+        </div>
+
+        <!-- Followers -->
+        <div class="stat-card stat-card--clickable" (click)="onFollowersClick.emit()">
+            <span class="stat-value">{{ formatNumber(followersCount()) }}</span>
+            <div class="stat-label">
+                <span class="material-symbols-outlined">group</span>
+                <span>{{ 'profile.followers' | translate }}</span>
+            </div>
+        </div>
+
+        <!-- Following -->
+        <div class="stat-card stat-card--clickable" (click)="onFollowingClick.emit()">
+            <span class="stat-value">{{ followingCount() }}</span>
+            <div class="stat-label">
+                <span class="material-symbols-outlined">person_add</span>
+                <span>{{ 'profile.following' | translate }}</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="tabs-container">
+    @for (tab of tabs(); track tab.key) {
+    <button class="tab-item" [class.active]="activeTab() === tab.key" (click)="onTabClick(tab.key)" type="button">
+        @if (tab.icon) {
+        <span class="material-symbols-outlined tab-icon">{{ tab.icon }}</span>
+        }
+        <span>
+            @if (useTranslation()) {
+            {{ tab.label | translate }}
+            } @else {
+            {{ tab.label }}
+            }
+        </span>
+    </button>
+    }
+</div>

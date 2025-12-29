@@ -1,0 +1,34 @@
+<div class="media-card" [class.rated]="isRated()" (click)="cardClick.emit()">
+
+    <!-- Poster Image -->
+    @if (posterPath()) {
+    <img [src]="posterUrl" [alt]="title()" class="card-poster" loading="lazy" />
+    } @else {
+    <div class="poster-placeholder">
+        <span class="material-symbols-outlined">movie</span>
+    </div>
+    }
+
+    <!-- Match Score Badge (for recommendations) -->
+    @if (matchScore()) {
+    <div class="match-score" [title]="'Match Score: ' + matchScore() + '%'">
+        {{ matchScore() }}%
+    </div>
+    }
+
+    <!-- Rating Badge -->
+    @if (rating()) {
+    <div class="rating-badge">
+        <span class="material-symbols-outlined">star</span>
+        {{ rating()!.toFixed(1) }}
+    </div>
+    }
+
+    <!-- Hover Overlay -->
+    <div class="card-overlay">
+        <span class="material-symbols-outlined">{{ overlayIcon() }}</span>
+    </div>
+
+    <!-- Content Projection for custom overlays (e.g., feedback buttons) -->
+    <ng-content></ng-content>
+</div>

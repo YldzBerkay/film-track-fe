@@ -23,13 +23,39 @@ import { WatchlistService, Watchlist } from '../../core/services/watchlist.servi
 import { EditListDialogComponent, ListItem } from '../../shared/components/edit-list-dialog/edit-list-dialog.component';
 import { WatchedReportsDialogComponent } from '../../shared/components/watched-reports-dialog/watched-reports-dialog.component';
 import { forkJoin } from 'rxjs';
+// New modular components
+import { ProfileHeaderComponent } from './components/profile-header/profile-header.component';
+import { ProfileStatsComponent } from './components/profile-stats/profile-stats.component';
+import { TabNavigationComponent, TabItem } from '../../shared/components/tab-navigation/tab-navigation.component';
+import { AppCarouselComponent } from '../../shared/components/app-carousel/app-carousel.component';
+import { MediaCardComponent } from '../../shared/components/media-card/media-card.component';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'settings';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MoodChartComponent, MoodTimelineComponent, HeaderComponent, ShareDialogComponent, EditFavoritesDialogComponent, EditListDialogComponent, WatchedReportsDialogComponent, TranslatePipe, RateDialogComponent, ActivityCardComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MoodChartComponent,
+    MoodTimelineComponent,
+    HeaderComponent,
+    ShareDialogComponent,
+    EditFavoritesDialogComponent,
+    EditListDialogComponent,
+    WatchedReportsDialogComponent,
+    TranslatePipe,
+    RateDialogComponent,
+    ActivityCardComponent,
+    // New modular components
+    ProfileHeaderComponent,
+    ProfileStatsComponent,
+    TabNavigationComponent,
+    AppCarouselComponent,
+    MediaCardComponent
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -54,6 +80,46 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
   activeTab = signal<TabType>('profile');
+
+  // Tab configuration for TabNavigationComponent
+  readonly profileTabs: TabItem[] = [
+    { key: 'profile', label: 'profile.profile' },
+    { key: 'lists', label: 'profile.listsTab' },
+    { key: 'activities', label: 'profile.activities' },
+    { key: 'likes', label: 'profile.likesTab' },
+    { key: 'settings', label: 'profile.settingsTab' }
+  ];
+
+  // TrackBy function for badges carousel
+  trackByBadgeId = (index: number, badge: Badge): string => badge.id;
+
+  // Handle banner upload from ProfileHeaderComponent
+  handleBannerUpload(file: File): void {
+    if (file.size > 2 * 1024 * 1024) {
+      alert(this.translationService.t('profile.bannerHint'));
+      return;
+    }
+
+    this.isBannerLoading.set(true);
+    const formData = new FormData();
+    formData.append('banner', file);
+
+    this.userService.updateProfile(formData).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadCurrentProfile();
+        } else {
+          alert(response.message || 'Failed to update banner');
+        }
+        this.isBannerLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to update banner:', err);
+        alert(err.error?.message || 'Failed to update banner');
+        this.isBannerLoading.set(false);
+      }
+    });
+  }
 
   // Activity Feed State
   activities = signal<Activity[]>([]);
@@ -551,8 +617,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onTabChange(tab: TabType): void {
-    this.activeTab.set(tab);
+  onTabChange(tab: string): void {
+    this.activeTab.set(tab as TabType);
 
     // Load data for specific tabs if needed
     if (tab === 'activities' && this.activities().length === 0) {
