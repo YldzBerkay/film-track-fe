@@ -13,6 +13,7 @@ export interface Activity {
       level: number;
       title: string;
     };
+    avatar?: string;
   };
   type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import' | 'comment';
   mediaType: 'movie' | 'tv_show' | 'tv_episode';
@@ -44,7 +45,10 @@ export interface Activity {
     _id: string;
     username: string;
     name: string;
+    avatar?: string;
   };
+  // For comment activities, reference to the root activity
+  activityId?: string | { _id: string };
 }
 
 export interface FeedResponse {
@@ -145,6 +149,10 @@ export class ActivityService {
       .set('limit', limit.toString());
 
     return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/media/${mediaType}/${tmdbId}`, { params });
+  }
+
+  getActivityById(activityId: string): Observable<ApiResponse<Activity>> {
+    return this.http.get<ApiResponse<Activity>>(`${this.apiUrl}/${activityId}`);
   }
 }
 

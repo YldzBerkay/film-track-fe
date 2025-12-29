@@ -1,0 +1,94 @@
+<article class="activity-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
+    <!-- Header -->
+    <div class="activity-header">
+        <div class="activity-user">
+            <div class="user-avatar-small" [routerLink]="profileLink" (click)="onInteractiveClick($event)"></div>
+            <div class="activity-meta">
+                <p class="activity-text">
+                    <a class="user-name" [routerLink]="profileLink" (click)="onInteractiveClick($event)">
+                        {{ activity.userId.name || activity.userId.username }}
+                    </a>
+                    @if (activity.userId.mastery?.title) {
+                    <span class="user-title"> • {{ 'masterRank.' + activity.userId.mastery?.title | translate }}</span>
+                    }
+                    @if (activity.type === 'review') {
+                    <span class="action-text">{{ 'activity.reviewed' | translate }}</span>
+                    } @else if (activity.type === 'rating') {
+                    <span class="action-text">{{ 'activity.rated' | translate }}</span>
+                    } @else if (activity.type === 'movie_watched') {
+                    <span class="action-text">{{ 'activity.watched' | translate }}</span>
+                    } @else if (activity.type === 'tv_episode_watched') {
+                    <span class="action-text">{{ 'activity.watchedEpisode' | translate }}</span>
+                    } @else if (activity.type === 'bulk_import') {
+                    <span class="action-text">{{ 'activity.importedHistory' | translate }}</span>
+                    }
+                </p>
+                <p class="activity-time">{{ getTimeAgo(activity.createdAt) }}</p>
+            </div>
+        </div>
+        @if (activity.rating) {
+        <div class="activity-rating-badge">
+            <span class="material-symbols-outlined">star</span>
+            <span>{{ activity.rating }}/10</span>
+        </div>
+        }
+    </div>
+
+    <!-- Content -->
+    <div class="activity-content">
+        @if (activity.type === 'bulk_import') {
+        <!-- Bulk import: show only title, no poster -->
+        <div class="media-content bulk-import-content">
+            <div class="media-info">
+                <h3 class="media-title">{{ activity.mediaTitle }}</h3>
+            </div>
+        </div>
+        } @else {
+        <div class="media-content">
+            <a class="media-poster" [routerLink]="mediaLink" (click)="onInteractiveClick($event)"
+                [style.background-image]="'url(' + tmdbService.getPosterUrl(activity.mediaPosterPath) + ')'">
+            </a>
+            <div class="media-info">
+                <h3 class="media-title">
+                    <a [routerLink]="mediaLink" (click)="onInteractiveClick($event)">{{ activity.mediaTitle }}</a>
+                </h3>
+                @if (activity.reviewText) {
+                <p class="media-review" [class.expanded]="viewMode === 'detail'">{{ activity.reviewText }}</p>
+                }
+                @if (activity.genres && activity.genres.length > 0) {
+                <div class="media-genres">
+                    @for (genre of activity.genres; track genre) {
+                    <span class="genre-tag">{{ genre }}</span>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Actions -->
+    <div class="activity-actions">
+        <app-reaction-bar [targetId]="activity._id" [targetType]="'activity'"
+            [likesCount]="activity.likesCount || (activity.likes || []).length"
+            [dislikesCount]="activity.dislikesCount || 0" [userVote]="getUserVote()"
+            (click)="onInteractiveClick($event)">
+        </app-reaction-bar>
+        <button class="action-btn" (click)="toggleComments($event)">
+            <span class="material-symbols-outlined">chat_bubble</span>
+            <span>{{ activity.commentCount || 0 }}</span>
+        </button>
+        <button class="action-btn bookmark-btn" (click)="onInteractiveClick($event)">
+            <span class="material-symbols-outlined">bookmark_add</span>
+        </button>
+    </div>
+
+    <!-- Comments Section -->
+    @if (showComments()) {
+    <div class="comments-section">
+        <app-comment-list [activityId]="activity._id" [initialCount]="activity.commentCount || 0"
+            [highlightCommentId]="highlightCommentId">
+        </app-comment-list>
+    </div>
+    }
+</article>

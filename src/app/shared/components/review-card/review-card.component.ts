@@ -1,4 +1,4 @@
-import { Component, Input, computed, inject, signal } from '@angular/core';
+import { Component, Input, computed, inject, signal, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactionBarComponent } from '../reaction-bar/reaction-bar.component';
@@ -22,9 +22,11 @@ import { Activity } from '../../../core/services/activity.service';
     templateUrl: './review-card.component.html',
     styleUrls: ['./review-card.component.scss']
 })
-export class ReviewCardComponent {
+export class ReviewCardComponent implements OnInit, AfterViewInit {
     @Input({ required: true }) activity!: Activity;
     @Input() isFeedView = false;
+    @Input() viewMode: 'feed' | 'detail' = 'feed';
+    @Input() highlightCommentId?: string;
 
     private authService = inject(AuthService);
     currentUser = computed(() => this.authService.user());
@@ -73,5 +75,26 @@ export class ReviewCardComponent {
 
     get displayRating(): string {
         return this.activity.rating ? `${this.activity.rating}/10` : '';
+    }
+
+    ngOnInit(): void {
+        // In detail mode, auto-expand text and comments
+        if (this.viewMode === 'detail') {
+            this.isExpanded.set(true);
+            this.showComments.set(true);
+        }
+    }
+
+    ngAfterViewInit(): void {
+        // Handle comment deep linking
+        if (this.highlightCommentId) {
+            setTimeout(() => {
+                const el = document.getElementById(this.highlightCommentId!);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('flash-highlight');
+                }
+            }, 500);
+        }
     }
 }

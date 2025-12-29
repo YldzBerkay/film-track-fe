@@ -1,22 +1,27 @@
 @switch (activity.type) {
 @case ('review') {
-<!-- Full Review Card -->
-<app-review-card [activity]="activity" [isFeedView]="true"></app-review-card>
+<!-- Full Review Card - Review card has its own click handling -->
+<div (click)="onCardClick()" [class.clickable]="viewMode === 'feed'">
+    <app-review-card [activity]="activity" [isFeedView]="viewMode === 'feed'" [viewMode]="viewMode"
+        [highlightCommentId]="highlightCommentId" (click)="onInteractiveClick($event)"></app-review-card>
+</div>
 }
 
 @case ('rating') {
 <!-- Mini Rating Card -->
-<div class="activity-card mini-card rating-card">
+<div class="activity-card mini-card rating-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
     <div class="mini-icon rating-icon">
         <span class="material-symbols-outlined">star</span>
     </div>
     <div class="mini-content">
         <div class="mini-header">
             <span class="mini-user">
-                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
+                    activity.userId.username }}</a>
             </span>
             <span class="mini-action">{{ 'activity.rated' | translate }}</span>
-            <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
+            <a [routerLink]="mediaLink" class="mini-media" (click)="onInteractiveClick($event)">{{ activity.mediaTitle
+                }}</a>
         </div>
         <div class="mini-meta">
             <span class="rating-badge">
@@ -27,7 +32,7 @@
             <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
         </div>
     </div>
-    <a [routerLink]="mediaLink" class="mini-poster">
+    <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">
         <img [src]="posterUrl" [alt]="activity.mediaTitle">
     </a>
 </div>
@@ -35,20 +40,22 @@
 
 @case ('comment') {
 <!-- Comment Activity Card -->
-<div class="activity-card mini-card comment-card">
+<div class="activity-card mini-card comment-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
     <div class="mini-icon comment-icon">
         <span class="material-symbols-outlined">{{ activity.parentId ? 'reply' : 'chat_bubble' }}</span>
     </div>
     <div class="mini-content">
         <div class="mini-header">
             <span class="mini-user">
-                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
+                    activity.userId.username }}</a>
             </span>
             @if (activity.parentId) {
             <!-- It's a reply -->
             @if (activity.replyToUser) {
             <span class="mini-action">{{ 'activity.repliedTo' | translate }}</span>
-            <a [routerLink]="['/profile', activity.replyToUser.username]" class="reply-target">@{{
+            <a [routerLink]="['/profile', activity.replyToUser.username]" class="reply-target"
+                (click)="onInteractiveClick($event)">@{{
                 activity.replyToUser.username }}</a>
             <span class="mini-action">{{ 'activity.on' | translate }}</span>
             } @else {
@@ -60,7 +67,8 @@
             <span class="target-type">{{ (activity.originalActivityType === 'review' ? 'activity.reviewOf' :
                 'activity.postOf') | translate }}</span>
             }
-            <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
+            <a [routerLink]="mediaLink" class="mini-media" (click)="onInteractiveClick($event)">{{ activity.mediaTitle
+                }}</a>
         </div>
 
         @if (activity.parentId && activity.parentCommentText) {
@@ -82,7 +90,7 @@
             <span class="time">{{ activity.createdAt | date:'short' }}</span>
         </div>
     </div>
-    <a [routerLink]="mediaLink" class="mini-poster">
+    <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">
         <img [src]="posterUrl" [alt]="activity.mediaTitle">
     </a>
 </div>
@@ -90,14 +98,15 @@
 
 @case ('bulk_import') {
 <!-- Bulk Import Summary -->
-<div class="activity-card mini-card import-card">
+<div class="activity-card mini-card import-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
     <div class="mini-icon import-icon">
         <span class="material-symbols-outlined">folder_open</span>
     </div>
     <div class="mini-content">
         <div class="mini-header">
             <span class="mini-user">
-                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
+                    activity.userId.username }}</a>
             </span>
             <span class="mini-action">{{ 'activity.importedHistory' | translate }}</span>
         </div>
@@ -116,30 +125,32 @@
 
 @case ('movie_watched') {
 <!-- Simple Watched Log -->
-<div class="activity-card mini-card watched-card">
+<div class="activity-card mini-card watched-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
     <div class="mini-icon watched-icon">
         <span class="material-symbols-outlined">visibility</span>
     </div>
     <div class="mini-content">
         <div class="mini-header">
             <span class="mini-user">
-                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
+                    activity.userId.username }}</a>
             </span>
             <span class="mini-action">{{ 'activity.watched' | translate }}</span>
-            <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
+            <a [routerLink]="mediaLink" class="mini-media" (click)="onInteractiveClick($event)">{{ activity.mediaTitle
+                }}</a>
         </div>
         <div class="mini-meta">
             <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
         </div>
     </div>
-    <a [routerLink]="mediaLink" class="mini-poster">
+    <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">
         <img [src]="posterUrl" [alt]="activity.mediaTitle">
     </a>
 </div>
 }
 @default {
 <!-- Fallback for other types -->
-<div class="activity-card mini-card">
+<div class="activity-card mini-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
     <div class="mini-content">{{ activity.type }}</div>
 </div>
 }

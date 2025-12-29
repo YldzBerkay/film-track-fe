@@ -1,0 +1,40 @@
+<div class="activity-detail-page">
+    <!-- Floating Ambient Orbs -->
+    <div class="floating-orb floating-orb--primary"></div>
+    <div class="floating-orb floating-orb--accent"></div>
+    <div class="floating-orb floating-orb--secondary"></div>
+
+    <app-header></app-header>
+
+    <div class="activity-detail-container">
+        <!-- Back Button -->
+        <button class="back-btn" (click)="goBack()">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span>{{ 'common.back' | translate }}</span>
+        </button>
+
+        <!-- Loading State -->
+        @if (isLoading()) {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p>{{ 'common.loading' | translate }}</p>
+        </div>
+        }
+
+        <!-- Error State -->
+        @if (error()) {
+        <div class="error-container">
+            <span class="material-symbols-outlined">error</span>
+            <p>{{ error() }}</p>
+            <button class="retry-btn" (click)="goBack()">{{ 'common.goBack' | translate }}</button>
+        </div>
+        }
+
+        <!-- Activity Card -->
+        @if (!isLoading() && !error() && activity()) {
+        <app-feed-card [activity]="activity()!" [viewMode]="'detail'"
+            [highlightCommentId]="highlightCommentId() || undefined">
+        </app-feed-card>
+        }
+    </div>
+</div>

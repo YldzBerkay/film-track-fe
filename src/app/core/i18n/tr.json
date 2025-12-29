@@ -281,7 +281,10 @@
         "dayAgo": "1 gün önce",
         "daysAgo": "{{count}} gün önce",
         "weekAgo": "1 hafta önce",
-        "weeksAgo": "{{count}} hafta önce"
+        "weeksAgo": "{{count}} hafta önce",
+        "back": "Geri",
+        "goBack": "Geri Dön",
+        "loading": "Yükleniyor..."
     },
     "auth": {
         "signIn": "Giriş Yap",
@@ -454,6 +457,8 @@
         "repliedToComment": "bir yorumu yanıtladı",
         "on": "üzerinde",
         "importedHistory": "izleme geçmişini içe aktardı",
-        "itemsImported": "içerik içe aktarıldı"
+        "itemsImported": "içerik içe aktarıldı",
+        "reviewed": "inceledi",
+        "watchedEpisode": "bölüm izledi"
     }
 }

@@ -3243,9 +3243,6 @@ app-mood-timeline {
   margin: 0 -2px; // Optical alignment
 
   // Frosted glass effect for sticky header
-  background: rgba(18, 18, 18, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   .chip-list {

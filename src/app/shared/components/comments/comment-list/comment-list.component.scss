@@ -101,14 +101,17 @@
 }
 
 .comment-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     flex: 1;
     min-width: 0;
 }
 
 .comment-header {
     display: flex;
+    align-items: center;
     gap: 8px;
-    align-items: baseline;
     margin-bottom: 4px;
 
     .username {
@@ -117,28 +120,15 @@
         color: var(--color-text-main);
     }
 
-    .time {
+    .user-title {
         font-size: 12px;
-        color: var(--color-text-muted);
-    }
-}
-
-.comment-text {
-    font-size: 14px;
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-    margin: 0 0 8px 0;
-    word-wrap: break-word;
-
-    .reply-tag {
-        color: var(--color-primary); // Or a distinct color
-        font-weight: 600;
-        margin-right: 4px;
+        color: var(--color-text-secondary);
     }
 }
 
 .comment-actions {
     display: flex;
+    align-items: center;
     gap: 16px;
     margin-bottom: 8px;
 
@@ -154,6 +144,11 @@
         &:hover {
             color: var(--color-text-secondary);
         }
+    }
+
+    .time-ago {
+        font-size: 11px;
+        color: var(--color-text-muted);
     }
 
     .likes-count {
@@ -242,4 +237,36 @@
     padding: 24px;
     color: var(--color-text-muted);
     font-size: 13px;
+}
+
+// Premium Highlight Animation
+@keyframes highlightPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 transparent;
+    }
+
+    15% {
+        transform: scale(1.02);
+        box-shadow:
+            0 0 20px 4px var(--color-primary);
+        /* Glow only */
+    }
+
+    80% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 transparent;
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 transparent;
+    }
+}
+
+.highlight-flash {
+    animation: highlightPulse 2s ease-out forwards !important;
+    position: relative;
+    z-index: 10;
+    border-radius: 12px;
 }

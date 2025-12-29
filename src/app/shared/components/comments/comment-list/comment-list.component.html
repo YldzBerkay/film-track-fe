@@ -15,7 +15,7 @@
     <!-- Comments List -->
     <div class="comments-list">
         @for (comment of comments(); track comment._id) {
-        <div class="comment-item" [class.is-reply]="comment.level > 0">
+        <div class="comment-item" [attr.id]="'comment-' + comment._id" [class.is-reply]="comment.level > 0">
 
             <!-- Indentation Spacer (if level 1) -->
             @if (comment.level > 0) {
@@ -34,7 +34,6 @@
                         <span class="user-title" *ngIf="comment.userId.mastery?.title">
                             • {{ 'masterRank.' + comment.userId.mastery?.title | translate }}
                         </span>
-                        <span class="time-ago">{{ comment.createdAt | timeAgo }}</span>
                     </div>
 
                     <p class="comment-text">
@@ -51,6 +50,7 @@
                         </app-reaction-bar>
 
                         <button class="text-btn" (click)="toggleReplyInput(comment)">Reply</button>
+                        <span class="time-ago">{{ comment.createdAt | timeAgo }}</span>
                     </div>
 
                     <!-- View Replies Link (Only for Level 0) -->

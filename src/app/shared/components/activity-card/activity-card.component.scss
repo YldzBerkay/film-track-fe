@@ -27,13 +27,28 @@
             pointer-events: none;
         }
 
-        &:hover {
-            background: rgba(40, 40, 40, 0.8);
-            border-color: rgba(0, 224, 84, 0.3); // Primary color manually applied or var if strict
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        // Clickable state (feed mode)
+        &.clickable {
+            cursor: pointer;
+
+            &:hover {
+                background: rgba(40, 40, 40, 0.8);
+                border-color: rgba(0, 224, 84, 0.3);
+                transform: translateY(-3px) scale(1.01);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        // Non-clickable state (detail mode) - subtle hover only
+        &:not(.clickable):hover {
+            background: rgba(35, 35, 35, 0.7);
         }
     }
+}
+
+// Clickable wrapper for review cards
+.clickable {
+    cursor: pointer;
 }
 
 .mini-icon {

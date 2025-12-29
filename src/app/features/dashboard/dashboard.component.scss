@@ -639,6 +639,9 @@
   background-color: var(--color-border);
   flex-shrink: 0;
   cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .activity-meta {

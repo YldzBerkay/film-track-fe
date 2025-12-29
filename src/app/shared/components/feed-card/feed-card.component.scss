@@ -1,0 +1,265 @@
+// FeedCard Component - Mirrors dashboard feed card design
+
+.activity-card {
+    background: rgb(38, 38, 38);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+
+    &.clickable {
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(45, 45, 45, 1);
+        }
+    }
+}
+
+.activity-header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.activity-user {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+}
+
+.user-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.activity-meta {
+    flex: 1;
+}
+
+.activity-text {
+    font-size: 14px;
+    color: var(--color-text-main);
+    margin: 0 0 4px 0;
+}
+
+.user-name {
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--color-text-main);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.user-title {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+.action-text {
+    color: var(--color-text-secondary);
+    margin-left: 4px;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.activity-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-primary);
+    font-weight: 600;
+
+    .material-symbols-outlined {
+        font-size: 20px;
+        font-variation-settings: 'FILL' 1;
+    }
+}
+
+.activity-content {
+    margin-top: 12px;
+}
+
+.media-content {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+
+    &.bulk-import-content {
+        margin-left: 56px;
+    }
+}
+
+.media-poster {
+    flex-shrink: 0;
+    width: 80px;
+    aspect-ratio: 2 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--color-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    transition: all 0.2s;
+    display: block;
+
+    &:hover {
+        box-shadow: 0 0 0 2px var(--color-primary);
+    }
+}
+
+.media-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.media-title {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--color-text-main);
+    margin: 0 0 4px 0;
+
+    a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.media-year {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+.media-review {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 12px 0;
+
+    // In feed mode, truncate text
+    &:not(.expanded) {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    // In detail mode, show full text
+    &.expanded {
+        -webkit-line-clamp: unset;
+    }
+}
+
+.media-genres {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.genre-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: var(--color-border);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    border: 1px solid rgba(38, 38, 38, 0.5);
+}
+
+.activity-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(38, 38, 38, 0.5);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    transition: all 0.2s;
+
+    &:hover {
+        color: var(--color-primary);
+        background: rgba(var(--color-primary-rgb), 0.1);
+        border-radius: 6px;
+    }
+
+    &.active {
+        color: var(--color-primary);
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    }
+
+    .material-symbols-outlined {
+        font-size: 18px;
+    }
+}
+
+// Comments Section Styles
+.comments-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Flash highlight animation for deep-linked comments */
+:global(.flash-highlight) {
+    animation: flash 1.5s ease-out;
+}
+
+@keyframes flash {
+
+    0%,
+    50% {
+        background-color: rgba(0, 224, 84, 0.15);
+        box-shadow: 0 0 0 4px rgba(0, 224, 84, 0.2);
+    }
+
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+    }
+}

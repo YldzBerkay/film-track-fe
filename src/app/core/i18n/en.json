@@ -281,7 +281,10 @@
         "dayAgo": "1 day ago",
         "daysAgo": "{{count}} days ago",
         "weekAgo": "1 week ago",
-        "weeksAgo": "{{count}} weeks ago"
+        "weeksAgo": "{{count}} weeks ago",
+        "back": "Back",
+        "goBack": "Go Back",
+        "loading": "Loading..."
     },
     "auth": {
         "signIn": "Sign In",
@@ -454,6 +457,8 @@
         "repliedToComment": "replied to a comment on",
         "on": "on",
         "importedHistory": "imported watch history",
-        "itemsImported": "items imported"
+        "itemsImported": "items imported",
+        "reviewed": "reviewed",
+        "watchedEpisode": "watched episode"
     }
 }

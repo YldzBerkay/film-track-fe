@@ -49,9 +49,15 @@ export class CommentListComponent implements OnChanges {
         this.currentUser = this.authService.user;
     }
 
+    @Input() highlightCommentId?: string;
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['activityId'] && this.activityId) {
             this.loadComments();
+        }
+        // If highlight ID changes (or is initially set), we might want to try scrolling
+        if (changes['highlightCommentId'] && this.highlightCommentId && !this.isLoading()) {
+            setTimeout(() => this.scrollToComment(this.highlightCommentId!), 500);
         }
     }
 
@@ -64,11 +70,25 @@ export class CommentListComponent implements OnChanges {
                     this.comments.set(nodes);
                     this.hasMore.set(res.data.pagination.hasMore);
                     this.page = 1;
+
+                    // Scroll to highlight if present
+                    if (this.highlightCommentId) {
+                        setTimeout(() => this.scrollToComment(this.highlightCommentId!), 100);
+                    }
                 }
                 this.isLoading.set(false);
             },
             error: () => this.isLoading.set(false)
         });
+    }
+
+    scrollToComment(commentId: string) {
+        const element = document.getElementById(`comment-${commentId}`);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.classList.add('highlight-flash');
+            setTimeout(() => element.classList.remove('highlight-flash'), 2000);
+        }
     }
 
     mapToNode(comment: Comment, level: number): CommentNode {

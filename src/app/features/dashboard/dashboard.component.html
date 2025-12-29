@@ -114,7 +114,9 @@
           <article class="activity-card">
             <div class="activity-header">
               <div class="activity-user">
-                <div class="user-avatar-small"></div>
+                <div class="user-avatar-small"
+                  [style.background-image]="'url(' + (activity.userId.avatar || 'assets/default-avatar.png') + ')'">
+                </div>
                 <div class="activity-meta">
                   <p class="activity-text">
                     <span class="user-name">{{ activity.userId.name || activity.userId.username }}</span>
