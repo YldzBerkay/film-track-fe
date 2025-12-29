@@ -125,6 +125,33 @@
     }
 }
 
+.review-input {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    transition: all 0.2s ease;
+    margin-bottom: 24px;
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent); // Dynamic focus ring
+    }
+}
+
 .btn-rate {
     width: 100%;
     padding: 14px;
