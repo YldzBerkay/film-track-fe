@@ -135,16 +135,9 @@
                 </div>
               </div>
               @if (activity.rating) {
-              <div class="activity-rating">
-                @for (star of getStars(activity.rating); track $index) {
-                @if (star === 1) {
-                <span class="material-symbols-outlined star-filled">star</span>
-                } @else if (star === 0.5) {
-                <span class="material-symbols-outlined star-half">star_half</span>
-                } @else {
-                <span class="material-symbols-outlined star-empty">star</span>
-                }
-                }
+              <div class="activity-rating-badge">
+                <span class="material-symbols-outlined">star</span>
+                <span>{{ activity.rating }}/10</span>
               </div>
               }
             </div>
@@ -162,16 +155,9 @@
                     }
                   </p>
                   @if (activity.rating) {
-                  <div class="episode-rating">
-                    @for (star of getStars(activity.rating); track $index) {
-                    @if (star === 1) {
-                    <span class="material-symbols-outlined star-filled">star</span>
-                    } @else if (star === 0.5) {
-                    <span class="material-symbols-outlined star-half">star_half</span>
-                    } @else {
-                    <span class="material-symbols-outlined star-empty">star</span>
-                    }
-                    }
+                  <div class="episode-rating-badge">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+                    <span>{{ activity.rating }}/10</span>
                   </div>
                   }
                 </div>

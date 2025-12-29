@@ -125,6 +125,7 @@ export class WatchedListService {
         numberOfSeasons?: number;
         genres?: string[];
         rating?: number;
+        reviewText?: string;
         watchedAt?: string;
     }): Observable<WatchedListResponse> {
         return this.http.post<WatchedListResponse>(`${this.apiUrl}/items`, item);
@@ -136,11 +137,12 @@ export class WatchedListService {
     updateRating(
         tmdbId: number,
         mediaType: 'movie' | 'tv',
-        rating: number
+        rating: number,
+        reviewText?: string
     ): Observable<WatchedListResponse> {
         return this.http.patch<WatchedListResponse>(
             `${this.apiUrl}/items/${tmdbId}/rating`,
-            { mediaType, rating }
+            { mediaType, rating, reviewText }
         );
     }
 

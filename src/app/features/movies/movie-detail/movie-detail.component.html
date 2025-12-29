@@ -101,7 +101,7 @@
         <section class="section">
           <h2 class="section-title">{{ 'details.cast' | translate }}</h2>
           <div class="cast-grid">
-            @for (actor of movieData.credits.cast.slice(0, 12); track actor.id) {
+            @for (actor of movieData.credits.cast.slice(0, 12); track $index) {
             <div class="cast-item">
               <div class="cast-image">
                 @if (actor.profile_path) {
@@ -120,6 +120,21 @@
             }
           </div>
         </section>
+        }
+
+        <!-- Crew -->
+        @if (movieData.credits && movieData.credits.crew && movieData.credits.crew.length > 0) {
+        <div class="info-box">
+          <h3 class="info-title">{{ 'details.crew' | translate }}</h3>
+          <div class="crew-list">
+            @for (member of movieData.credits.crew.slice(0, 5); track $index) {
+            <div class="crew-item">
+              <span class="crew-name">{{ member.name }}</span>
+              <span class="crew-job">{{ member.job }}</span>
+            </div>
+            }
+          </div>
+        </div>
         }
 
         <!-- Similar Movies -->
@@ -229,8 +244,56 @@
           </div>
         </div>
         }
+
       </aside>
     </div>
+
+    <!-- Reviews / Activities Section -->
+    <section class="section full-width-reviews">
+      <div class="reviews-header">
+        <div class="header-left">
+          <h2 class="section-title">
+            {{ 'details.reviews' | translate }}
+            <span class="count" *ngIf="activities().length">({{ activities().length }})</span>
+          </h2>
+        </div>
+
+        <div class="header-controls">
+          <div class="sort-control">
+            <select #sortSelect (change)="onSortChange(sortSelect.value)" class="sort-select">
+              <option value="popular">{{ 'sort.popular' | translate }}</option>
+              <option value="recent">{{ 'sort.recent' | translate }}</option>
+              <option value="rating_high">{{ 'sort.ratingHigh' | translate }}</option>
+              <option value="rating_low">{{ 'sort.ratingLow' | translate }}</option>
+            </select>
+          </div>
+
+          <button class="btn-primary write-review-btn" (click)="openRateDialog()">
+            <span class="material-symbols-outlined">rate_review</span>
+            {{ 'details.writeReview' | translate }}
+          </button>
+        </div>
+      </div>
+
+      @if (sortedReviews().length > 0) {
+      <div class="reviews-feed">
+        @for (activity of sortedReviews(); track $index) {
+        <app-review-card [activity]="activity"></app-review-card>
+        }
+      </div>
+      } @else {
+      <div class="no-reviews empty-state">
+        <div class="empty-illustration">
+          <span class="material-symbols-outlined">rate_review</span>
+        </div>
+        <h3>{{ 'details.noReviewsTitle' | translate }}</h3>
+        <p>{{ 'details.noReviewsDesc' | translate }}</p>
+        <button class="btn-secondary" (click)="openRateDialog()">
+          {{ 'details.beFirstToReview' | translate }}
+        </button>
+      </div>
+      }
+    </section>
   </div>
 </div>
 }

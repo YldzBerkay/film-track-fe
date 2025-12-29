@@ -28,7 +28,6 @@ import { ReactionBarComponent } from '../../shared/components/reaction-bar/react
     CommonModule,
     RouterModule,
     FormsModule,
-    TimeAgoPipe,
     CommentListComponent,
     HeaderComponent,
     DialogComponent,
@@ -255,26 +254,7 @@ export class DashboardComponent implements OnInit {
     this.loadFeed();
   }
 
-  getStars(rating: number | undefined): number[] {
-    if (!rating) {
-      return [0, 0, 0, 0, 0];
-    }
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    const stars: number[] = [];
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(1);
-    }
-    if (hasHalfStar) {
-      stars.push(0.5);
-    }
-    const emptyStars = 5 - stars.length;
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(0);
-    }
-    return stars;
-  }
 
   getYear(dateString: string): number {
     return new Date(dateString).getFullYear();

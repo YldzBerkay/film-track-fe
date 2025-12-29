@@ -108,5 +108,17 @@ export class ActivityService {
   commentOnActivity(activityId: string, text: string): Observable<ApiResponse<Activity>> {
     return this.http.post<ApiResponse<Activity>>(`${this.apiUrl}/${activityId}/comments`, { text });
   }
+  getMediaActivities(
+    mediaType: 'movie' | 'tv',
+    tmdbId: number,
+    page: number = 1,
+    limit: number = 20
+  ): Observable<ApiResponse<FeedResponse>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<ApiResponse<FeedResponse>>(`${this.apiUrl}/media/${mediaType}/${tmdbId}`, { params });
+  }
 }
 

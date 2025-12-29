@@ -26,6 +26,16 @@
         "noUsers": "Kullanıcı bulunamadı.",
         "back": "Geri"
     },
+    "sort": {
+        "popular": "En Popüler",
+        "recent": "En Yeni",
+        "ratingHigh": "En Yüksek Puan",
+        "ratingLow": "En Düşük Puan"
+    },
+    "review": {
+        "reply": "Yanıtla",
+        "rated": "Puanladı"
+    },
     "watchlist": {
         "title": "İzleyeceklerim",
         "addToWatchlist": "İzleme Listesine Ekle",
@@ -364,7 +374,12 @@
         "episodes": "Bölümler",
         "seasonsCount": "{{count}} Sezon",
         "episodesCount": "{{count}} Bölüm",
-        "seasonEpisodes": "{{count}} bölüm"
+        "seasonEpisodes": "{{count}} bölüm",
+        "reviews": "İncelemeler",
+        "writeReview": "İnceleme Yaz",
+        "noReviewsTitle": "Henüz inceleme yok",
+        "noReviewsDesc": "Bu içerik için henüz hiç inceleme yapılmamış.",
+        "beFirstToReview": "İlk inceleyen sen ol!"
     },
     "reports": {
         "title": "İzleme Raporu",

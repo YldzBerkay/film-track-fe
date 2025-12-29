@@ -1,0 +1,124 @@
+@switch (activity.type) {
+@case ('review') {
+<!-- Full Review Card -->
+<app-review-card [activity]="activity" [isFeedView]="true"></app-review-card>
+}
+
+@case ('rating') {
+<!-- Mini Rating Card -->
+<div class="activity-card mini-card rating-card">
+    <div class="mini-icon rating-icon">
+        <span class="material-symbols-outlined">star</span>
+    </div>
+    <div class="mini-content">
+        <div class="mini-header">
+            <span class="mini-user">
+                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+            </span>
+            <span class="mini-action">{{ 'activity.rated' | translate }}</span>
+            <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
+        </div>
+        <div class="mini-meta">
+            <span class="rating-badge">
+                <span class="material-symbols-outlined">star</span>
+                {{ activity.rating }}
+            </span>
+            <span class="dot">•</span>
+            <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
+        </div>
+    </div>
+    <a [routerLink]="mediaLink" class="mini-poster">
+        <img [src]="posterUrl" [alt]="activity.mediaTitle">
+    </a>
+</div>
+}
+
+@case ('comment') {
+<!-- Comment Activity Card -->
+<div class="activity-card mini-card comment-card">
+    <div class="mini-icon comment-icon">
+        <span class="material-symbols-outlined">chat_bubble</span>
+    </div>
+    <div class="mini-content">
+        <div class="mini-header">
+            <span class="mini-user">
+                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+            </span>
+            <span class="mini-action">{{ 'activity.commentedOn' | translate }}</span>
+            <span class="target-type">{{ (activity['originalActivityType'] === 'review' ? 'activity.reviewOf' :
+                'activity.postOf') | translate }}</span>
+            <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
+        </div>
+
+        <div class="comment-bubble">
+            <span class="quote-mark">“</span>
+            {{ activity['commentText'] }}
+            <span class="quote-mark">”</span>
+        </div>
+
+        <div class="mini-meta">
+            <span class="time">{{ activity['commentCreatedAt'] | date:'short' }}</span>
+        </div>
+    </div>
+    <a [routerLink]="mediaLink" class="mini-poster">
+        <img [src]="posterUrl" [alt]="activity.mediaTitle">
+    </a>
+</div>
+}
+
+@case ('bulk_import') {
+<!-- Bulk Import Summary -->
+<div class="activity-card mini-card import-card">
+    <div class="mini-icon import-icon">
+        <span class="material-symbols-outlined">folder_open</span>
+    </div>
+    <div class="mini-content">
+        <div class="mini-header">
+            <span class="mini-user">
+                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+            </span>
+            <span class="mini-action">{{ 'activity.importedHistory' | translate }}</span>
+        </div>
+        <div class="import-stats">
+            <span class="stat-badge">
+                <span class="material-symbols-outlined">movie</span>
+                {{ 'activity.itemsImported' | translate }}
+            </span>
+        </div>
+        <div class="mini-meta">
+            <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
+        </div>
+    </div>
+</div>
+}
+
+@case ('movie_watched') {
+<!-- Simple Watched Log -->
+<div class="activity-card mini-card watched-card">
+    <div class="mini-icon watched-icon">
+        <span class="material-symbols-outlined">visibility</span>
+    </div>
+    <div class="mini-content">
+        <div class="mini-header">
+            <span class="mini-user">
+                <a [routerLink]="profileLink">{{ activity.userId.name || activity.userId.username }}</a>
+            </span>
+            <span class="mini-action">{{ 'activity.watched' | translate }}</span>
+            <a [routerLink]="mediaLink" class="mini-media">{{ activity.mediaTitle }}</a>
+        </div>
+        <div class="mini-meta">
+            <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
+        </div>
+    </div>
+    <a [routerLink]="mediaLink" class="mini-poster">
+        <img [src]="posterUrl" [alt]="activity.mediaTitle">
+    </a>
+</div>
+}
+@default {
+<!-- Fallback for other types -->
+<div class="activity-card mini-card">
+    <div class="mini-content">{{ activity.type }}</div>
+</div>
+}
+}

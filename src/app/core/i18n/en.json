@@ -26,6 +26,16 @@
         "noUsers": "No users found.",
         "back": "Back"
     },
+    "sort": {
+        "popular": "Most Popular",
+        "recent": "Most Recent",
+        "ratingHigh": "Highest Rated",
+        "ratingLow": "Lowest Rated"
+    },
+    "review": {
+        "reply": "Reply",
+        "rated": "Rated"
+    },
     "watchlist": {
         "title": "Watchlist",
         "addToWatchlist": "Add to Watchlist",
@@ -364,7 +374,12 @@
         "episodes": "Episodes",
         "seasonsCount": "{{count}} Seasons",
         "episodesCount": "{{count}} Episodes",
-        "seasonEpisodes": "{{count}} episodes"
+        "seasonEpisodes": "{{count}} episodes",
+        "reviews": "Reviews",
+        "writeReview": "Write a Review",
+        "noReviewsTitle": "No reviews yet",
+        "noReviewsDesc": "There are no reviews for this title yet.",
+        "beFirstToReview": "Be the first to review!"
     },
     "reports": {
         "title": "Watching Report",

@@ -12,12 +12,13 @@ import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate
 import { DialogComponent } from '../../../shared/components/dialog/dialog.component';
 
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { ReviewCardComponent } from '../../../shared/components/review-card/review-card.component';
 import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-tv-show-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, DialogComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, DialogComponent, TranslatePipe, ReviewCardComponent],
   templateUrl: './tv-show-detail.component.html',
   styleUrl: './tv-show-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,6 +54,7 @@ export class TvShowDetailComponent implements OnInit {
   isRateDialogOpen = signal(false);
   isSpecialsDialogOpen = signal(false);
   pendingRating = signal<number | null>(null);
+  pendingReview = signal<string | undefined>(undefined);
 
   // Episode ratings (keyed by episode number for current season)
   episodeRatings = signal<Record<number, number>>({});
@@ -67,6 +69,41 @@ export class TvShowDetailComponent implements OnInit {
   // Public Stats for seasons and episodes
   seasonPublicStats = signal<Record<number, { count: number; averageRating: number }>>({});
   episodePublicStats = signal<Record<number, { count: number; averageRating: number }>>({});
+
+  // Reviews & Activities
+  activities = signal<any[]>([]);
+  isLoadingActivities = signal(false);
+
+  // Sorting
+  reviewSort = signal<'popular' | 'recent' | 'rating_high' | 'rating_low'>('popular');
+
+  sortedReviews = computed(() => {
+    const list = [...this.activities()];
+    const sort = this.reviewSort();
+
+    return list.sort((a, b) => {
+      // Safety checks for properties
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const ratingA = a.rating || 0;
+      const ratingB = b.rating || 0;
+      const scoreA = (a.likesCount || 0) * 2 - (a.dislikesCount || 0) + (a.commentCount || 0);
+      const scoreB = (b.likesCount || 0) * 2 - (b.dislikesCount || 0) + (b.commentCount || 0);
+
+      if (sort === 'recent') {
+        return dateB - dateA;
+      } else if (sort === 'rating_high') {
+        return ratingB - ratingA;
+      } else if (sort === 'rating_low') {
+        return ratingA - ratingB;
+      } else { // popular (default)
+        if (scoreA === scoreB) {
+          return dateB - dateA;
+        }
+        return scoreB - scoreA;
+      }
+    });
+  });
 
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
   readonly hasSpecials = computed(() => this.tvShow()?.seasons.some(s => s.season_number === 0) || false);
@@ -90,6 +127,14 @@ export class TvShowDetailComponent implements OnInit {
         }
       }
     });
+
+    // Effect to load activities when tv show changes
+    effect(() => {
+      const id = this.tmdbId();
+      if (id) {
+        this.loadActivities(Number(id));
+      }
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
@@ -104,6 +149,22 @@ export class TvShowDetailComponent implements OnInit {
     if (this.isLoggedIn()) {
       this.checkUserStatus(Number(id));
     }
+    // Activities loaded via effect
+  }
+
+  loadActivities(tmdbId: number): void {
+    this.isLoadingActivities.set(true);
+    this.activityService.getMediaActivities('tv', tmdbId).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.activities.set(res.data.activities);
+        }
+        this.isLoadingActivities.set(false);
+      },
+      error: () => {
+        this.isLoadingActivities.set(false);
+      }
+    });
   }
 
   // ... (rest of methods)
@@ -131,7 +192,10 @@ export class TvShowDetailComponent implements OnInit {
     return avgRuntime * relevantEpisodes;
   }
 
-  onRate(rating: number): void {
+  onRate(event: { rating: number, review?: string }): void {
+    const rating = event.rating;
+    const review = event.review;
+
     if (this.isRating()) return;
 
     const show = this.tvShow();
@@ -140,11 +204,12 @@ export class TvShowDetailComponent implements OnInit {
     if (this.isWatched()) {
       // Just update the rating
       this.isRating.set(true);
-      this.watchedListService.updateRating(show.id, 'tv', rating).subscribe({
+      this.watchedListService.updateRating(show.id, 'tv', rating, review).subscribe({
         next: (res) => {
           if (res.success) {
             this.userRating.set(rating);
             this.loadPublicStats(show.id);
+            this.loadActivities(show.id); // Reload reviews
           }
           this.isRating.set(false);
           this.closeRateDialog();
@@ -156,6 +221,8 @@ export class TvShowDetailComponent implements OnInit {
     } else {
       // Not watched yet, marks as watched. Check for specials.
       this.pendingRating.set(rating);
+      this.pendingReview.set(review);
+
       if (this.hasSpecials()) {
         this.isSpecialsDialogOpen.set(true);
       } else {
@@ -335,14 +402,13 @@ export class TvShowDetailComponent implements OnInit {
       this.loadSeasonDetails(this.tmdbId(), seasonNumber);
     }
   }
-
   onLogClick(): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/login']);
       return;
     }
+    this.toggleWatched();
   }
-
   toggleWatched(): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/login']);
@@ -387,11 +453,17 @@ export class TvShowDetailComponent implements OnInit {
     this.isSpecialsDialogOpen.set(false);
     this.finishToggleWatched(includeSpecials, this.pendingRating());
     this.pendingRating.set(null);
+    this.pendingReview.set(undefined); // Added: Clear pending review
   }
 
   finishToggleWatched(includeSpecials: boolean, rating: number | null = null): void {
     const show = this.tvShow();
     if (!show) return;
+
+    const review = this.pendingReview(); // Added: Get pending review
+    // Clear pending review after use (or if not used, it stays until overwritten?)
+    // Best to clear it.
+    this.pendingReview.set(undefined); // Added: Clear pending review
 
     this.isLogging.set(true);
     this.watchedListService.addItem({
@@ -404,6 +476,7 @@ export class TvShowDetailComponent implements OnInit {
       numberOfEpisodes: includeSpecials ? show.number_of_episodes + (show.seasons.find(s => s.season_number === 0)?.episode_count || 0) : show.number_of_episodes,
       numberOfSeasons: includeSpecials ? show.number_of_seasons + 1 : show.number_of_seasons,
       rating: rating !== null ? rating : undefined,
+      reviewText: review, // Added: Include review text
       watchedAt: new Date().toISOString()
     }).subscribe({
       next: (res) => {
@@ -411,6 +484,7 @@ export class TvShowDetailComponent implements OnInit {
           this.isWatched.set(true);
           if (rating !== null) this.userRating.set(rating);
           this.loadPublicStats(show.id);
+          if (review || rating) this.loadActivities(show.id); // Added: Load activities if review or rating
         }
         this.isLogging.set(false);
       },
@@ -457,7 +531,9 @@ export class TvShowDetailComponent implements OnInit {
     this.ratingEpisode.set(null);
   }
 
-  onRateEpisode(rating: number): void {
+  onRateEpisode(event: { rating: number, review?: string }): void {
+    const rating = event.rating;
+    // Note: Reviews for episodes are not yet supported by the backend
     const ep = this.ratingEpisode();
     if (!ep) return;
 
@@ -526,7 +602,9 @@ export class TvShowDetailComponent implements OnInit {
     this.ratingSeason.set(null);
   }
 
-  onRateSeason(rating: number): void {
+  onRateSeason(event: { rating: number, review?: string }): void {
+    const rating = event.rating;
+    // Note: Reviews for seasons are not yet supported by the backend
     const s = this.ratingSeason();
     if (!s) return;
 
@@ -573,6 +651,9 @@ export class TvShowDetailComponent implements OnInit {
         this.closeSeasonRateDialog();
       }
     });
+  }
+  onSortChange(value: string): void {
+    this.reviewSort.set(value as 'popular' | 'recent' | 'rating_high' | 'rating_low');
   }
 }
 

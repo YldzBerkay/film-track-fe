@@ -13,10 +13,11 @@ export class RateDialogComponent {
     @Input() initialRating: number | null = null;
     @Input() title = '';
     @Output() close = new EventEmitter<void>();
-    @Output() save = new EventEmitter<number>();
+    @Output() save = new EventEmitter<{ rating: number, review?: string }>();
 
     hoverRating = signal<number>(0);
     selectedRating = signal<number>(0);
+    reviewText = signal<string>('');
 
     ngOnChanges(changes: any): void {
         if (changes.initialRating && this.initialRating !== null) {
@@ -26,6 +27,7 @@ export class RateDialogComponent {
         if (changes.isOpen && !this.isOpen) {
             this.selectedRating.set(0);
             this.hoverRating.set(0);
+            this.reviewText.set('');
         }
     }
 
@@ -33,9 +35,16 @@ export class RateDialogComponent {
         this.selectedRating.set(rating);
     }
 
+    onReviewInput(text: string): void {
+        this.reviewText.set(text);
+    }
+
     onSave(): void {
         if (this.selectedRating() > 0) {
-            this.save.emit(this.selectedRating());
+            this.save.emit({
+                rating: this.selectedRating(),
+                review: this.reviewText()
+            });
             this.close.emit();
         }
     }

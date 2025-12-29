@@ -666,20 +666,17 @@
   margin: 0;
 }
 
-.activity-rating {
+.activity-rating-badge {
   display: flex;
+  align-items: center;
+  gap: 4px;
   color: var(--color-primary);
-}
+  font-weight: 600;
 
-.star-filled,
-.star-half {
-  color: var(--color-primary);
-  font-size: 18px;
-}
-
-.star-empty {
-  color: var(--color-border);
-  font-size: 18px;
+  .material-symbols-outlined {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 1;
+  }
 }
 
 .activity-content {
@@ -735,13 +732,18 @@
   text-overflow: ellipsis;
 }
 
-.episode-rating {
+.episode-rating-badge {
   display: flex;
+  align-items: center;
+  gap: 2px;
   color: var(--color-primary);
   margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
 
   .material-symbols-outlined {
-    font-size: 12px;
+    font-size: 14px;
+    font-variation-settings: 'FILL' 1;
   }
 }
 

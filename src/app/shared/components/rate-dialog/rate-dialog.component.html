@@ -24,6 +24,9 @@
                 }
             </div>
 
+            <textarea #reviewInput class="review-input" placeholder="Write a review (optional)..." rows="3"
+                (input)="onReviewInput(reviewInput.value)"></textarea>
+
             <button class="btn-rate" [disabled]="selectedRating() === 0" (click)="onSave()">Rate</button>
         </div>
     </div>

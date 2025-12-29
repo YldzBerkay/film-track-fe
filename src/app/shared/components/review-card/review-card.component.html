@@ -1,0 +1,84 @@
+<div class="review-card">
+    <!-- Header -->
+    <div class="card-header">
+        <div class="user-avatar" [routerLink]="['/profile', activity.userId.username]">
+            <!-- Avatar logic (using placeholder or actual image if available) -->
+            <div class="avatar-placeholder">{{ activity.userId.username.charAt(0).toUpperCase() }}</div>
+        </div>
+
+        <div class="header-content">
+            <div class="user-row">
+                <a [routerLink]="['/profile', activity.userId.username]" class="username">{{ activity.userId.username
+                    }}</a>
+                @if (activity.userId.mastery?.title) {
+                <span class="user-badge">{{ activity.userId.mastery?.title }}</span>
+                }
+            </div>
+            <div class="meta-row">
+                @if (activity.rating) {
+                <span class="action-text">{{ 'review.rated' | translate }}</span>
+                <div class="rating-badge">
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="rating-value">{{ displayRating }}</span>
+                </div>
+                }
+                <span class="separator">•</span>
+                <span class="time">{{ activity.createdAt | timeAgo }}</span>
+            </div>
+        </div>
+
+        <!-- Context Menu button (placeholder) -->
+        <button class="context-menu-btn">
+            <span class="material-symbols-outlined">more_horiz</span>
+        </button>
+    </div>
+
+    <!-- Content -->
+    @if (activity.reviewText) {
+    <div class="card-content">
+        <div class="text-container" [class.spoiler-hidden]="activity.isSpoiler && !showSpoilers()">
+            <p class="review-text">
+                {{ displayedText }}
+                @if (isTruncated && !isExpanded()) {
+                <a href="#" class="read-more" (click)="toggleExpand($event)">{{ 'review.readMore' | translate }}</a>
+                }
+            </p>
+
+            @if (activity.isSpoiler && !showSpoilers()) {
+            <button class="spoiler-reveal-btn" (click)="toggleSpoiler($event)">
+                <span class="material-symbols-outlined">visibility</span>
+                {{ 'review.spoilerWarning' | translate }}
+            </button>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- Interaction Bar -->
+    <div class="interaction-bar">
+        <app-reaction-bar [likesCount]="activity.likesCount" [dislikesCount]="activity.dislikesCount"
+            [targetId]="activity._id" targetType="activity" [userVote]="null"></app-reaction-bar>
+        <!-- Note: userVote needs to be computed in component if Activity interface doesn't have it directly. 
+         Assuming ActivityService populates current user's likelyhood or we need a helper.
+         The Activity interface currently has likes: string[] (user IDs). 
+         We'll need to check if current user ID is in those arrays.
+    -->
+
+        <button class="action-btn reply-btn" (click)="toggleComments()">
+            <span class="material-symbols-outlined">chat_bubble</span>
+            <span>{{ 'review.reply' | translate }}</span>
+        </button>
+
+        <button class="action-btn share-btn">
+            <span class="material-symbols-outlined">share</span>
+        </button>
+    </div>
+
+    <!-- Nested Comments -->
+    @if (showComments()) {
+    <div class="comments-section">
+        <app-comment-list [activityId]="activity._id" [initialCount]="activity.commentCount">
+        </app-comment-list>
+    </div>
+    }
+</div>

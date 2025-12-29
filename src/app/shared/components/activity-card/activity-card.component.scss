@@ -1,0 +1,198 @@
+@use '../../../../styles/variables' as *;
+
+.activity-card {
+    margin-bottom: 24px;
+
+    &.mini-card {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        background: rgba($surface, 0.5);
+        border-radius: 16px;
+        border: 1px solid rgba($white, 0.05);
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: rgba($surface, 0.8);
+            border-color: rgba($primary, 0.3);
+            transform: translateY(-2px);
+        }
+    }
+}
+
+.mini-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    span {
+        font-size: 20px;
+    }
+
+    &.rating-icon {
+        background: rgba($warning, 0.1);
+        color: $warning;
+    }
+
+    &.comment-icon {
+        background: rgba($info, 0.1);
+        color: $info;
+    }
+
+    &.import-icon {
+        background: rgba($success, 0.1);
+        color: $success;
+    }
+
+    &.watched-icon {
+        background: rgba($primary, 0.1);
+        color: $primary;
+    }
+}
+
+.mini-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mini-header {
+    line-height: 1.5;
+    font-size: 0.95rem;
+
+    a {
+        color: $white;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+            color: $primary;
+            text-decoration: underline;
+        }
+    }
+
+    .mini-user a {
+        font-weight: 600;
+    }
+
+    .mini-action {
+        color: $text-secondary;
+        margin: 0 4px;
+    }
+
+    .target-type {
+        color: $text-secondary;
+        margin-right: 4px;
+    }
+}
+
+.mini-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: $text-secondary;
+
+    .rating-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: $warning;
+        font-weight: 600;
+
+        span {
+            font-size: 16px;
+            font-variation-settings: 'FILL' 1;
+        }
+    }
+
+    .dot {
+        opacity: 0.5;
+    }
+}
+
+.mini-poster {
+    width: 48px;
+    height: 72px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+/* Comment Bubble */
+.comment-bubble {
+    background: rgba($white, 0.05);
+    padding: 12px;
+    border-radius: 0 12px 12px 12px;
+    color: $text-primary;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    border-left: 2px solid $info;
+    margin-top: 4px;
+    font-style: italic;
+
+    .quote-mark {
+        color: rgba($info, 0.5);
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+}
+
+/* Import Stats */
+.import-stats {
+    display: flex;
+    gap: 12px;
+
+    .stat-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba($white, 0.05);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: $text-primary;
+
+        span {
+            font-size: 18px;
+        }
+    }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .activity-card.mini-card {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .mini-icon {
+        width: 32px;
+        height: 32px;
+
+        span {
+            font-size: 16px;
+        }
+    }
+
+    .mini-poster {
+        width: 40px;
+        height: 60px;
+    }
+}

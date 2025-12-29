@@ -8,13 +8,14 @@ import { WatchedListService } from '../../../core/services/watched-list.service'
 import { AddToListDialogComponent } from '../../../shared/components/add-to-list-dialog/add-to-list-dialog.component';
 import { RateDialogComponent } from '../../../shared/components/rate-dialog/rate-dialog.component';
 
-import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { ReviewCardComponent } from '../../../shared/components/review-card/review-card.component';
 import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, DatePipe, AddToListDialogComponent, RateDialogComponent, TranslatePipe, ReviewCardComponent],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,6 +45,41 @@ export class MovieDetailComponent implements OnInit {
   isAddToListOpen = signal(false);
   isRateDialogOpen = signal(false);
 
+  // Reviews & Activities
+  activities = signal<any[]>([]);
+  isLoadingActivities = signal(false);
+
+  // Sorting
+  reviewSort = signal<'popular' | 'recent' | 'rating_high' | 'rating_low'>('popular');
+
+  sortedReviews = computed(() => {
+    const list = [...this.activities()];
+    const sort = this.reviewSort();
+
+    return list.sort((a, b) => {
+      // Safety checks for properties
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const ratingA = a.rating || 0;
+      const ratingB = b.rating || 0;
+      const scoreA = (a.likesCount || 0) * 2 - (a.dislikesCount || 0) + (a.commentCount || 0);
+      const scoreB = (b.likesCount || 0) * 2 - (b.dislikesCount || 0) + (b.commentCount || 0);
+
+      if (sort === 'recent') {
+        return dateB - dateA;
+      } else if (sort === 'rating_high') {
+        return ratingB - ratingA;
+      } else if (sort === 'rating_low') {
+        return ratingA - ratingB;
+      } else { // popular (default)
+        if (scoreA === scoreB) {
+          return dateB - dateA;
+        }
+        return scoreB - scoreA;
+      }
+    });
+  });
+
   readonly tmdbId = computed(() => this.route.snapshot.paramMap.get('id') || '');
 
   private previousLanguage = this.languageService.language();
@@ -59,6 +95,14 @@ export class MovieDetailComponent implements OnInit {
         }
       }
     });
+
+    // Effect to load activities when movie changes
+    effect(() => {
+      const id = this.tmdbId();
+      if (id) {
+        this.loadActivities(Number(id));
+      }
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
@@ -73,6 +117,22 @@ export class MovieDetailComponent implements OnInit {
     if (this.isLoggedIn()) {
       this.checkUserStatus(Number(id));
     }
+    // Activities loaded via effect
+  }
+
+  loadActivities(tmdbId: number): void {
+    this.isLoadingActivities.set(true);
+    this.activityService.getMediaActivities('movie', tmdbId).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.activities.set(res.data.activities);
+        }
+        this.isLoadingActivities.set(false);
+      },
+      error: () => {
+        this.isLoadingActivities.set(false);
+      }
+    });
   }
 
   // ... (rest of methods)
@@ -89,40 +149,68 @@ export class MovieDetailComponent implements OnInit {
     this.isRateDialogOpen.set(false);
   }
 
-  onRate(rating: number): void {
+  onRate(event: { rating: number, review?: string }): void {
+    // Compatibility with event potentially being just a number in some previous versions, 
+    // but we updated RateDialog to emit object.
+    // However, if we just use explicit typing:
+    const rating = event.rating;
+    const review = event.review;
+
     if (this.isRating()) return;
 
     this.isRating.set(true);
     const movie = this.movie();
     if (!movie) return;
 
-    this.watchedListService.addItem({
-      tmdbId: movie.id,
-      mediaType: 'movie',
-      title: movie.title,
-      posterPath: movie.poster_path || undefined,
-      runtime: movie.runtime || 0,
-      genres: movie.genres?.map(g => g.name),
-      rating: rating,
-      watchedAt: new Date().toISOString()
-    }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.userRating.set(rating);
-          this.isWatched.set(true);
-          this.loadPublicStats(movie.id);
+    if (this.isWatched()) {
+      // Just update rating (and review)
+      this.watchedListService.updateRating(movie.id, 'movie', rating, review).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.userRating.set(rating);
+            this.loadPublicStats(movie.id);
+            this.loadActivities(movie.id); // Reload reviews
+          }
+          this.isRating.set(false);
+          this.closeRateDialog();
+        },
+        error: () => {
+          this.isRating.set(false);
         }
-        this.isRating.set(false);
-        this.closeRateDialog();
-      },
-      error: () => {
-        this.isRating.set(false);
-      }
-    });
+      });
+    } else {
+      // Add to watched with rating and review
+      this.watchedListService.addItem({
+        tmdbId: movie.id,
+        mediaType: 'movie',
+        title: movie.title,
+        posterPath: movie.poster_path || undefined,
+        runtime: movie.runtime || 0,
+        genres: movie.genres?.map(g => g.name),
+        rating: rating,
+        reviewText: review,
+        watchedAt: new Date().toISOString()
+      }).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.userRating.set(rating);
+            this.isWatched.set(true);
+            this.loadPublicStats(movie.id);
+            this.loadActivities(movie.id); // Reload reviews
+          }
+          this.isRating.set(false);
+          this.closeRateDialog();
+        },
+        error: () => {
+          this.isRating.set(false);
+        }
+      });
+    }
   }
 
   loadMovieDetails(id: string): void {
     this.isLoading.set(true);
+    // ... existing implementation
     this.error.set(null);
 
     this.tmdbService.getMovieDetails(id).subscribe({
@@ -202,6 +290,7 @@ export class MovieDetailComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+    this.toggleWatched();
   }
 
   toggleWatched(): void {
@@ -266,6 +355,10 @@ export class MovieDetailComponent implements OnInit {
 
   closeAddToList(): void {
     this.isAddToListOpen.set(false);
+  }
+
+  onSortChange(value: string): void {
+    this.reviewSort.set(value as 'popular' | 'recent' | 'rating_high' | 'rating_low');
   }
 
   goBack(): void {
