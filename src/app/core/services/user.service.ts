@@ -49,6 +49,11 @@ export interface UserProfile {
   }>;
   reviewCount: number;
   isFollowedByMe?: boolean;
+  recommendationQuota?: {
+    remaining: number;
+    total: number;
+    lastResetDate: string;
+  };
 }
 
 export interface ApiResponse<T> {

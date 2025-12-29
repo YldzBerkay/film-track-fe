@@ -142,12 +142,19 @@ export class RecommendationService {
         });
     }
 
-    sendRLFeedback(tmdbId: number, mediaType: string, feedback: number, rating: number): Observable<ApiResponse<void>> {
-        return this.http.post<ApiResponse<void>>(`${this.apiUrl}/rl-feedback`, {
+    sendRLFeedback(
+        tmdbId: number,
+        mediaType: string,
+        feedback: number,
+        rating?: number,
+        review?: string
+    ): Observable<any> {
+        return this.http.post(`${this.apiUrl}/rl-feedback`, {
             tmdbId,
             mediaType,
             feedback,
-            rating
+            rating,
+            review
         });
     }
 

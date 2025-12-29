@@ -112,6 +112,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   isPremiumDeckScrollable = signal(false);
   isMoviesFavoritesScrollable = signal(false);
   isTvFavoritesScrollable = signal(false);
+  isActivitiesScrollable = signal(false);
 
   // Followers/Following dialog state
   showUserListDialog = signal(false);
@@ -139,6 +140,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   // Share Dialog state
   showShareDialog = signal(false);
+
+  private readonly RATED_CARDS_KEY = 'film_track_rated_mood_cards';
+  private readonly MOOD_RECS_KEY = 'film_track_mood_recs';
   shareUrl = signal('');
 
   // Watched Reports state
@@ -234,6 +238,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.reloadLanguageDependentContent();
       }
     });
+
+    // Check scrollability when profile loads
+    effect(() => {
+      const p = this.profile();
+      if (p?.recentActivities?.length) {
+        setTimeout(() => this.checkActivitiesScrollable(), 0);
+      }
+    });
   }
 
   reloadLanguageDependentContent(): void {
@@ -250,6 +262,71 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       this.loadProfile(username);
     } else {
       this.loadCurrentProfile();
+    }
+  }
+
+  // --- Persistence for Rated Cards ---
+  private loadRatedCardsState(): void {
+    try {
+      const stored = localStorage.getItem(this.RATED_CARDS_KEY);
+      if (stored) {
+        const ids = JSON.parse(stored) as number[];
+        if (Array.isArray(ids)) {
+          this.ratedCards.set(new Set(ids));
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load rated cards state', e);
+    }
+  }
+
+  private saveRatedCardsState(): void {
+    try {
+      const ids = Array.from(this.ratedCards());
+      localStorage.setItem(this.RATED_CARDS_KEY, JSON.stringify(ids));
+    } catch (e) {
+      console.warn('Failed to save rated cards state', e);
+    }
+  }
+
+  // --- Persistence for Mood Recs ---
+  private SaveMoodRecsState(recs: any[]): void {
+    try {
+      const state = {
+        data: recs,
+        params: {
+          mode: this.moodRecsMode(),
+          includeWatched: this.includeWatched()
+        },
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.MOOD_RECS_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Failed to save mood recs state', e);
+    }
+  }
+
+  private loadMoodRecsState(): any[] | null {
+    try {
+      const stored = localStorage.getItem(this.MOOD_RECS_KEY);
+      if (!stored) return null;
+
+      const state = JSON.parse(stored);
+
+      // Check freshness (e.g. 4 hours)
+      const isFresh = (Date.now() - state.timestamp) < (4 * 60 * 60 * 1000);
+
+      // Check params match
+      const paramsMatch = state.params &&
+        state.params.mode === this.moodRecsMode() &&
+        state.params.includeWatched === this.includeWatched();
+
+      if (isFresh && paramsMatch && Array.isArray(state.data)) {
+        return state.data;
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 
@@ -273,6 +350,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       this.loadCurrentProfile();
     } else {
       this.loadProfile(username);
+    }
+
+    // Load persisted rated cards state
+    if (this.isOwnProfile()) {
+      this.loadRatedCardsState();
     }
 
     // Read tab from query params
@@ -360,6 +442,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
               banner: response.data.user.banner || undefined
             });
           }
+          // Sync quota
+          if (response.data.recommendationQuota) {
+            this.replacementQuota.set({
+              remaining: response.data.recommendationQuota.remaining,
+              total: response.data.recommendationQuota.total
+            });
+          }
           // Load activities if on activities tab
           if (this.activeTab() === 'activities') {
             this.loadActivities();
@@ -390,6 +479,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             avatar: response.data.user.avatar || undefined,
             banner: response.data.user.banner || undefined
           });
+          // Sync quota
+          if (response.data.recommendationQuota) {
+            this.replacementQuota.set({
+              remaining: response.data.recommendationQuota.remaining,
+              total: response.data.recommendationQuota.total
+            });
+          }
           // Load activities if on activities tab
           if (this.activeTab() === 'activities') {
             this.loadActivities();
@@ -850,7 +946,18 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     }
   }
 
-  loadMoodRecommendations(): void {
+  loadMoodRecommendations(force: boolean = false): void {
+    // 1. Try cache first (if not forced)
+    if (!force) {
+      const cached = this.loadMoodRecsState();
+      if (cached) {
+        this.moodRecommendations.set(cached);
+        this.isLoadingRecommendations.set(false);
+        this.aiThresholdNotMet.set(false);
+        return;
+      }
+    }
+
     this.isLoadingRecommendations.set(true);
     // Use signal values for mode and includeWatched
     this.recommendationService.getMoodBasedRecommendations(this.moodRecsMode(), 5, this.includeWatched()).subscribe({
@@ -874,6 +981,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             score: Math.round(rec.moodSimilarity)
           }));
           this.moodRecommendations.set(recommendations);
+
+          // Cache the new data
+          this.SaveMoodRecsState(recommendations);
         }
         this.isLoadingRecommendations.set(false);
       },
@@ -914,7 +1024,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (!movie) return;
 
     const action = this.ratingDialogAction();
-    const { rating } = event; // We only use rating for now
+    const { rating, review } = event; // We only use rating for now
 
     // Add to rated set for UI feedback
     this.ratedCards.update(set => {
@@ -922,6 +1032,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       newSet.add(movie.tmdbId);
       return newSet;
     });
+
+    this.saveRatedCardsState();
 
     // Close dialog
     this.showRatingDialog.set(false);
@@ -934,7 +1046,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       movie.tmdbId,
       movie.mediaType || 'movie', // Fallback if mediaType missing
       feedbackValue,
-      rating
+      rating,
+      review
     ).subscribe({
       next: () => {
         // Success - handle quota if needed
@@ -976,14 +1089,17 @@ export class ProfileComponent implements OnInit, AfterViewInit {
               : r
           );
           this.moodRecommendations.set(newRecs);
+          this.SaveMoodRecsState(newRecs);
 
           // Remove from rated set
           const newSet = new Set(this.ratedCards());
           newSet.delete(tmdbIdToReplace);
           this.ratedCards.set(newSet);
+          this.saveRatedCardsState();
 
           // Update quota
           if (response.remaining !== undefined) {
+            // If the response indicates a reset (remaining == 3), update total too just in case
             this.replacementQuota.set({ remaining: response.remaining, total: 3 });
           }
         } else if (response.error === 'QUOTA_EXCEEDED') {
@@ -1030,6 +1146,28 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     } else {
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  @ViewChild('activitiesContainer') activitiesContainer!: ElementRef<HTMLDivElement>;
+
+  scrollActivities(direction: 'left' | 'right'): void {
+    if (!this.activitiesContainer) return;
+
+    const container = this.activitiesContainer.nativeElement;
+    const scrollAmount = 300;
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  private checkActivitiesScrollable(): void {
+    if (this.activitiesContainer?.nativeElement) {
+      const el = this.activitiesContainer.nativeElement;
+      this.isActivitiesScrollable.set(el.scrollWidth > el.clientWidth);
     }
   }
 

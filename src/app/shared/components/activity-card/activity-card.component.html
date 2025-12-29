@@ -28,6 +28,12 @@
                 <span class="material-symbols-outlined">star</span>
                 {{ activity.rating }}
             </span>
+            @if ($any(activity).isMoodPick) {
+            <span class="mood-pick-badge" title="You liked this from your Mood Recommendations">
+                <span class="material-symbols-outlined">auto_awesome</span>
+                <span class="mood-text">{{ 'activity.moodPick' | translate }}</span>
+            </span>
+            }
             <span class="dot">•</span>
             <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
         </div>

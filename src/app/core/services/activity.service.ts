@@ -26,6 +26,7 @@ export interface Activity {
   rating?: number;
   reviewText?: string;
   isSpoiler: boolean;
+  isMoodPick?: boolean;
   genres?: string[];
   createdAt: string;
   updatedAt: string;

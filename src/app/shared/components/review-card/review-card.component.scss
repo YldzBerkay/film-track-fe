@@ -99,6 +99,23 @@
     }
 }
 
+.mood-pick-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: rgba(156, 39, 176, 0.15); // Purple-ish
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: 6px;
+    color: #e1bee7; // Light purple text
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    .material-symbols-outlined {
+        font-size: 14px;
+    }
+}
+
 .separator {
     margin: 0 2px;
 }
