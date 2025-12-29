@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { WatchedListService, WatchedReportsResponse } from '../../../core/services/watched-list.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
     selector: 'app-watched-reports-dialog',
@@ -40,6 +41,7 @@ export class WatchedReportsDialogComponent implements OnInit {
     reports = signal<WatchedReportsResponse['data'] | null>(null);
     isLoading = signal(true);
 
+
     ngOnInit(): void {
         this.loadReports();
     }
@@ -63,8 +65,19 @@ export class WatchedReportsDialogComponent implements OnInit {
         this.close.emit();
     }
 
+    private languageService = inject(LanguageService);
+
     formatRuntime(minutes: number): string {
-        return this.watchedListService.formatRuntime(minutes);
+        const isTr = this.languageService.langCode() === 'tr';
+        const h = isTr ? 'sa' : 'h';
+        const m = isTr ? 'dk' : 'm';
+
+        if (minutes < 60) {
+            return `${minutes}${m}`;
+        }
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return mins > 0 ? `${hours}${h} ${mins}${m}` : `${hours}${h}`;
     }
 
     getSortedGenres(): Array<{ name: string, count: number }> {

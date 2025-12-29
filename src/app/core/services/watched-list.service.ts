@@ -82,6 +82,14 @@ export interface WatchedReportsResponse {
         totalRatingCount: number;
         averageRating: number | null;
         ratings: Array<{ tmdbId: number; mediaType: 'movie' | 'tv'; title: string; rating: number }>;
+        mastery?: {
+            level: number;
+            title: string;
+            score: number;
+            nextLevelScore: number;
+            scoreToNextLevel: number;
+            progressPercent: number;
+        };
     };
 }
 

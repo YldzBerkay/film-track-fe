@@ -83,6 +83,7 @@
         "listsTab": "Lists",
         "reviewsTab": "Reviews",
         "likesTab": "Likes",
+        "settingsTab": "Settings",
         "moodBadges": "Mood Badges",
         "earnBadgesHint": "Watch and rate movies to earn badges!",
         "cinematicMood": "Cinematic Mood",
@@ -379,7 +380,8 @@
         "recentRatings": "Rated Recently",
         "noRatings": "No ratings yet",
         "generating": "Generating report...",
-        "failedToLoad": "Failed to load report"
+        "failedToLoad": "Failed to load report",
+        "tvStats": "{{episodes}} ep / {{seasons}} seasons"
     },
     "settings": {
         "importTitle": "Import Watch History",
@@ -409,5 +411,10 @@
         "cinephile": "Cinephile",
         "cultureGuardian": "Culture Guardian",
         "grandmaster": "Grandmaster"
+    },
+    "mastery": {
+        "level": "Level",
+        "toNextLevel": "{{xp}} XP to next level",
+        "xp": "XP"
     }
 }
