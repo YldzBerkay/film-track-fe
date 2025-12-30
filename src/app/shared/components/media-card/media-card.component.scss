@@ -120,3 +120,64 @@
         width: 100px;
     }
 }
+
+// Feedback Buttons (content projected from parent)
+::ng-deep .feedback-buttons {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+
+.media-card:hover ::ng-deep .feedback-buttons {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+::ng-deep .feedback-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+
+    .material-symbols-outlined {
+        font-size: 20px;
+    }
+
+    &.like {
+        background: rgba(0, 224, 84, 0.9);
+        color: #14181c;
+
+        &:hover {
+            background: #00e054;
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(0, 224, 84, 0.4);
+        }
+    }
+
+    &.dislike {
+        background: rgba(255, 71, 87, 0.9);
+        color: #fff;
+
+        &:hover {
+            background: #ff4757;
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(255, 71, 87, 0.4);
+        }
+    }
+}

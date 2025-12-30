@@ -66,6 +66,9 @@ export class ProfileOverviewComponent implements OnInit {
     badges = signal<Badge[]>([]);
     isLoadingBadges = signal(false);
 
+    // Feedback state for recommendation cards
+    ratedCards = signal<Set<number>>(new Set());
+
     // Computed
     hasEnoughTimelineData = computed(() => this.moodTimeline().length >= 3);
 
@@ -125,4 +128,22 @@ export class ProfileOverviewComponent implements OnInit {
     }
 
     trackByBadgeId = (index: number, badge: Badge): string => badge.id;
+
+    // Check if a card has been rated
+    isCardRated(tmdbId: number): boolean {
+        return this.ratedCards().has(tmdbId);
+    }
+
+    // Rate a recommendation card (like/dislike)
+    rateCard(rec: MoodRecommendation, action: 'like' | 'dislike'): void {
+        this.ratedCards.update(set => {
+            const newSet = new Set(set);
+            newSet.add(rec.tmdbId);
+            return newSet;
+        });
+
+        this.recommendationService.submitFeedback(rec.tmdbId, rec.title, action).subscribe({
+            error: (err) => console.error('Feedback failed:', err)
+        });
+    }
 }

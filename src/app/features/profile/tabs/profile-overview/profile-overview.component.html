@@ -105,7 +105,18 @@
     <div class="recommendations-grid">
         @for (rec of moodRecommendations(); track rec.tmdbId) {
         <app-media-card [title]="rec.title" [posterPath]="rec.posterPath" [matchScore]="rec.score"
-            (cardClick)="router.navigate(['/movies', rec.tmdbId])" />
+            [isRated]="isCardRated(rec.tmdbId)" (cardClick)="router.navigate(['/movies', rec.tmdbId])">
+            @if (!isCardRated(rec.tmdbId)) {
+            <div class="feedback-buttons">
+                <button class="feedback-btn like" (click)="rateCard(rec, 'like'); $event.stopPropagation()">
+                    <span class="material-symbols-outlined">thumb_up</span>
+                </button>
+                <button class="feedback-btn dislike" (click)="rateCard(rec, 'dislike'); $event.stopPropagation()">
+                    <span class="material-symbols-outlined">thumb_down</span>
+                </button>
+            </div>
+            }
+        </app-media-card>
         }
     </div>
     } @else {
