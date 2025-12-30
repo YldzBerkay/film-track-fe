@@ -107,7 +107,7 @@
         cursor: pointer;
 
         .material-symbols-outlined {
-            transition: all 0.1s;
+            transition: all 0.15s ease;
             font-size: 32px;
             color: #888; // Default outline color
             font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 48; // Thinner border
@@ -118,10 +118,52 @@
                 font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 48;
             }
 
+            // Red color for stars that will be removed (decrease zone)
+            &.decrease {
+                color: #ff4757;
+                font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 48;
+                animation: pulse-red 0.3s ease;
+            }
+
+            // Blue color for stars that will be added (increase zone)
+            &.increase {
+                color: #3b82f6;
+                font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 48;
+                animation: pulse-blue 0.3s ease;
+            }
+
             &:hover {
                 transform: scale(1.1);
             }
         }
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse-blue {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
     }
 }
 

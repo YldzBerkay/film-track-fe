@@ -52,4 +52,52 @@ export class RateDialogComponent {
     onClose(): void {
         this.close.emit();
     }
+
+    /**
+     * Check if a star is in the "decrease zone" 
+     * (between hovered rating and selected rating when lowering)
+     */
+    isDecreaseZone(star: number): boolean {
+        const hover = this.hoverRating();
+        const selected = this.selectedRating();
+
+        // Only show decrease zone when hovering on a lower rating
+        if (hover === 0 || hover >= selected) return false;
+
+        // Stars between hover (exclusive) and selected (inclusive) are in decrease zone
+        return star > hover && star <= selected;
+    }
+
+    /**
+     * Check if a star is in the "increase zone"
+     * (between selected rating and hovered rating when raising)
+     */
+    isIncreaseZone(star: number): boolean {
+        const hover = this.hoverRating();
+        const selected = this.selectedRating();
+
+        // Only show increase zone when hovering on a higher rating
+        if (hover === 0 || hover <= selected) return false;
+
+        // Stars between selected (exclusive) and hover (inclusive) are in increase zone
+        return star > selected && star <= hover;
+    }
+
+    /**
+     * Get the appropriate star icon based on current state
+     */
+    getStarIcon(star: number): string {
+        const hover = this.hoverRating();
+        const selected = this.selectedRating();
+
+        // If hovering
+        if (hover > 0) {
+            if (star <= hover) return 'star';  // Filled up to hover
+            if (this.isDecreaseZone(star)) return 'star';  // Filled but will be red
+            return 'star_outline';
+        }
+
+        // Not hovering - show selected rating
+        return selected >= star ? 'star' : 'star_outline';
+    }
 }

@@ -16,10 +16,12 @@
 
             <div class="rating-stars interactive">
                 @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
-                <span class="material-symbols-outlined" [class.filled]="(selectedRating() || 0) >= star"
-                    [class.hovered]="(hoverRating() || 0) >= star" (mouseenter)="hoverRating.set(star)"
+                <span class="material-symbols-outlined"
+                    [class.filled]="(selectedRating() || 0) >= star && hoverRating() === 0"
+                    [class.hovered]="hoverRating() > 0 && hoverRating() >= star" [class.decrease]="isDecreaseZone(star)"
+                    [class.increase]="isIncreaseZone(star)" (mouseenter)="hoverRating.set(star)"
                     (mouseleave)="hoverRating.set(0)" (click)="onRate(star)">
-                    {{ (selectedRating() || 0) >= star || (hoverRating() || 0) >= star ? 'star' : 'star_outline' }}
+                    {{ getStarIcon(star) }}
                 </span>
                 }
             </div>
