@@ -191,7 +191,29 @@
             </div>
         </div>
     </div>
+    <!-- Danger Zone -->
+    <div class="settings-card danger-zone">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">warning</span>
+            <h3>{{ 'settings.dangerZone' | translate }}</h3>
+        </div>
+        <div class="danger-content">
+            <p>{{ 'settings.deleteAccountDesc' | translate }}</p>
+            <button class="delete-account-btn" (click)="openDeleteModal()">
+                {{ 'settings.deleteAccount' | translate }}
+            </button>
+        </div>
+    </div>
 </div>
+
+<!-- Delete Account Confirmation Dialog -->
+<app-dialog [isOpen]="showDeleteModal()" [title]="'settings.deleteAccount' | translate"
+    [message]="'settings.deleteWarning' | translate" [confirmText]="'settings.confirmDelete' | translate"
+    [cancelText]="'settings.cancel' | translate" type="danger" [showInput]="true" inputType="text"
+    validationMatch="DELETE" [inputPlaceholder]="'settings.typeToDelete' | translate" [isLoading]="isDeletingAccount()"
+    loadingText="Deleting your account..." (confirm)="onDeleteConfirmed()" (cancel)="closeDeleteModal()"
+    (close)="closeDeleteModal()">
+</app-dialog>
 } @else {
 <div class="settings-not-available">
     <span class="material-symbols-outlined">lock</span>

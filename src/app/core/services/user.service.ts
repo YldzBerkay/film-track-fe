@@ -140,6 +140,10 @@ export class UserService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${userId}/follower`);
   }
 
+  deleteAccount(): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/me`);
+  }
+
   updateProfile(data: FormData): Observable<ApiResponse<void>> {
     return this.http.put<ApiResponse<void>>(`${this.apiUrl}/profile/me`, data);
   }

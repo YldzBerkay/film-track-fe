@@ -451,7 +451,18 @@
         "updatePassword": "Update Password",
         "passwordMismatch": "Passwords do not match",
         "accountInfo": "Account Info",
-        "memberSince": "Member Since"
+        "memberSince": "Member Since",
+        "dangerZone": "Danger Zone",
+        "deleteAccount": "Delete Account",
+        "deleteAccountDesc": "Permanently delete your account and all of your content.",
+        "deleteWarning": "This action cannot be undone. This will permanently delete your account, comments, lists, and remove all your data from our servers.",
+        "typeToDelete": "Type \"DELETE\" to confirm",
+        "cancel": "Cancel",
+        "confirmDelete": "Confirm Delete",
+        "allFieldsRequired": "All fields are required",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "passwordUpdated": "Password updated successfully"
     },
     "masterRank": {
         "novice": "Novice",

@@ -451,7 +451,18 @@
         "updatePassword": "Şifreyi Güncelle",
         "passwordMismatch": "Şifreler eşleşmiyor",
         "accountInfo": "Hesap Bilgileri",
-        "memberSince": "Üyelik Tarihi"
+        "memberSince": "Üyelik Tarihi",
+        "dangerZone": "Tehlikeli Bölge",
+        "deleteAccount": "Hesabı Sil",
+        "deleteAccountDesc": "Hesabınızı ve tüm içeriğinizi kalıcı olarak silin.",
+        "deleteWarning": "Bu işlem geri alınamaz. Hesabınız, yorumlarınız, listeleriniz ve tüm verileriniz sunucularımızdan kalıcı olarak silinecektir.",
+        "typeToDelete": "Onaylamak için \"DELETE\" yazın",
+        "cancel": "İptal",
+        "confirmDelete": "Silmeyi Onayla",
+        "allFieldsRequired": "Tüm alanlar zorunludur",
+        "passwordsDoNotMatch": "Şifreler eşleşmiyor",
+        "passwordTooShort": "Şifre en az 6 karakter olmalıdır",
+        "passwordUpdated": "Şifre başarıyla güncellendi"
     },
     "masterRank": {
         "novice": "Acemi İzleyici",

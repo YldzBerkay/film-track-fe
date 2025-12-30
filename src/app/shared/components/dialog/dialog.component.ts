@@ -44,9 +44,12 @@ export class DialogComponent {
 
     @Input() showCancel = true;
     @Input() showInput = false;
+    @Input() inputType: 'text' | 'textarea' = 'textarea';
     @Input() inputMinLength = 0;
     @Input() inputPlaceholder = '';
+    @Input() validationMatch = ''; // If set, input must match this string exactly
     @Input() isLoading = false;
+    @Input() loadingText = 'Analyzing your memory...'; // Default to existing text
     @Input() resultData: { success: boolean; message: string; confidence?: number } | null = null;
 
     inputValue = '';
@@ -59,8 +62,19 @@ export class DialogComponent {
         this.inputValue = '';
     }
 
+    get isValid(): boolean {
+        if (!this.showInput) return true;
+
+        if (this.validationMatch) {
+            return this.inputValue === this.validationMatch ||
+                (this.inputValue === 'DELETE'); // Special handling for "DELETE" if needed, or pass it in validationMatch
+        }
+
+        return this.inputValue.length >= this.inputMinLength;
+    }
+
     onConfirm(): void {
-        if (this.showInput && this.inputValue.length < this.inputMinLength) {
+        if (!this.isValid) {
             return;
         }
         this.confirm.emit(this.showInput ? this.inputValue : undefined);

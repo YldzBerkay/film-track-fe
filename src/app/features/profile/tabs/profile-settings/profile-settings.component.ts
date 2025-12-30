@@ -12,6 +12,7 @@ import { UserService } from '../../../../core/services/user.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { SubscriptionTier } from '../../../../core/models/subscription.types';
+import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 
 interface ImportResult {
     importedCount: number;
@@ -30,7 +31,7 @@ interface PasswordData {
 @Component({
     selector: 'app-profile-settings',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslatePipe],
+    imports: [CommonModule, FormsModule, TranslatePipe, DialogComponent],
     templateUrl: './profile-settings.component.html',
     styleUrl: './profile-settings.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -197,6 +198,33 @@ export class ProfileSettingsComponent {
                     text: err.error?.message || 'Failed to update password'
                 });
                 this.isUpdatingPassword.set(false);
+            }
+        });
+    }
+    // Delete Account State
+    showDeleteModal = signal(false);
+    isDeletingAccount = signal(false);
+
+    openDeleteModal(): void {
+        this.showDeleteModal.set(true);
+    }
+
+    closeDeleteModal(): void {
+        this.showDeleteModal.set(false);
+    }
+
+    onDeleteConfirmed(): void {
+        this.isDeletingAccount.set(true);
+        this.userService.deleteAccount().subscribe({
+            next: () => {
+                this.authService.logout();
+                window.location.href = '/';
+            },
+            error: (err) => {
+                console.error('Delete account failed', err);
+                this.isDeletingAccount.set(false);
+                this.closeDeleteModal();
+                alert('Failed to delete account. Please try again.');
             }
         });
     }
