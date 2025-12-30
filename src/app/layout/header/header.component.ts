@@ -97,6 +97,36 @@ export class HeaderComponent {
         this.closeNotificationMenu();
     }
 
+    onNotificationClick(notification: any): void {
+        this.closeNotificationMenu();
+
+        switch (notification.type) {
+            case 'new_episode':
+                // Navigate to TV show detail
+                if (notification.data?.tmdbId) {
+                    this.router.navigate(['/tv-shows', notification.data.tmdbId]);
+                }
+                break;
+            case 'comment':
+            case 'like':
+            case 'mention':
+                // Navigate to activity detail page
+                if (notification.data?.activityId) {
+                    this.router.navigate(['/activity', notification.data.activityId]);
+                } else {
+                    this.navigateToUser(notification.fromUser?.username);
+                }
+                break;
+            case 'follow':
+            default:
+                // Navigate to user profile
+                if (notification.fromUser?.username) {
+                    this.router.navigate(['/profile', notification.fromUser.username]);
+                }
+                break;
+        }
+    }
+
     toggleLanguage(): void {
         this.languageService.toggleLanguage();
     }

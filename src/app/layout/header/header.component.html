@@ -47,8 +47,7 @@
                         </div>
                         } @else {
                         @for (notification of socketService.notifications(); track notification.id) {
-                        <div class="notification-item"
-                            (click)="notification.type === 'new_episode' ? router.navigate(['/tv-shows', notification.data?.tmdbId]) : navigateToUser(notification.fromUser.username)">
+                        <div class="notification-item" (click)="onNotificationClick(notification)">
                             <div class="notification-icon"
                                 [class.has-poster]="notification.type === 'new_episode' && notification.data?.posterPath">
                                 @switch (notification.type) {

@@ -172,7 +172,8 @@
         "noComments": "No comments yet",
         "noRatings": "No ratings yet",
         "noImports": "No imports yet",
-        "noLikes": "No likes yet. Go show some love to reviews and lists!"
+        "noLikes": "No likes yet. Go show some love to reviews and lists!",
+        "report": "Report User"
     },
     "privacy": {
         "everyone": "Everyone",
