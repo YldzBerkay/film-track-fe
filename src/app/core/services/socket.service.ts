@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 
 export interface Notification {
     id: string;
-    type: 'follow' | 'like' | 'comment' | 'mention';
+    type: 'follow' | 'like' | 'comment' | 'mention' | 'new_episode';
     message: string;
     fromUser: {
         id: string;
@@ -14,6 +14,7 @@ export interface Notification {
     };
     createdAt: string;
     read?: boolean;
+    data?: any;
 }
 
 interface NotificationsResponse {

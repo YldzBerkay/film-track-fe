@@ -47,11 +47,21 @@
                         </div>
                         } @else {
                         @for (notification of socketService.notifications(); track notification.id) {
-                        <div class="notification-item" (click)="navigateToUser(notification.fromUser.username)">
-                            <div class="notification-icon">
+                        <div class="notification-item"
+                            (click)="notification.type === 'new_episode' ? router.navigate(['/tv-shows', notification.data?.tmdbId]) : navigateToUser(notification.fromUser.username)">
+                            <div class="notification-icon"
+                                [class.has-poster]="notification.type === 'new_episode' && notification.data?.posterPath">
                                 @switch (notification.type) {
                                 @case ('follow') {
                                 <span class="material-symbols-outlined">person_add</span>
+                                }
+                                @case ('new_episode') {
+                                @if (notification.data?.posterPath) {
+                                <img [src]="'https://image.tmdb.org/t/p/w92' + notification.data.posterPath"
+                                    alt="Show Poster" class="notification-poster">
+                                } @else {
+                                <span class="material-symbols-outlined">tv</span>
+                                }
                                 }
                                 @default {
                                 <span class="material-symbols-outlined">notifications</span>

@@ -298,6 +298,20 @@
         font-size: 18px;
         color: var(--color-primary);
     }
+
+    &.has-poster {
+        background: transparent;
+        overflow: hidden;
+        border-radius: 4px;
+        width: 36px;
+        height: 54px; // 2:3 aspect ratio roughly
+    }
+
+    .notification-poster {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 }
 
 .notification-content {
