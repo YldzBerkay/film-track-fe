@@ -70,14 +70,15 @@
           </button>
           }
         </div>
-        @if (isOwnProfile() && aiThresholdNotMet() && aiThresholdMeta()) {
-        <!-- Locked State: Not enough rated movies for Mood Analysis (only for own profile) -->
+        @if (aiThresholdNotMet() && aiThresholdMeta()) {
+        <!-- Locked State: Not enough rated movies for Mood Analysis -->
         <div class="ai-locked-state">
           <div class="locked-icon">
             <span class="material-symbols-outlined">lock</span>
           </div>
           <h3 class="locked-title">{{ 'profile.aiLocked' | translate }}</h3>
-          <p class="locked-message">{{ 'profile.aiLockedMessage' | translate }}</p>
+          <p class="locked-message">{{ (isOwnProfile() ? 'profile.aiLockedMessage' : 'profile.aiLockedMessageOther') |
+            translate }}</p>
           <div class="progress-container">
             <div class="progress-bar">
               <div class="progress-fill"
@@ -86,7 +87,8 @@
             <span class="progress-text">{{ aiThresholdMeta()!.currentCount }} / {{ aiThresholdMeta()!.requiredCount
               }}</span>
           </div>
-          <p class="remaining-hint">{{ 'profile.aiLockedRemaining' | translate:{ remaining: aiThresholdMeta()!.remaining
+          <p class="remaining-hint">{{ (isOwnProfile() ? 'profile.aiLockedRemaining' : 'profile.aiLockedRemainingOther')
+            | translate:{ remaining: aiThresholdMeta()!.remaining
             } }}</p>
         </div>
         } @else {
@@ -94,10 +96,11 @@
         @defer (on viewport) {
         <div class="mood-charts-grid">
           <app-mood-chart [moodData]="isOwnProfile() ? moodData() : (profile()?.moodVector ?? null)"
-            [isLoading]="isLoadingMood()"></app-mood-chart>
+            [isLoading]="isLoadingMood()" [isOwnProfile]="isOwnProfile()"></app-mood-chart>
 
           <div class="timeline-container">
-            <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
+            <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"
+              [isOwnProfile]="isOwnProfile()"></app-mood-timeline>
 
             @if (!hasEnoughTimelineData()) {
             <div class="timeline-overlay">
@@ -152,6 +155,7 @@
         </app-carousel>
       </div>
 
+      @if (isOwnProfile()) {
       <!-- Mood Recommendations Section -->
       <div class="badges-section recommendations-section">
         <div class="section-header">
@@ -253,6 +257,7 @@
         </div>
         }
       </div>
+      }
       }
 
       <!-- Director's Cut (Movies) Section -->

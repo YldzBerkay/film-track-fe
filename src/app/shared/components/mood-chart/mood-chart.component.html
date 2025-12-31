@@ -1,5 +1,5 @@
 <div class="mood-chart-container">
-  <h3 class="chart-title">{{ 'mood.cinematicMood' | translate }}</h3>
+  <h3 class="chart-title">{{ (isOwnProfile() ? 'mood.cinematicMood' : 'mood.cinematicMoodOther') | translate }}</h3>
   @if (isLoading()) {
   <div class="chart-loading">
     <div class="loading-spinner"></div>
@@ -13,14 +13,15 @@
       <div class="insufficient-data-content">
         <span class="material-symbols-outlined">psychology_alt</span>
         <p>{{ 'mood.insufficientData' | translate }}</p>
-        <span class="hint">{{ 'mood.insufficientDataHint' | translate }}</span>
+        <span class="hint">{{ (isOwnProfile() ? 'mood.insufficientDataHint' : 'mood.insufficientDataHintOther') |
+          translate }}</span>
       </div>
     </div>
     }
   </div>
   } @else {
   <div class="chart-empty">
-    <p>{{ 'mood.noData' | translate }}</p>
+    <p>{{ (isOwnProfile() ? 'mood.noData' : 'mood.noDataOther') | translate }}</p>
   </div>
   }
 </div>

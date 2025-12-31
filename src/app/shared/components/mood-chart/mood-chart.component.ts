@@ -17,6 +17,7 @@ export class MoodChartComponent {
   moodData = input<MoodVector | null>(null);
   isLoading = input<boolean>(false);
   compareVector = input<MoodVector | null>(null);
+  isOwnProfile = input<boolean>(true);
 
   // Detect if all mood values are at default (50) - indicates insufficient data
   isDefaultMood = computed(() => {

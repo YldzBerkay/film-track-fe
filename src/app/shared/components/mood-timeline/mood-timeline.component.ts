@@ -32,6 +32,7 @@ export interface MoodTimelineEntry {
 export class MoodTimelineComponent {
     timelineData = input<MoodTimelineEntry[]>([]);
     isLoading = input<boolean>(false);
+    isOwnProfile = input<boolean>(true);
 
     chartData = computed(() => {
         const data = this.timelineData();

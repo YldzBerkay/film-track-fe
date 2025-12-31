@@ -1,7 +1,7 @@
 <div class="mood-timeline-container">
     <h3 class="chart-title">
         <span class="material-symbols-outlined">trending_up</span>
-        {{ 'mood.moodJourney' | translate }}
+        {{ (isOwnProfile() ? 'mood.moodJourney' : 'mood.moodJourneyOther') | translate }}
     </h3>
     @if (isLoading()) {
     <div class="chart-loading">
@@ -15,7 +15,7 @@
     } @else {
     <div class="chart-empty">
         <span class="material-symbols-outlined">timeline</span>
-        <p>{{ 'mood.noTimelineData' | translate }}</p>
+        <p>{{ (isOwnProfile() ? 'mood.noTimelineData' : 'mood.noTimelineDataOther') | translate }}</p>
     </div>
     }
 </div>
