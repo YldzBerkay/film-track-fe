@@ -38,6 +38,10 @@
   <div class="content-container">
     <div class="content-section">
       @if (activeTab() === 'profile') {
+
+      <!-- Taste Match Section (Other User's Profile) -->
+
+
       <!-- Mood Charts Section -->
       @if (isOwnProfile()) {
       <div class="mood-section">
@@ -884,77 +888,7 @@
 </div>
 }
 
-<!-- Mood Comparison Dialog -->
-@if (showComparisonDialog()) {
-<div class="dialog-overlay" (click)="closeComparisonDialog()">
-  <div class="comparison-dialog" (click)="$event.stopPropagation()">
-    <div class="dialog-header">
-      <h2><span class="material-symbols-outlined">compare</span> {{ 'profile.moodComparison' | translate }}</h2>
-      <button class="close-btn" (click)="closeComparisonDialog()">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-    <div class="dialog-body">
-      @if (isLoadingComparison()) {
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <p>{{ 'profile.comparingMoods' | translate }}</p>
-      </div>
-      } @else if (moodComparison()) {
-      <div class="comparison-content">
-        <div class="similarity-section">
-          <div class="similarity-circle" [class.high]="moodComparison()!.similarity >= 75">
-            <span class="similarity-value">{{ moodComparison()!.similarity }}%</span>
-            <span class="similarity-label">{{ 'profile.match' | translate }}</span>
-          </div>
-          <p class="similarity-text">
-            @if (moodComparison()!.similarity >= 80) { {{ 'profile.cinematicSoulmates' | translate }} }
-            @else if (moodComparison()!.similarity >= 60) { {{ 'profile.similarVibes' | translate }} }
-            @else if (moodComparison()!.similarity >= 40) { {{ 'profile.someOverlap' | translate }} }
-            @else { {{ 'profile.differentPerspectives' | translate }} }
-          </p>
-        </div>
-        <div class="dimension-comparison">
-          <h3>{{ 'profile.dimensionBreakdown' | translate }}</h3>
-          <div class="dimensions-list">
-            @for (dim of moodComparison()!.dimensionComparison; track dim.dimension) {
-            <div class="dimension-row">
-              <span class="dim-label">{{ getDimensionLabel(dim.dimension) }}</span>
-              <div class="dim-bars">
-                <div class="bar-container you">
-                  <div class="bar" [style.width.%]="dim.user1Value"></div><span class="bar-value">{{ dim.user1Value
-                    }}</span>
-                </div>
-                <div class="bar-container them">
-                  <div class="bar" [style.width.%]="dim.user2Value"></div><span class="bar-value">{{ dim.user2Value
-                    }}</span>
-                </div>
-              </div>
-            </div>
-            }
-          </div>
-          <div class="legend">
-            <span class="legend-item you"><span class="dot"></span> {{ 'profile.you' | translate }}</span>
-            <span class="legend-item them"><span class="dot"></span> {{ profile()?.user?.name ||
-              profile()?.user?.username }}</span>
-          </div>
-        </div>
-        @if (moodComparison()!.commonStrengths.length > 0) {
-        <div class="strengths-section">
-          <h3>{{ 'profile.sharedStrengths' | translate }}</h3>
-          <div class="strength-tags">
-            @for (s of moodComparison()!.commonStrengths; track s) {
-            <span class="strength-tag common">{{ getDimensionLabel(s) }}</span>
-            }
-          </div>
-        </div>
-        }
-      </div>
-      }
-    </div>
-  </div>
-</div>
-}
+
 <app-share-dialog [isOpen]="showShareDialog()" [profile]="profile()" [moodData]="moodData()" [badges]="badges()"
   [close]="closeShareDialog">
 </app-share-dialog>
@@ -981,3 +915,7 @@
   (close)="cancelRating()" (save)="onRateRec($event)">
 </app-rate-dialog>
 }
+
+<app-match-dialog [isOpen]="showMatchDialog() && !!matchResult()" [result]="matchResult()!"
+  (close)="closeMatchDialog()">
+</app-match-dialog>

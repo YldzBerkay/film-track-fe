@@ -173,7 +173,8 @@
         "noRatings": "Henüz puanlama yok",
         "noImports": "Henüz içe aktarım yok",
         "noLikes": "Henüz beğeni yok. İncelemeleri ve listeleri beğenmeye başla!",
-        "report": "Rapor"
+        "report": "Rapor",
+        "tasteMatch": "Zevk Eşleşmesi"
     },
     "privacy": {
         "everyone": "Herkes",
@@ -269,7 +270,10 @@
         "noFriends": "Henüz hiç arkadaşın yok.",
         "noFriendsHint": "İnsanları takip et ve seni geri takip etmelerini sağla!",
         "selectFriendsHint": "Birlikte keyif alacağınız bölümleri bulmak için arkadaş seç:",
-        "findEpisode": "Bölüm Bul ({{count}})"
+        "findEpisode": "Bölüm Bul ({{count}})",
+        "ourTaste": "Zevk Uyumunuz",
+        "calculatingMatch": "Zevk uyumu hesaplanıyor...",
+        "sharedFavorites": "Ortak Favorileriniz"
     },
     "common": {
         "watched": "izledi",

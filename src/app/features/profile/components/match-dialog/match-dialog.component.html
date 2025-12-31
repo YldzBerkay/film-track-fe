@@ -1,0 +1,133 @@
+@if (isOpen()) {
+<div class="dialog-backdrop" [@backdropEnter] (click)="onBackdropClick()"></div>
+
+<div class="dialog-container" [@dialogEnter] role="dialog" aria-modal="true">
+    @if (result(); as res) {
+
+    <!-- Confetti for high matches -->
+    @if (res.matchScore > 75) {
+    <div class="confetti-container">
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+    </div>
+    } @else {
+    <div class="sparkles-container">
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+    </div>
+    }
+
+    <div class="dialog-actions">
+        <button class="action-btn share" (click)="shareMatch()" title="Share Result">
+            <span class="material-symbols-outlined">ios_share</span>
+        </button>
+        <button class="action-btn close" (click)="close.emit()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <!-- MAIN DIALOG CONTENT (visible) -->
+    <div class="dialog-content" #dialogContent>
+        <div class="dialog-header">
+            <div class="score-container">
+                <div class="score-value">{{ res.matchScore }}%</div>
+                <div class="match-label">Match Score</div>
+            </div>
+            <div class="verdict" [class.high]="res.matchScore > 80">
+                {{ res.verdict }}
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <app-mood-chart [moodData]="userVector()" [compareVector]="compareVector()">
+            </app-mood-chart>
+        </div>
+
+        <!-- Insight Sentence -->
+        @if (res.commonStrengths?.length) {
+        <div class="insight-text" [@popIn]>
+            You both bond over
+            <span class="highlight">{{ res.commonStrengths?.[0] }}</span>
+            &amp;
+            <span class="highlight">{{ res.commonStrengths?.[1] || 'great cinema' }}</span>.
+        </div>
+        }
+
+        <!-- Recommendation Card -->
+        @if (res.recommendedMovie; as movie) {
+        <div class="recommendation-card" [@popIn]>
+            <div class="rec-label">Perfect for both</div>
+            <div class="rec-content">
+                <img [src]="'https://image.tmdb.org/t/p/w92' + movie.posterPath" alt="poster" class="rec-poster">
+                <div class="rec-info">
+                    <span class="rec-title">{{ movie.title }}</span>
+                    <span class="rec-cta">Watch together <span
+                            class="material-symbols-outlined">arrow_forward</span></span>
+                </div>
+            </div>
+        </div>
+        }
+
+        <div class="archetypes-footer">
+            <div class="archetype-card user">
+                <div class="label">YOU</div>
+                <div class="icon">{{ res.yourArchetype.emoji }}</div>
+                <div class="name">{{ res.yourArchetype.displayName }}</div>
+            </div>
+
+            <div class="vs-divider">VS</div>
+
+            <div class="archetype-card target">
+                <div class="label">THEM</div>
+                <div class="icon">{{ res.theirArchetype.emoji }}</div>
+                <div class="name">{{ res.theirArchetype.displayName }}</div>
+            </div>
+        </div>
+
+        <div class="branding-footer">
+            <span class="brand-icon">🎬</span>
+            <span class="brand-name">CineTrack</span>
+        </div>
+    </div>
+
+    }
+</div>
+}

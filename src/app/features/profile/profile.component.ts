@@ -31,6 +31,9 @@ import { AppCarouselComponent } from '../../shared/components/app-carousel/app-c
 import { MediaCardComponent } from '../../shared/components/media-card/media-card.component';
 import { ProfileStateService } from '../../core/services/profile-state.service';
 import { ProfileSettingsComponent } from './tabs/profile-settings/profile-settings.component';
+import { TasteMatchComponent } from '../../shared/components/taste-match/taste-match.component';
+import { MatchDialogComponent } from './components/match-dialog/match-dialog.component';
+import { MatchService, TasteMatchResult } from '../../core/services/match.service';
 
 type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'settings';
 
@@ -57,13 +60,16 @@ type TabType = 'profile' | 'watchlist' | 'lists' | 'activities' | 'likes' | 'set
     TabNavigationComponent,
     AppCarouselComponent,
     MediaCardComponent,
-    ProfileSettingsComponent
+    ProfileSettingsComponent,
+    TasteMatchComponent,
+    MatchDialogComponent
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfileComponent implements OnInit, AfterViewInit {
+  // Main profile component logic
   isDev = isDevMode();
   private route = inject(ActivatedRoute);
   router = inject(Router);
@@ -76,6 +82,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   favoritesService = inject(FavoritesService);
   languageService = inject(LanguageService);
   translationService = inject(TranslationService);
+  matchService = inject(MatchService);
   private watchedListService = inject(WatchedListService);
   private watchlistService = inject(WatchlistService);
   private profileState = inject(ProfileStateService);
@@ -209,10 +216,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   canChangeUsername = signal(true);
   canChangeUsernameAt = signal<string | null>(null);
 
-  // Mood Comparison state
-  showComparisonDialog = signal(false);
-  moodComparison = signal<MoodComparison | null>(null);
-  isLoadingComparison = signal(false);
+  // Taste Match Dialog state
+  showMatchDialog = signal(false);
+  matchResult = signal<TasteMatchResult | null>(null);
+  isMatchLoading = signal(false);
 
   // Share Dialog state
   showShareDialog = signal(false);
@@ -1268,30 +1275,37 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     const profileData = this.profile();
     if (!profileData) return;
 
-    this.showComparisonDialog.set(true);
-    this.isLoadingComparison.set(true);
-    this.moodComparison.set(null);
+    this.isMatchLoading.set(true);
+    this.showMatchDialog.set(true);
+    this.matchResult.set(null);
 
-    this.moodService.getMoodComparison(profileData.user.id).subscribe({
+    this.matchService.getTasteMatch(profileData.user.id).subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          this.moodComparison.set(response.data);
+          this.matchResult.set(response.data);
+        } else {
+          this.showMatchDialog.set(false);
         }
-        this.isLoadingComparison.set(false);
+        this.isMatchLoading.set(false);
       },
-      error: () => {
-        this.isLoadingComparison.set(false);
+      error: (err) => {
+        console.error('Failed to get taste match:', err);
+        this.isMatchLoading.set(false);
+        this.showMatchDialog.set(false);
       }
     });
+  }
+
+  closeMatchDialog(): void {
+    this.showMatchDialog.set(false);
+    this.matchResult.set(null);
   }
 
   openReports(): void {
     this.showReportsDialog.set(true);
   }
 
-  closeComparisonDialog(): void {
-    this.showComparisonDialog.set(false);
-  }
+
 
   openShareDialog(): void {
     this.showShareDialog.set(true);

@@ -35,6 +35,7 @@ import { AppCarouselComponent } from '../../../../shared/components/app-carousel
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfileOverviewComponent implements OnInit {
+    // Component logic for profile overview tab
     private profileState = inject(ProfileStateService);
     private moodService = inject(MoodService);
     private recommendationService = inject(RecommendationService);

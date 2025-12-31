@@ -20,6 +20,8 @@ import { CommentListComponent } from '../../shared/components/comments/comment-l
 
 import { CreateListDialogComponent } from '../../shared/components/create-list-dialog/create-list-dialog.component';
 import { ReactionBarComponent } from '../../shared/components/reaction-bar/reaction-bar.component';
+import { TasteMatchComponent } from '../../shared/components/taste-match/taste-match.component';
+import { MatchService, TasteMatchResult } from '../../core/services/match.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,7 +35,8 @@ import { ReactionBarComponent } from '../../shared/components/reaction-bar/react
     DialogComponent,
     TranslatePipe,
     CreateListDialogComponent,
-    ReactionBarComponent
+    ReactionBarComponent,
+    TasteMatchComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -116,6 +119,14 @@ export class DashboardComponent implements OnInit {
   isMoodRecsLoading = signal(false);
   moodRecsMode = signal<'match' | 'shift'>('match');
   includeWatched = signal(false);
+
+  // Taste Match Dialog state
+  private matchService = inject(MatchService);
+  showTasteMatchDialog = signal(false);
+  tasteMatchTargetUser = signal<{ id: string; name: string } | null>(null);
+  tasteMatchResult = signal<TasteMatchResult | null>(null);
+  isTasteMatchLoading = signal(false);
+  tasteMatchError = signal<string | null>(null);
 
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
@@ -573,5 +584,39 @@ export class DashboardComponent implements OnInit {
         });
       }
     });
+  }
+
+  // Taste Match Dialog Methods
+  openTasteMatchDialog(userId: string, userName: string): void {
+    // Don't open for own profile
+    if (userId === this.user()?.id) return;
+
+    this.tasteMatchTargetUser.set({ id: userId, name: userName });
+    this.showTasteMatchDialog.set(true);
+    this.tasteMatchResult.set(null);
+    this.tasteMatchError.set(null);
+    this.isTasteMatchLoading.set(true);
+
+    this.matchService.getTasteMatch(userId).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.tasteMatchResult.set(response.data);
+        } else {
+          this.tasteMatchError.set('Failed to calculate taste match');
+        }
+        this.isTasteMatchLoading.set(false);
+      },
+      error: (err) => {
+        this.tasteMatchError.set(err.error?.message || 'Failed to calculate taste match');
+        this.isTasteMatchLoading.set(false);
+      }
+    });
+  }
+
+  closeTasteMatchDialog(): void {
+    this.showTasteMatchDialog.set(false);
+    this.tasteMatchTargetUser.set(null);
+    this.tasteMatchResult.set(null);
+    this.tasteMatchError.set(null);
   }
 }

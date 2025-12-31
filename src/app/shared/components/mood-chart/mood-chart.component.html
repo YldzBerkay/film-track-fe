@@ -7,7 +7,7 @@
   </div>
   } @else if (moodData()) {
   <div class="chart-wrapper">
-    <canvas baseChart [data]="chartData()" [options]="chartOptions" [type]="chartType"></canvas>
+    <canvas baseChart [data]="chartData()" [options]="chartOptions()" [type]="chartType"></canvas>
     @if (isDefaultMood()) {
     <div class="insufficient-data-overlay">
       <div class="insufficient-data-content">

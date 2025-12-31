@@ -128,13 +128,13 @@
                       • {{ 'masterRank.' + activity.userId.mastery?.title | translate }}
                     </span>
                     @if (activity.type === 'movie_watched') {
-                    watched
+                    {{ 'activity.watched' | translate }}
                     } @else if (activity.type === 'tv_episode_watched') {
-                    watched episode
+                    {{ 'activity.watchedEpisode' | translate }}
                     } @else if (activity.type === 'tv_show_watched') {
-                    watched
+                    {{ 'activity.watched' | translate }}
                     } @else if (activity.type === 'bulk_import') {
-                    imported watch history
+                    {{ 'activity.importedHistory' | translate }}
                     }
                   </p>
                   <div class="activity-time-row">
@@ -220,10 +220,18 @@
               </button>
               <button class="action-btn bookmark-btn" [class.active]="isActivityBookmarked(activity._id)"
                 (click)="toggleBookmark(activity)"
-                [title]="isActivityBookmarked(activity._id) ? 'Remove bookmark' : 'Bookmark'">
+                [title]="isActivityBookmarked(activity._id) ? ('bookmarks.remove' | translate) : ('bookmarks.subtitle' | translate)">
                 <span class="material-symbols-outlined">{{ isActivityBookmarked(activity._id) ? 'bookmark' :
                   'bookmark_border' }}</span>
               </button>
+              <!-- Taste Match Button (only for other users) -->
+              @if (activity.userId._id !== user()?.id) {
+              <button class="action-btn taste-match-btn"
+                (click)="openTasteMatchDialog(activity.userId._id, activity.userId.name || activity.userId.username)"
+                [title]="'dashboard.ourTaste' | translate">
+                <span class="material-symbols-outlined">diversity_1</span>
+              </button>
+              }
             </div>
 
             <!-- Comments Section -->
@@ -510,3 +518,67 @@
 <app-create-list-dialog [isOpen]="showCreateListDialog()" [isLoading]="isCreatingList()"
   (close)="closeCreateListDialog()" (create)="handleCreateList($event)">
 </app-create-list-dialog>
+
+<!-- Taste Match Dialog -->
+@if (showTasteMatchDialog()) {
+<div class="taste-match-dialog-backdrop" (click)="closeTasteMatchDialog()">
+  <div class="taste-match-dialog" (click)="$event.stopPropagation()">
+    <div class="taste-match-dialog-header">
+      <h3>{{ 'dashboard.ourTaste' | translate }}</h3>
+      <span class="target-name" *ngIf="tasteMatchTargetUser()">{{ tasteMatchTargetUser()!.name }}</span>
+      <button class="close-btn" (click)="closeTasteMatchDialog()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="taste-match-dialog-body">
+      @if (isTasteMatchLoading()) {
+      <div class="taste-match-loading">
+        <div class="pulse-ring"></div>
+        <span>{{ 'dashboard.calculatingMatch' | translate }}</span>
+      </div>
+      } @else if (tasteMatchError()) {
+      <div class="taste-match-error">
+        <span class="material-symbols-outlined">warning</span>
+        <span>{{ tasteMatchError() }}</span>
+      </div>
+      } @else if (tasteMatchResult(); as result) {
+      <div class="taste-match-result">
+        <div class="score-circle"
+          [style.--score-color]="result.matchScore >= 70 ? '#10b981' : result.matchScore >= 50 ? '#f59e0b' : '#ef4444'">
+          <span class="score-value">{{ result.matchScore }}</span>
+          <span class="score-percent">%</span>
+        </div>
+        <div class="verdict" [class.soulmates]="result.matchScore >= 90"
+          [class.great]="result.matchScore >= 70 && result.matchScore < 90">
+          {{ result.verdict }}
+        </div>
+
+        <div class="archetypes">
+          <div class="archetype you">
+            <span class="emoji">{{ result.yourArchetype.emoji }}</span>
+            <span class="label">{{ 'profile.you' | translate }}</span>
+            <span class="name">{{ result.yourArchetype.displayName }}</span>
+          </div>
+          <div class="archetype them">
+            <span class="emoji">{{ result.theirArchetype.emoji }}</span>
+            <span class="label">{{ tasteMatchTargetUser()!.name }}</span>
+            <span class="name">{{ result.theirArchetype.displayName }}</span>
+          </div>
+        </div>
+
+        @if (result.sharedFavorites.length > 0) {
+        <div class="shared-favorites">
+          <h4>{{ 'dashboard.sharedFavorites' | translate }}</h4>
+          <div class="favorites-chips">
+            @for (movie of result.sharedFavorites; track movie) {
+            <span class="chip">{{ movie }}</span>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}

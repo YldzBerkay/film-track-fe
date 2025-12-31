@@ -1,0 +1,82 @@
+<div class="taste-match-container" *ngIf="!isLoading() && result()">
+    <div class="match-card" @fadeIn>
+
+        <!-- Score Circle -->
+        <div class="score-section" @scoreReveal>
+            <div class="score-circle" [@pulse]="pulseState()"
+                [style.--score-color]="getScoreColor(result()!.matchScore)">
+                <span class="score-value">{{ result()!.matchScore }}</span>
+                <span class="score-percent">%</span>
+            </div>
+            <div class="verdict" [class]="getVerdictClass(result()!.verdict)">
+                {{ result()!.verdict }}
+            </div>
+        </div>
+
+        <!-- Archetypes -->
+        <div class="archetypes-section">
+            <div class="archetype you">
+                <span class="emoji">{{ result()!.yourArchetype.emoji }}</span>
+                <span class="label">You</span>
+                <span class="name">{{ result()!.yourArchetype.displayName }}</span>
+            </div>
+
+            <div class="vs-divider">
+                <span class="heart">💫</span>
+            </div>
+
+            <div class="archetype them">
+                <span class="emoji">{{ result()!.theirArchetype.emoji }}</span>
+                <span class="label">{{ targetUsername || 'Them' }}</span>
+                <span class="name">{{ result()!.theirArchetype.displayName }}</span>
+            </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="breakdown-section">
+            <div class="breakdown-item">
+                <span class="breakdown-label">Mood Match</span>
+                <div class="breakdown-bar">
+                    <div class="fill" [style.width.%]="result()!.breakdown.moodSimilarity"></div>
+                </div>
+                <span class="breakdown-value">{{ result()!.breakdown.moodSimilarity }}%</span>
+            </div>
+
+            <div class="breakdown-item" *ngIf="result()!.breakdown.ratingAgreement !== null">
+                <span class="breakdown-label">Rating Agreement</span>
+                <div class="breakdown-bar">
+                    <div class="fill" [style.width.%]="result()!.breakdown.ratingAgreement"></div>
+                </div>
+                <span class="breakdown-value">{{ result()!.breakdown.ratingAgreement }}%</span>
+            </div>
+
+            <div class="shared-count" *ngIf="result()!.breakdown.sharedMoviesCount > 0">
+                <span class="icon">🎬</span>
+                <span>{{ result()!.breakdown.sharedMoviesCount }} movies in common</span>
+            </div>
+        </div>
+
+        <!-- Shared Favorites -->
+        <div class="favorites-section" *ngIf="result()!.sharedFavorites.length > 0">
+            <h4>Favorites You Both Love</h4>
+            <div class="favorites-list">
+                <span class="favorite-chip" *ngFor="let movie of result()!.sharedFavorites">
+                    {{ movie }}
+                </span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-state" *ngIf="isLoading()">
+    <div class="pulse-ring"></div>
+    <span>Calculating taste match...</span>
+</div>
+
+<!-- Error State -->
+<div class="error-state" *ngIf="error()">
+    <span class="error-icon">⚠️</span>
+    <span>{{ error() }}</span>
+</div>

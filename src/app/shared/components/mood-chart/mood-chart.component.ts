@@ -16,6 +16,7 @@ import { TranslatePipe } from '../../../core/i18n';
 export class MoodChartComponent {
   moodData = input<MoodVector | null>(null);
   isLoading = input<boolean>(false);
+  compareVector = input<MoodVector | null>(null);
 
   // Detect if all mood values are at default (50) - indicates insufficient data
   isDefaultMood = computed(() => {
@@ -33,6 +34,7 @@ export class MoodChartComponent {
 
   chartData = computed(() => {
     const data = this.moodData();
+    const compare = this.compareVector();
     const labels = [
       'Adrenaline', 'Joy', 'Romance', 'Wonder', 'Inspiration',
       'Intellect', 'Nostalgia', 'Melancholy', 'Darkness', 'Tension'
@@ -55,42 +57,82 @@ export class MoodChartComponent {
       };
     }
 
+    const datasets: any[] = [
+      {
+        data: [
+          data.adrenaline,
+          data.joy,
+          data.romance || 0,
+          data.wonder || 0,
+          data.inspiration || 0,
+          data.intellect,
+          data.nostalgia || 0,
+          data.melancholy,
+          data.darkness || 0,
+          data.tension
+        ],
+        borderColor: '#00E054',
+        backgroundColor: 'rgba(0, 224, 84, 0.2)',
+        pointBackgroundColor: '#F1F1F1',
+        pointBorderColor: '#00E054',
+        pointHoverBackgroundColor: '#00E054',
+        pointHoverBorderColor: '#F1F1F1',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        order: 2,
+        label: 'You'
+      }
+    ];
+
+    if (compare) {
+      datasets.push({
+        data: [
+          compare.adrenaline,
+          compare.joy,
+          compare.romance || 0,
+          compare.wonder || 0,
+          compare.inspiration || 0,
+          compare.intellect,
+          compare.nostalgia || 0,
+          compare.melancholy,
+          compare.darkness || 0,
+          compare.tension
+        ],
+        borderColor: '#8b5cf6', // Violet color for overlay
+        backgroundColor: 'rgba(139, 92, 246, 0.05)', // Very light fill
+        borderDash: [5, 5],
+        pointBackgroundColor: '#F1F1F1',
+        pointBorderColor: '#8b5cf6',
+        pointHoverBackgroundColor: '#8b5cf6',
+        pointHoverBorderColor: '#F1F1F1',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        fill: true,
+        order: 1,
+        label: 'Match'
+      });
+    }
+
     return {
       labels,
-      datasets: [
-        {
-          data: [
-            data.adrenaline,
-            data.joy,
-            data.romance || 0,
-            data.wonder || 0,
-            data.inspiration || 0,
-            data.intellect,
-            data.nostalgia || 0,
-            data.melancholy,
-            data.darkness || 0,
-            data.tension
-          ],
-          borderColor: '#00E054',
-          backgroundColor: 'rgba(0, 224, 84, 0.2)',
-          pointBackgroundColor: '#F1F1F1',
-          pointBorderColor: '#00E054',
-          pointHoverBackgroundColor: '#00E054',
-          pointHoverBorderColor: '#F1F1F1',
-          borderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6
-        }
-      ]
+      datasets
     };
   });
 
-  chartOptions: ChartConfiguration['options'] = {
+  chartOptions = computed<ChartConfiguration['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
+        display: !!this.compareVector(), // Show legend only if comparing
+        labels: {
+          color: '#9ca3af',
+          font: {
+            size: 11
+          }
+        }
       },
       tooltip: {
         backgroundColor: 'rgba(20, 24, 28, 0.9)',
@@ -101,7 +143,7 @@ export class MoodChartComponent {
         padding: 12,
         callbacks: {
           label: (context) => {
-            return `${context.label}: ${context.parsed.r}%`;
+            return `${context.dataset.label || context.label}: ${context.parsed.r}%`;
           }
         }
       }
@@ -115,9 +157,10 @@ export class MoodChartComponent {
           stepSize: 20,
           color: '#9ca3af',
           font: {
-            size: 10 // Reduced tick size
+            size: 10
           },
-          backdropColor: 'transparent'
+          backdropColor: 'transparent',
+          display: !this.compareVector() // Hide ticks comparison mode for cleaner look
         },
         grid: {
           color: 'rgba(255, 255, 255, 0.1)'
@@ -126,7 +169,7 @@ export class MoodChartComponent {
           color: '#F1F1F1',
           font: (context) => {
             const width = context.chart.width;
-            const size = width < 400 ? 10 : 14; // Dynamic font size based on width
+            const size = width < 400 ? 10 : 14;
             return {
               size: size,
               weight: 'bold'
@@ -135,7 +178,7 @@ export class MoodChartComponent {
         }
       }
     }
-  };
+  }));
 
   chartType: ChartType = 'radar';
 }

@@ -173,7 +173,8 @@
         "noRatings": "No ratings yet",
         "noImports": "No imports yet",
         "noLikes": "No likes yet. Go show some love to reviews and lists!",
-        "report": "Report"
+        "report": "Report",
+        "tasteMatch": "Taste Match"
     },
     "privacy": {
         "everyone": "Everyone",
@@ -269,7 +270,10 @@
         "noFriends": "You don't have any friends yet.",
         "noFriendsHint": "Follow people and have them follow you back!",
         "selectFriendsHint": "Select friends to find episodes you'll all enjoy:",
-        "findEpisode": "Find Episode ({{count}})"
+        "findEpisode": "Find Episode ({{count}})",
+        "ourTaste": "Our Taste",
+        "calculatingMatch": "Calculating taste match...",
+        "sharedFavorites": "Favorites You Both Love"
     },
     "common": {
         "watched": "watched",
