@@ -30,6 +30,8 @@ export interface Comment {
     dislikes: string[];
     likesCount: number;
     dislikesCount: number;
+    isDeleted?: boolean;
+    deletedAt?: string;
     createdAt: string;
     updatedAt: string;
 }

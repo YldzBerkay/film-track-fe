@@ -270,3 +270,37 @@
     z-index: 10;
     border-radius: 12px;
 }
+
+// Deleted Comment Styles
+.comment-item.is-deleted {
+    opacity: 0.6;
+}
+
+.deleted-comment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--color-border);
+    border-radius: 8px;
+    width: 100%;
+
+    .deleted-icon {
+        font-size: 14px;
+        opacity: 0.6;
+    }
+
+    .deleted-text {
+        font-size: 13px;
+        font-style: italic;
+        color: var(--color-text-muted);
+    }
+}
+
+.comment-text {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    word-break: break-word;
+}

@@ -15,7 +15,8 @@
     <!-- Comments List -->
     <div class="comments-list">
         @for (comment of comments(); track comment._id) {
-        <div class="comment-item" [attr.id]="'comment-' + comment._id" [class.is-reply]="comment.level > 0">
+        <div class="comment-item" [attr.id]="'comment-' + comment._id" [class.is-reply]="comment.level > 0"
+            [class.is-deleted]="comment.isDeleted">
 
             <!-- Indentation Spacer (if level 1) -->
             @if (comment.level > 0) {
@@ -23,6 +24,14 @@
             }
 
             <div class="comment-content-wrapper">
+                <!-- DELETED COMMENT -->
+                @if (comment.isDeleted) {
+                <div class="deleted-comment">
+                    <span class="deleted-icon">🗑️</span>
+                    <span class="deleted-text">Comment deleted by user</span>
+                </div>
+                } @else {
+                <!-- NORMAL COMMENT -->
                 <div class="comment-avatar"
                     [style.background-image]="'url(' + (comment.userId.avatar || 'assets/default-avatar.png') + ')'">
                 </div>
@@ -79,6 +88,7 @@
                     </div>
                     }
                 </div>
+                }
             </div>
         </div>
         }
