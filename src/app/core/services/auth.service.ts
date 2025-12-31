@@ -73,6 +73,12 @@ export interface User {
     darkness: number;
     inspiration: number;
   };
+  privacySettings?: {
+    mood: 'public' | 'friends' | 'private';
+    library: 'public' | 'friends' | 'private';
+    activity: 'public' | 'friends' | 'private';
+    stats: 'public' | 'friends' | 'private';
+  };
 }
 
 @Injectable({

@@ -1,5 +1,81 @@
 @if (isOwnProfile()) {
 <div class="settings-container">
+    <!-- Privacy Settings Section -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">visibility</span>
+            <h3>{{ 'settings.privacyTitle' | translate }}</h3>
+        </div>
+
+        <div class="privacy-form">
+            <div class="form-row">
+                <!-- Mood Privacy -->
+                <div class="form-group">
+                    <label for="moodPrivacy">{{ 'settings.moodPrivacy' | translate }}</label>
+                    <select id="moodPrivacy" [ngModel]="privacySettings().mood"
+                        (ngModelChange)="updatePrivacySetting('mood', $event)">
+                        <option value="public">{{ 'privacy.everyone' | translate }}</option>
+                        <option value="friends">{{ 'privacy.friends' | translate }}</option>
+                        <option value="private">{{ 'privacy.nobody' | translate }}</option>
+                    </select>
+                </div>
+
+                <!-- Library Privacy -->
+                <div class="form-group">
+                    <label for="libraryPrivacy">{{ 'settings.libraryPrivacy' | translate }}</label>
+                    <select id="libraryPrivacy" [ngModel]="privacySettings().library"
+                        (ngModelChange)="updatePrivacySetting('library', $event)">
+                        <option value="public">{{ 'privacy.everyone' | translate }}</option>
+                        <option value="friends">{{ 'privacy.friends' | translate }}</option>
+                        <option value="private">{{ 'privacy.nobody' | translate }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <!-- Activity Privacy -->
+                <div class="form-group">
+                    <label for="activityPrivacy">{{ 'settings.activityPrivacy' | translate }}</label>
+                    <select id="activityPrivacy" [ngModel]="privacySettings().activity"
+                        (ngModelChange)="updatePrivacySetting('activity', $event)">
+                        <option value="public">{{ 'privacy.everyone' | translate }}</option>
+                        <option value="friends">{{ 'privacy.friends' | translate }}</option>
+                        <option value="private">{{ 'privacy.nobody' | translate }}</option>
+                    </select>
+                </div>
+
+                <!-- Stats Privacy -->
+                <div class="form-group">
+                    <label for="statsPrivacy">{{ 'settings.statsPrivacy' | translate }}</label>
+                    <select id="statsPrivacy" [ngModel]="privacySettings().stats"
+                        (ngModelChange)="updatePrivacySetting('stats', $event)">
+                        <option value="public">{{ 'privacy.everyone' | translate }}</option>
+                        <option value="friends">{{ 'privacy.friends' | translate }}</option>
+                        <option value="private">{{ 'privacy.nobody' | translate }}</option>
+                    </select>
+                </div>
+            </div>
+
+            @if (privacyMessage(); as msg) {
+            <div class="message" [class.success]="msg.type === 'success'" [class.error]="msg.type === 'error'">
+                <span class="material-symbols-outlined">{{ msg.type === 'success' ? 'check_circle' : 'error' }}</span>
+                <span>{{ msg.text }}</span>
+            </div>
+            }
+
+            <div class="form-actions">
+                <button class="save-btn" (click)="savePrivacySettings()" [disabled]="isUpdatingPrivacy()">
+                    @if (isUpdatingPrivacy()) {
+                    <div class="spinner-small"></div>
+                    } @else {
+                    <span class="material-symbols-outlined">save</span>
+                    }
+                    {{ 'settings.save' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Subscription & Billing Section -->
     <div class="settings-card subscription-card">
         <div class="settings-card-header">

@@ -25,13 +25,21 @@
     (onCompareMood)="openMoodComparison()" (onBannerChange)="handleBannerUpload($event)" />
 
   <!-- Stats Component -->
+  <!-- Stats Component -->
+  @if (canViewStats()) {
   <app-profile-stats [stats]="profileData.user.stats" [reviewCount]="profileData.reviewCount"
     [followersCount]="profileData.user.followersCount" [followingCount]="profileData.user.followingCount"
     (onFollowersClick)="openFollowers()" (onFollowingClick)="openFollowing()" />
+  } @else {
+  <div class="stats-private-placeholder">
+    <span class="material-symbols-outlined">lock</span>
+    <span>{{ 'profile.privateStats' | translate }}</span>
+  </div>
+  }
 
   <!-- Tab Navigation Component -->
   <div class="tabs-section">
-    <app-tab-navigation [tabs]="profileTabs" [activeTab]="activeTab()" (tabChanged)="onTabChange($event)" />
+    <app-tab-navigation [tabs]="profileTabs()" [activeTab]="activeTab()" (tabChanged)="onTabChange($event)" />
   </div>
 
   <!-- Content Section -->
@@ -43,14 +51,14 @@
 
 
       <!-- Mood Charts Section -->
-      @if (isOwnProfile()) {
+      @if (canViewMood()) {
       <div class="mood-section">
         <div class="section-header mood-section-header">
           <h2 class="section-title">
             <span class="material-symbols-outlined section-icon">psychology</span>
             {{ 'profile.cinematicMood' | translate }}
           </h2>
-          @if (isDev) {
+          @if (isDev && isOwnProfile()) {
           <button class="refresh-all-btn" (click)="refreshMood()" [disabled]="isRefreshingAllMood()">
             @if (isRefreshingAllMood()) {
             <span class="material-symbols-outlined spinning">sync</span>
@@ -62,8 +70,8 @@
           </button>
           }
         </div>
-        @if (aiThresholdNotMet() && aiThresholdMeta()) {
-        <!-- Locked State: Not enough rated movies for Mood Analysis -->
+        @if (isOwnProfile() && aiThresholdNotMet() && aiThresholdMeta()) {
+        <!-- Locked State: Not enough rated movies for Mood Analysis (only for own profile) -->
         <div class="ai-locked-state">
           <div class="locked-icon">
             <span class="material-symbols-outlined">lock</span>
@@ -85,8 +93,10 @@
         <!-- Mood Charts with @defer for performance -->
         @defer (on viewport) {
         <div class="mood-charts-grid">
-          <app-mood-chart [moodData]="moodData()" [isLoading]="isLoadingMood()"></app-mood-chart>
+          <app-mood-chart [moodData]="isOwnProfile() ? moodData() : (profile()?.moodVector ?? null)"
+            [isLoading]="isLoadingMood()"></app-mood-chart>
 
+          @if (isOwnProfile()) {
           <div class="timeline-container">
             <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
 
@@ -100,6 +110,7 @@
             </div>
             }
           </div>
+          }
         </div>
         } @placeholder {
         <div class="mood-charts-loading">
@@ -108,6 +119,15 @@
         }
         }
       </div>
+      } @else {
+      <!-- Private Mood Section -->
+      <div class="mood-section private-state">
+        <div class="private-content">
+          <span class="material-symbols-outlined private-icon">lock</span>
+          <p>{{ 'profile.privateMood' | translate }}</p>
+        </div>
+      </div>
+      }
 
       <!-- Badges Section -->
       <div class="badges-section">
@@ -311,11 +331,11 @@
           }
         </div>
       </div>
-      }
 
       } @else if (activeTab() === 'lists') {
       <!-- Lists Tab Content (kept as-is for now) -->
       <div class="lists-tab-content">
+        @if (canViewLibrary()) {
         <!-- View Toggle -->
         <div class="lists-view-toggle">
           <button class="view-toggle-btn" [class.active]="listsViewMode() === 'slider'"
@@ -411,7 +431,7 @@
           } @else {
           <div class="list-empty">
             <span class="material-symbols-outlined">movie</span>
-            <p>{{ 'watched.empty' | translate }}</p>
+            <p>{{ (isOwnProfile() ? 'watched.empty' : 'profile.noListsOther') | translate }}</p>
           </div>
           }
         </div>
@@ -491,7 +511,7 @@
           } @else {
           <div class="list-empty">
             <span class="material-symbols-outlined">bookmark_border</span>
-            <p>{{ 'watchlist.empty' | translate }}</p>
+            <p>{{ (isOwnProfile() ? 'watchlist.empty' : 'profile.noListsOther') | translate }}</p>
           </div>
           }
         </div>
@@ -622,9 +642,17 @@
           }
         </div>
         }
+        } @else {
+        <!-- Private Library Section -->
+        <div class="list-empty privacy-state">
+          <span class="material-symbols-outlined">lock</span>
+          <p>{{ 'profile.privateLibrary' | translate }}</p>
+        </div>
+        }
       </div>
       } @else if (activeTab() === 'activities') {
       <div class="activities-tab-content">
+        @if (canViewActivity()) {
         <!-- Filter Bar -->
         <div class="activity-filters">
           <div class="chip-list">
@@ -682,6 +710,9 @@
             }
           </span>
           <p>
+            @if (!isOwnProfile()) {
+            {{ 'profile.noActivitiesOther' | translate }}
+            } @else {
             @switch (activityFilter()) {
             @case ('REVIEWS') { {{ 'profile.noReviews' | translate }} }
             @case ('COMMENTS') { {{ 'profile.noComments' | translate }} }
@@ -689,7 +720,15 @@
             @case ('IMPORTS') { {{ 'profile.noImports' | translate }} }
             @default { {{ 'profile.noActivities' | translate }} }
             }
+            }
           </p>
+        </div>
+        }
+        } @else {
+        <!-- Private Activities Section -->
+        <div class="activities-empty privacy-state">
+          <span class="material-symbols-outlined">lock</span>
+          <p>{{ 'profile.privateActivity' | translate }}</p>
         </div>
         }
       </div>
@@ -721,7 +760,7 @@
         } @else {
         <div class="activities-empty">
           <span class="material-symbols-outlined">favorite_border</span>
-          <p>{{ 'profile.noLikes' | translate }}</p>
+          <p>{{ (isOwnProfile() ? 'profile.noLikes' : 'profile.noLikesOther') | translate }}</p>
         </div>
         }
       </div>

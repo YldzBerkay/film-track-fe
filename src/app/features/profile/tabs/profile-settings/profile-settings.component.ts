@@ -56,6 +56,17 @@ export class ProfileSettingsComponent {
     isUpdatingPassword = signal(false);
     passwordMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
+
+    // Privacy state
+    privacySettings = signal({
+        mood: 'public',
+        library: 'public',
+        activity: 'public',
+        stats: 'public'
+    });
+    isUpdatingPrivacy = signal(false);
+    privacyMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
+
     currentYear = new Date().getFullYear();
 
     // Subscription state
@@ -67,6 +78,61 @@ export class ProfileSettingsComponent {
     private subscriptionService = inject(SubscriptionService);
 
     // ... existing methods ...
+
+    // ... existing methods ...
+
+    constructor() {
+        // Initialize privacy settings from user
+        const user = this.authService.user();
+        if (user?.privacySettings) {
+            this.privacySettings.set({
+                mood: user.privacySettings.mood || 'public',
+                library: user.privacySettings.library || 'public',
+                activity: user.privacySettings.activity || 'public',
+                stats: user.privacySettings.stats || 'public'
+            });
+        }
+    }
+
+    updatePrivacySetting(section: 'mood' | 'library' | 'activity' | 'stats', value: string): void {
+        this.privacySettings.update(s => ({ ...s, [section]: value }));
+    }
+
+    savePrivacySettings(): void {
+        this.isUpdatingPrivacy.set(true);
+        this.privacyMessage.set(null);
+
+        const settings = this.privacySettings();
+
+        // Map string values to allowed union types
+        const payload = {
+            mood: settings.mood as 'public' | 'friends' | 'private',
+            library: settings.library as 'public' | 'friends' | 'private',
+            activity: settings.activity as 'public' | 'friends' | 'private',
+            stats: settings.stats as 'public' | 'friends' | 'private'
+        };
+
+        this.userService.updatePrivacySettings(payload).subscribe({
+            next: (response) => {
+                if (response.success && response.data?.privacySettings) {
+                    this.privacyMessage.set({
+                        type: 'success',
+                        text: this.translationService.t('settings.privacyUpdated')
+                    });
+                    // Update auth user state
+                    this.authService.updateUser({ privacySettings: response.data.privacySettings });
+                }
+                this.isUpdatingPrivacy.set(false);
+            },
+            error: (err) => {
+                this.privacyMessage.set({
+                    type: 'error',
+                    text: err.error?.message || this.translationService.t('settings.privacyUpdateFailed')
+                });
+                this.isUpdatingPrivacy.set(false);
+            }
+        });
+    }
 
     async redeemCode(): Promise<void> {
         const code = this.promoCode().trim();

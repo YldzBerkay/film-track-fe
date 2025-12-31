@@ -12,7 +12,7 @@ export interface ProfileUser {
     id: string;
     username: string;
     name?: string | null;
-    email: string;
+    email?: string;  // Optional - only present on own profile
     avatar?: string | null;
     banner?: string | null;
     followersCount: number;

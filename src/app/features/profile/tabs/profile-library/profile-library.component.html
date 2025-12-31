@@ -1,4 +1,10 @@
 <div class="library-container">
+    @if (!canView()) {
+    <div class="list-empty privacy-state">
+        <span class="material-symbols-outlined">lock</span>
+        <p>{{ 'profile.privateLibrary' | translate }}</p>
+    </div>
+    } @else {
     <!-- View Toggle -->
     <div class="view-toggle">
         <button class="toggle-btn" [class.active]="viewMode() === 'slider'" (click)="viewMode.set('slider')">
@@ -85,7 +91,7 @@
         } @else {
         <div class="list-empty">
             <span class="material-symbols-outlined">movie</span>
-            <p>{{ 'watched.empty' | translate }}</p>
+            <p>{{ (isOwnProfile() ? 'watched.empty' : 'profile.noListsOther') | translate }}</p>
         </div>
         }
     </div>
@@ -164,7 +170,7 @@
         } @else {
         <div class="list-empty">
             <span class="material-symbols-outlined">bookmark_border</span>
-            <p>{{ 'watchlist.empty' | translate }}</p>
+            <p>{{ (isOwnProfile() ? 'watchlist.empty' : 'profile.noListsOther') | translate }}</p>
         </div>
         }
     </div>
@@ -285,5 +291,6 @@
         </a>
         }
     </div>
+    }
     }
 </div>

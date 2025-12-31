@@ -364,6 +364,64 @@
     gap: 16px;
 }
 
+// Privacy Form
+.privacy-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (min-width: 640px) {
+        flex-direction: row;
+
+        .form-group {
+            flex: 1;
+        }
+    }
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #00e054, #00c94b);
+    border: none;
+    border-radius: 8px;
+    color: #0a0d10;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 224, 84, 0.3);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .material-symbols-outlined {
+        font-size: 20px;
+    }
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -374,7 +432,8 @@
         color: rgba(255, 255, 255, 0.7);
     }
 
-    input {
+    input,
+    select {
         padding: 12px 16px;
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -382,6 +441,12 @@
         color: #f1f1f1;
         font-size: 0.95rem;
         transition: all 0.2s ease;
+        width: 100%;
+        appearance: none; // Remove default arrow
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%23ffffff80'%3E%3Cpath d='M480-360 280-560h400L480-360Z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 40px;
 
         &::placeholder {
             color: rgba(255, 255, 255, 0.3);
@@ -390,8 +455,19 @@
         &:focus {
             outline: none;
             border-color: rgba(0, 224, 84, 0.5);
-            background: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.05);
         }
+
+        option {
+            background-color: #1a1f26; // match card bg
+            color: #f1f1f1;
+        }
+    }
+
+    // Reset background image for regular inputs that aren't selects
+    input {
+        background-image: none;
+        padding-right: 16px;
     }
 }
 

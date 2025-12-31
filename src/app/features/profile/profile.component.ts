@@ -93,13 +93,20 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   activeTab = signal<TabType>('profile');
 
   // Tab configuration for TabNavigationComponent
-  readonly profileTabs: TabItem[] = [
-    { key: 'profile', label: 'profile.profile' },
-    { key: 'lists', label: 'profile.listsTab' },
-    { key: 'activities', label: 'profile.activities' },
-    { key: 'likes', label: 'profile.likesTab' },
-    { key: 'settings', label: 'profile.settingsTab' }
-  ];
+  readonly profileTabs = computed<TabItem[]>(() => {
+    const tabs: TabItem[] = [
+      { key: 'profile', label: 'profile.profile' },
+      { key: 'lists', label: 'profile.listsTab' },
+      { key: 'activities', label: 'profile.activities' },
+      { key: 'likes', label: 'profile.likesTab' },
+    ];
+
+    if (this.isOwnProfile()) {
+      tabs.push({ key: 'settings', label: 'profile.settingsTab' });
+    }
+
+    return tabs;
+  });
 
   // TrackBy function for badges carousel
   trackByBadgeId = (index: number, badge: Badge): string => badge.id;
@@ -419,6 +426,45 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     }
     const currentUser = this.authService.user();
     return currentUser?.username === this.username();
+  });
+
+  /** Can the current viewer see the mood section? */
+  readonly canViewMood = computed(() => {
+    // Own profile - always visible
+    if (this.isOwnProfile()) return true;
+
+    const profileData = this.profile();
+    if (!profileData) return false;
+
+    const privacy = profileData.privacySettings?.mood ?? 'public';
+
+    if (privacy === 'public') return true;
+    if (privacy === 'friends' && profileData.isFriend) return true;
+    return false;
+  });
+
+  readonly canViewStats = computed(() => {
+    if (this.isOwnProfile()) return true;
+    const profile = this.profile();
+    if (!profile) return false;
+    const privacy = profile.privacySettings?.stats ?? 'public';
+    return privacy === 'public' || (privacy === 'friends' && !!profile.isFriend);
+  });
+
+  readonly canViewLibrary = computed(() => {
+    if (this.isOwnProfile()) return true;
+    const profile = this.profile();
+    if (!profile) return false;
+    const privacy = profile.privacySettings?.library ?? 'public';
+    return privacy === 'public' || (privacy === 'friends' && !!profile.isFriend);
+  });
+
+  readonly canViewActivity = computed(() => {
+    if (this.isOwnProfile()) return true;
+    const profile = this.profile();
+    if (!profile) return false;
+    const privacy = profile.privacySettings?.activity ?? 'public';
+    return privacy === 'public' || (privacy === 'friends' && !!profile.isFriend);
   });
 
   ngOnInit(): void {

@@ -3,6 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SubscriptionTier } from '../models/subscription.types';
 
+export interface MoodVector {
+  adrenaline: number;
+  melancholy: number;
+  joy: number;
+  tension: number;
+  intellect: number;
+  romance: number;
+  wonder: number;
+  nostalgia: number;
+  darkness: number;
+  inspiration: number;
+}
+
 export interface UserProfile {
   user: {
     id: string;
@@ -10,12 +23,16 @@ export interface UserProfile {
     name?: string;
     avatar: string | null;
     banner: string | null;
-    email: string;
-    subscription: {
+    // Private fields - only present on /me endpoint
+    email?: string;
+    subscription?: {
       tier: SubscriptionTier;
       startedAt: string;
       expiresAt: string | null;
     };
+    usernameLastChanged?: string | null;
+    canChangeUsernameAt?: string | null;
+    // Public fields - always present
     stats: {
       moviesWatched: number;
       episodesWatched: number;
@@ -35,15 +52,13 @@ export interface UserProfile {
       posterPath: string;
       firstAirDate: string;
     }>;
-    streak: {
+    streak?: {
       current: number;
       lastLoginDate: string | null;
     };
-    usernameLastChanged: string | null;
-    canChangeUsernameAt: string | null;
     createdAt: string;
   };
-  recentActivities: Array<{
+  recentActivities?: Array<{
     _id: string;
     type: string;
     mediaType: string;
@@ -54,7 +69,25 @@ export interface UserProfile {
     createdAt: string;
   }>;
   reviewCount: number;
+  mastery?: {
+    level: number;
+    title: string;
+    score: number;
+    nextLevelScore: number;
+    scoreToNextLevel: number;
+    progressPercent: number;
+  };
+  // Public profiles only
   isFollowedByMe?: boolean;
+  isFriend?: boolean;  // true if mutual followers
+  privacySettings?: {
+    mood: 'public' | 'friends' | 'private';
+    library: 'public' | 'friends' | 'private';
+    activity: 'public' | 'friends' | 'private';
+    stats: 'public' | 'friends' | 'private';
+  };
+  moodVector?: MoodVector;
+  // Private profiles only
   recommendationQuota?: {
     remaining: number;
     total: number;
@@ -171,6 +204,15 @@ export class UserService {
       failedItems: string[];
       estimatedProcessingSeconds: number;
     }>>('http://localhost:3000/api/import/watch-history', formData);
+  }
+
+  updatePrivacySettings(settings: {
+    mood?: 'public' | 'friends' | 'private';
+    library?: 'public' | 'friends' | 'private';
+    activity?: 'public' | 'friends' | 'private';
+    stats?: 'public' | 'friends' | 'private';
+  }): Observable<ApiResponse<{ privacySettings: any }>> {
+    return this.http.patch<ApiResponse<{ privacySettings: any }>>(`${this.apiUrl}/profile/privacy`, settings);
   }
 }
 

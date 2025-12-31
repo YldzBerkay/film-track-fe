@@ -1,4 +1,10 @@
 <div class="activities-container">
+    @if (!canView()) {
+    <div class="activities-empty">
+        <span class="material-symbols-outlined">lock</span>
+        <p>{{ 'profile.privateActivity' | translate }}</p>
+    </div>
+    } @else {
     <!-- Sticky Filter Bar -->
     <div class="activity-filters">
         <div class="chip-list">
@@ -55,6 +61,9 @@
             }
         </span>
         <p>
+            @if (!isOwnProfile()) {
+            {{ 'profile.noActivitiesOther' | translate }}
+            } @else {
             @switch (activityFilter()) {
             @case ('REVIEWS') { {{ 'profile.noReviews' | translate }} }
             @case ('COMMENTS') { {{ 'profile.noComments' | translate }} }
@@ -62,7 +71,9 @@
             @case ('IMPORTS') { {{ 'profile.noImports' | translate }} }
             @default { {{ 'profile.noActivities' | translate }} }
             }
+            }
         </p>
     </div>
+    }
     }
 </div>

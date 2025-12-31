@@ -4,6 +4,7 @@ import {
     inject,
     signal,
     OnInit,
+    Input,
     ViewChild,
     ElementRef
 } from '@angular/core';
@@ -34,6 +35,10 @@ export class ProfileLibraryComponent implements OnInit {
 
     isOwnProfile = this.profileState.isOwnProfile;
     user = this.profileState.user;
+    canView = signal(true);
+    @Input() set canViewInput(value: boolean) {
+        this.canView.set(value);
+    }
 
     // View mode
     viewMode = signal<ViewMode>('slider');

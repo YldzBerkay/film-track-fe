@@ -3,7 +3,8 @@ import {
     ChangeDetectionStrategy,
     inject,
     signal,
-    OnInit
+    OnInit,
+    Input
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../core/i18n';
@@ -26,6 +27,11 @@ export class ProfileActivitiesComponent implements OnInit {
     private activityService = inject(ActivityService);
 
     user = this.profileState.user;
+    isOwnProfile = this.profileState.isOwnProfile;
+    canView = signal(true);
+    @Input() set canViewInput(value: boolean) {
+        this.canView.set(value);
+    }
 
     activities = signal<Activity[]>([]);
     isLoading = signal(false);
