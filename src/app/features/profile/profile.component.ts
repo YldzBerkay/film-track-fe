@@ -220,6 +220,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   showMatchDialog = signal(false);
   matchResult = signal<TasteMatchResult | null>(null);
   isMatchLoading = signal(false);
+  showUpgradeModal = signal(false);
 
   // Share Dialog state
   showShareDialog = signal(false);
@@ -1275,6 +1276,15 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     const profileData = this.profile();
     if (!profileData) return;
 
+    // Check if user is PREMIUM_PLUS
+    const currentUser = this.authService.user();
+    const tier = currentUser?.subscription?.tier;
+
+    if (tier !== 'PREMIUM_PLUS') {
+      this.showUpgradeModal.set(true);
+      return;
+    }
+
     this.isMatchLoading.set(true);
     this.showMatchDialog.set(true);
     this.matchResult.set(null);
@@ -1294,6 +1304,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.showMatchDialog.set(false);
       }
     });
+  }
+
+  closeUpgradeModal(): void {
+    this.showUpgradeModal.set(false);
   }
 
   closeMatchDialog(): void {

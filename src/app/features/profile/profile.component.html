@@ -919,3 +919,27 @@
 <app-match-dialog [isOpen]="showMatchDialog() && !!matchResult()" [result]="matchResult()!"
   (close)="closeMatchDialog()">
 </app-match-dialog>
+
+<!-- Premium Plus Upgrade Modal -->
+@if (showUpgradeModal()) {
+<div class="upgrade-modal-backdrop" (click)="closeUpgradeModal()">
+  <div class="upgrade-modal" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeUpgradeModal()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+
+    <div class="upgrade-icon">
+      <span class="material-symbols-outlined">stars</span>
+    </div>
+
+    <h2>{{ 'profile.premiumPlusRequired' | translate }}</h2>
+    <p>{{ 'profile.tasteMatchPremiumMessage' | translate }}</p>
+
+    <button class="upgrade-btn" [routerLink]="['/settings']" [queryParams]="{tab: 'subscription'}"
+      (click)="closeUpgradeModal()">
+      <span class="material-symbols-outlined">rocket_launch</span>
+      {{ 'profile.upgradeToPremiumPlus' | translate }}
+    </button>
+  </div>
+</div>
+}
