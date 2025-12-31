@@ -96,7 +96,6 @@
           <app-mood-chart [moodData]="isOwnProfile() ? moodData() : (profile()?.moodVector ?? null)"
             [isLoading]="isLoadingMood()"></app-mood-chart>
 
-          @if (isOwnProfile()) {
           <div class="timeline-container">
             <app-mood-timeline [timelineData]="moodTimeline()" [isLoading]="isLoadingTimeline()"></app-mood-timeline>
 
@@ -110,7 +109,6 @@
             </div>
             }
           </div>
-          }
         </div>
         } @placeholder {
         <div class="mood-charts-loading">

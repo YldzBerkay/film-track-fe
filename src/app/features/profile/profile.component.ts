@@ -583,6 +583,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           if (this.activeTab() === 'activities') {
             this.loadActivities();
           }
+
+          // Load mood/badges if permitted (Timeline fix)
+          if (this.canViewMood()) {
+            this.loadMood();
+            this.loadMoodTimeline();
+            this.loadBadges();
+          }
         } else {
           this.error.set('Profile not found');
         }
@@ -821,9 +828,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     return `${hours}h ${mins}m`;
   }
 
-  loadMood(): void {
+  loadMood(force: boolean = false): void {
+    const userId = this.isOwnProfile() ? undefined : this.profile()?.user.id;
     this.isLoadingMood.set(true);
-    this.moodService.getUserMood().subscribe({
+    // Use proper getUserMood call
+    this.moodService.getUserMood(force, userId).subscribe({
       next: (response: any) => {
         // Handle NOT_ENOUGH_DATA threshold error
         if (response.error === 'NOT_ENOUGH_DATA' && response.meta) {
@@ -1070,9 +1079,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     }
   }
 
+
+
+
   loadMoodTimeline(): void {
+    const userId = this.isOwnProfile() ? undefined : this.profile()?.user.id;
     this.isLoadingTimeline.set(true);
-    this.moodService.getMoodTimeline(30).subscribe({
+    this.moodService.getMoodTimeline(30, userId).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.moodTimeline.set(response.data);
@@ -1086,8 +1099,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   loadBadges(): void {
+    const userId = this.isOwnProfile() ? undefined : this.profile()?.user.id;
     this.isLoadingBadges.set(true);
-    this.userService.getBadges(true).subscribe({
+    this.userService.getBadges(true, userId).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.badges.set(response.data);

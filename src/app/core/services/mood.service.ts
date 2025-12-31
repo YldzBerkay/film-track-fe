@@ -80,13 +80,19 @@ export class MoodService {
     });
   }
 
-  getUserMood(forceRecalculate: boolean = false): Observable<ApiResponse<MoodVector>> {
-    const params = new HttpParams().set('forceRecalculate', forceRecalculate.toString());
+  getUserMood(forceRecalculate: boolean = false, userId?: string): Observable<ApiResponse<MoodVector>> {
+    let params = new HttpParams().set('forceRecalculate', forceRecalculate.toString());
+    if (userId) {
+      params = params.set('userId', userId);
+    }
     return this.http.get<ApiResponse<MoodVector>>(`${this.apiUrl}/user`, { params });
   }
 
-  getMoodTimeline(days: number = 30): Observable<ApiResponse<MoodTimelineEntry[]>> {
-    const params = new HttpParams().set('days', days.toString());
+  getMoodTimeline(days: number = 30, userId?: string): Observable<ApiResponse<MoodTimelineEntry[]>> {
+    let params = new HttpParams().set('days', days.toString());
+    if (userId) {
+      params = params.set('userId', userId);
+    }
     return this.http.get<ApiResponse<MoodTimelineEntry[]>>(`${this.apiUrl}/timeline`, { params });
   }
 

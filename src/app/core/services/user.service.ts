@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SubscriptionTier } from '../models/subscription.types';
 
@@ -181,10 +181,12 @@ export class UserService {
     return this.http.put<ApiResponse<void>>(`${this.apiUrl}/profile/me`, data);
   }
 
-  getBadges(showAll: boolean = false): Observable<ApiResponse<Badge[]>> {
-    return this.http.get<ApiResponse<Badge[]>>(this.badgeApiUrl, {
-      params: { all: showAll.toString() }
-    });
+  getBadges(showAll: boolean = false, userId?: string): Observable<ApiResponse<Badge[]>> {
+    let params = new HttpParams().set('all', showAll.toString());
+    if (userId) {
+      params = params.set('userId', userId);
+    }
+    return this.http.get<ApiResponse<Badge[]>>(this.badgeApiUrl, { params });
   }
 
   uploadWatchHistoryCsv(file: File, overwriteExisting: boolean = false): Observable<ApiResponse<{
