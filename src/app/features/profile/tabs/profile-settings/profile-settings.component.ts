@@ -2,7 +2,8 @@ import {
     Component,
     ChangeDetectionStrategy,
     inject,
-    signal
+    signal,
+    effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -82,16 +83,18 @@ export class ProfileSettingsComponent {
     // ... existing methods ...
 
     constructor() {
-        // Initialize privacy settings from user
-        const user = this.authService.user();
-        if (user?.privacySettings) {
-            this.privacySettings.set({
-                mood: user.privacySettings.mood || 'public',
-                library: user.privacySettings.library || 'public',
-                activity: user.privacySettings.activity || 'public',
-                stats: user.privacySettings.stats || 'public'
-            });
-        }
+        // Initialize privacy settings from profile when it loads
+        effect(() => {
+            const profile = this.profileState.profile();
+            if (profile?.privacySettings) {
+                this.privacySettings.set({
+                    mood: profile.privacySettings.mood || 'public',
+                    library: profile.privacySettings.library || 'public',
+                    activity: profile.privacySettings.activity || 'public',
+                    stats: profile.privacySettings.stats || 'public'
+                });
+            }
+        });
     }
 
     updatePrivacySetting(section: 'mood' | 'library' | 'activity' | 'stats', value: string): void {

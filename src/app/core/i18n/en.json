@@ -442,6 +442,12 @@
     },
     "settings": {
         "subscriptionTitle": "Subscription & Billing",
+        "privacyTitle": "Privacy Settings",
+        "moodPrivacy": "Mood Privacy",
+        "statsPrivacy": "Stats Privacy",
+        "libraryPrivacy": "Library Privacy",
+        "activityPrivacy": "Activity Privacy",
+        "save": "Save Changes",
         "currentPlan": "Current Plan",
         "premiumMember": "Premium Member",
         "freePlan": "Free Plan",

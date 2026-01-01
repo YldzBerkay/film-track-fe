@@ -435,6 +435,12 @@
     },
     "settings": {
         "subscriptionTitle": "Abonelik ve Ödeme",
+        "privacyTitle": "Gizlilik Ayarları",
+        "moodPrivacy": "Mod Gizliliği",
+        "statsPrivacy": "İstatistik Gizliliği",
+        "libraryPrivacy": "Kütüphane Gizliliği",
+        "activityPrivacy": "Aktivite Gizliliği",
+        "save": "Değişiklikleri Kaydet",
         "currentPlan": "Mevcut Plan",
         "premiumMember": "Premium Üye",
         "freePlan": "Ücretsiz Plan",
