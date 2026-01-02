@@ -6,7 +6,8 @@
             </div>
             <div class="activity-meta">
                 <p class="activity-text">
-                    <span class="user-name">{{ activity.userId.name || activity.userId.username }}</span>
+                    <a [routerLink]="profileLink" (click)="$event.stopPropagation()" class="user-name">{{
+                        activity.userId.name || activity.userId.username }}</a>
                     <span class="user-title" *ngIf="activity.userId.mastery?.title">
                         • {{ 'masterRank.' + activity.userId.mastery?.title | translate }}
                     </span>
