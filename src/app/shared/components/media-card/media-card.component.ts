@@ -23,7 +23,7 @@ export class MediaCardComponent {
     title = input.required<string>();
 
     /** TMDB poster path (without base URL) */
-    posterPath = input.required<string | null>();
+    posterPath = input.required<string | null | undefined>();
 
     /** Rating to display (0-10 scale) */
     rating = input<number>();
@@ -45,6 +45,6 @@ export class MediaCardComponent {
 
     /** Computed poster URL */
     get posterUrl(): string {
-        return this.tmdbService.getPosterUrl(this.posterPath(), 'w300');
+        return this.tmdbService.getPosterUrl(this.posterPath() ?? null, 'w300');
     }
 }

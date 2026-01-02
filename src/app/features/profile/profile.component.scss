@@ -1697,61 +1697,7 @@ app-mood-timeline {
   }
 }
 
-// Recommendation Cards
-.recommendation-card {
-  flex-shrink: 0;
-  width: 140px;
-  aspect-ratio: 2/3;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
-  border: 1px solid var(--color-border);
-  transition: all 0.2s;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-
-    .rec-overlay {
-      opacity: 1;
-    }
-  }
-
-  .rec-poster {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .rec-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s;
-
-    .material-symbols-outlined {
-      font-size: 32px;
-      color: #fff;
-    }
-  }
-
-  .rec-score {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(0, 224, 84, 0.9);
-    color: #000;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 9999px;
-  }
-}
 
 .share-profile-btn {
   display: flex;
@@ -2107,70 +2053,7 @@ app-mood-timeline {
   }
 }
 
-.list-poster-card {
-  flex-shrink: 0;
-  width: 120px;
-  aspect-ratio: 2/3;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s ease;
 
-  &:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    border-color: var(--color-primary);
-
-    .poster-overlay {
-      opacity: 1;
-    }
-  }
-
-  .poster-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .poster-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-
-    .material-symbols-outlined {
-      font-size: 40px;
-      color: #fff;
-      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
-    }
-  }
-
-  .poster-rating {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
-    padding: 4px 8px;
-    border-radius: 6px;
-    color: var(--color-primary);
-    font-size: 0.75rem;
-    font-weight: 700;
-
-    .material-symbols-outlined {
-      font-size: 14px;
-    }
-  }
-}
 
 .list-empty {
   display: flex;
@@ -2192,20 +2075,7 @@ app-mood-timeline {
   }
 }
 
-.poster-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(38, 38, 38, 0.8), rgba(26, 31, 38, 0.9));
 
-  .material-symbols-outlined {
-    font-size: 32px;
-    color: var(--color-text-muted);
-    opacity: 0.6;
-  }
-}
 
 // Settings Tab Content
 .settings-tab-content {

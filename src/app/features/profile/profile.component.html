@@ -441,25 +441,8 @@
 
             <div class="list-slider" #watchedContainer>
               @for (item of watchedList.items.slice(0, 10); track item.tmdbId) {
-              <div class="list-poster-card"
-                (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
-                @if (item.posterPath) {
-                <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title" class="poster-img" />
-                } @else {
-                <div class="poster-placeholder">
-                  <span class="material-symbols-outlined">movie</span>
-                </div>
-                }
-                <div class="poster-overlay">
-                  <span class="material-symbols-outlined">play_circle</span>
-                </div>
-                @if (item.rating) {
-                <div class="poster-rating">
-                  <span class="material-symbols-outlined">star</span>
-                  {{ item.rating.toFixed(1) }}
-                </div>
-                }
-              </div>
+              <app-media-card [title]="item.title" [posterPath]="item.posterPath ?? null" [rating]="item.rating"
+                (cardClick)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])" />
               }
             </div>
 
@@ -528,19 +511,8 @@
 
             <div class="list-slider" #watchlistContainer>
               @for (item of watchlist.items.slice(0, 10); track item.tmdbId) {
-              <div class="list-poster-card"
-                (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
-                @if (item.posterPath) {
-                <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title" class="poster-img" />
-                } @else {
-                <div class="poster-placeholder">
-                  <span class="material-symbols-outlined">movie</span>
-                </div>
-                }
-                <div class="poster-overlay">
-                  <span class="material-symbols-outlined">play_circle</span>
-                </div>
-              </div>
+              <app-media-card [title]="item.title" [posterPath]="item.posterPath ?? null"
+                (cardClick)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])" />
               }
             </div>
 
@@ -609,19 +581,8 @@
 
             <div class="list-slider" [id]="'list-' + list._id">
               @for (item of list.items.slice(0, 10); track item.tmdbId) {
-              <div class="list-poster-card"
-                (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
-                @if (item.posterPath) {
-                <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title" class="poster-img" />
-                } @else {
-                <div class="poster-placeholder">
-                  <span class="material-symbols-outlined">movie</span>
-                </div>
-                }
-                <div class="poster-overlay">
-                  <span class="material-symbols-outlined">play_circle</span>
-                </div>
-              </div>
+              <app-media-card [title]="item.title" [posterPath]="item.posterPath ?? null"
+                (cardClick)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])" />
               }
             </div>
 
