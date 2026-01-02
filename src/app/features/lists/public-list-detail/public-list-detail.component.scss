@@ -99,38 +99,121 @@
 .list-title-section {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
     flex: 1;
+    min-width: 0;
 
-    .list-icon {
-        font-size: 36px;
-        color: var(--color-primary);
-    }
-
-    h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--color-text-main);
-        margin: 0;
-    }
-
-    .item-count {
-        display: inline-flex;
+    .list-title-group {
+        display: flex;
         align-items: center;
-        padding: 6px 14px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--color-border);
-        border-radius: 9999px;
-        color: var(--color-text-secondary);
-        font-size: 0.9rem;
-        font-weight: 500;
+        gap: 16px;
+        min-width: 0;
+
+        .list-icon {
+            font-size: 36px;
+            color: var(--color-primary);
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text-main);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .list-meta-group {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-shrink: 0;
+
+        .item-count {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--color-border);
+            border-radius: 9999px;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
     }
 
     .list-actions {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-left: auto;
+    }
+}
+
+// Owner Info
+.owner-info {
+    order: 3; // Ensure it stays visually after title section on desktop
+    // On mobile we might want to adjust
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+    .list-header {
+        align-items: flex-start;
+        padding-bottom: 20px;
+        margin-bottom: 24px;
+    }
+
+    .list-title-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        order: 2; // Keep title section after back button
+        width: 100%; // Take full width on new row if needed? 
+        // Actually since we wrap list-header items, we need to be careful.
+    }
+
+    // Special handling for Public View header structure
+    // Structure: BackBtn | TitleSection | OwnerInfo
+    // Mobile desired:
+    // Row 1: BackBtn | OwnerInfo
+    // Row 2: TitleSection (Icon+Title)
+    // Row 3: Meta (Count + Actions)
+
+    // Or simpler:
+    // Row 1: BackBtn
+    // Row 2: TitleSection (full width)
+
+    .list-header {
+        flex-wrap: wrap;
+    }
+
+    .owner-info {
+        margin-left: auto; // Push to right on top row with BackBtn
+        order: 1; // Visual order along with BackBtn?
+        // BackBtn is default order 0.
+    }
+
+    .list-title-section {
+        order: 3; // Push below
+        margin-top: 12px;
+
+        .list-title-group {
+            h1 {
+                font-size: 1.5rem;
+                white-space: normal;
+                line-height: 1.2;
+            }
+        }
+
+        .list-meta-group {
+            justify-content: space-between;
+            width: 100%;
+        }
     }
 }
 

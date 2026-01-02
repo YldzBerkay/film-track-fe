@@ -12,46 +12,51 @@
                 <span class="material-symbols-outlined">arrow_back</span>
             </button>
             <div class="list-title-section">
-                <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
-                <h1>{{ listTitle() }}</h1>
-                <span class="item-count">{{ items().length }} {{ 'watchlist.items' | translate }}</span>
+                <div class="list-title-group">
+                    <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
+                    <h1>{{ listTitle() }}</h1>
+                </div>
 
-                <!-- Actions -->
-                <div class="list-actions">
-                    @if (!isLoading() && !error() && items().length > 0) {
-                    <app-list-filter [items]="items()" [listType]="listType()"
-                        (filterChange)="onFilterChange($event)"></app-list-filter>
-                    }
+                <div class="list-meta-group">
+                    <span class="item-count">{{ items().length }} {{ 'watchlist.items' | translate }}</span>
 
-                    <button class="action-btn" (click)="openEditDialog()"
-                        [title]="'profile.editDirectorsCut' | translate">
-                        <span class="material-symbols-outlined">edit</span>
-                    </button>
-
-                    <!-- Privacy Settings -->
-                    <div class="privacy-dropdown-container">
-                        <button class="action-btn" (click)="togglePrivacyDropdown($event)">
-                            <span class="material-symbols-outlined">{{ getPrivacyIcon(privacyStatus()) }}</span>
-                        </button>
-                        @if (showPrivacyDropdown()) {
-                        <div class="privacy-dropdown" (click)="$event.stopPropagation()">
-                            <button class="privacy-option" [class.active]="privacyStatus() === 0"
-                                (click)="updatePrivacy(0)">
-                                <span class="material-symbols-outlined">public</span>
-                                <span>{{ 'privacy.everyone' | translate }}</span>
-                            </button>
-                            <button class="privacy-option" [class.active]="privacyStatus() === 1"
-                                (click)="updatePrivacy(1)">
-                                <span class="material-symbols-outlined">group</span>
-                                <span>{{ 'privacy.friends' | translate }}</span>
-                            </button>
-                            <button class="privacy-option" [class.active]="privacyStatus() === 2"
-                                (click)="updatePrivacy(2)">
-                                <span class="material-symbols-outlined">lock</span>
-                                <span>{{ 'privacy.nobody' | translate }}</span>
-                            </button>
-                        </div>
+                    <!-- Actions -->
+                    <div class="list-actions">
+                        @if (!isLoading() && !error() && items().length > 0) {
+                        <app-list-filter [items]="items()" [listType]="listType()"
+                            (filterChange)="onFilterChange($event)"></app-list-filter>
                         }
+
+                        <button class="action-btn" (click)="openEditDialog()"
+                            [title]="'profile.editDirectorsCut' | translate">
+                            <span class="material-symbols-outlined">edit</span>
+                        </button>
+
+                        <!-- Privacy Settings -->
+                        <div class="privacy-dropdown-container">
+                            <button class="action-btn" (click)="togglePrivacyDropdown($event)">
+                                <span class="material-symbols-outlined">{{ getPrivacyIcon(privacyStatus()) }}</span>
+                            </button>
+                            @if (showPrivacyDropdown()) {
+                            <div class="privacy-dropdown" (click)="$event.stopPropagation()">
+                                <button class="privacy-option" [class.active]="privacyStatus() === 0"
+                                    (click)="updatePrivacy(0)">
+                                    <span class="material-symbols-outlined">public</span>
+                                    <span>{{ 'privacy.everyone' | translate }}</span>
+                                </button>
+                                <button class="privacy-option" [class.active]="privacyStatus() === 1"
+                                    (click)="updatePrivacy(1)">
+                                    <span class="material-symbols-outlined">group</span>
+                                    <span>{{ 'privacy.friends' | translate }}</span>
+                                </button>
+                                <button class="privacy-option" [class.active]="privacyStatus() === 2"
+                                    (click)="updatePrivacy(2)">
+                                    <span class="material-symbols-outlined">lock</span>
+                                    <span>{{ 'privacy.nobody' | translate }}</span>
+                                </button>
+                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1933,6 +1933,8 @@ app-mood-timeline {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem;
   margin-bottom: 20px;
 }
 

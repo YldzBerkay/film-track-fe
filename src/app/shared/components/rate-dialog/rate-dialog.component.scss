@@ -103,6 +103,10 @@
     gap: 8px;
     margin-bottom: 24px;
 
+    @media (max-width: 768px) {
+        gap: 0;
+    }
+
     &.interactive {
         cursor: pointer;
 

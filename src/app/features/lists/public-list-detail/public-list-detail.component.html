@@ -12,15 +12,20 @@
                 <span class="material-symbols-outlined">arrow_back</span>
             </button>
             <div class="list-title-section">
-                <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
-                <h1>{{ listTitle() }}</h1>
-                <span class="item-count">{{ items().length }} {{ 'watchlist.items' | translate }}</span>
+                <div class="list-title-group">
+                    <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
+                    <h1>{{ listTitle() }}</h1>
+                </div>
 
-                <div class="list-actions">
-                    @if (!isLoading() && !error() && canView() && items().length > 0) {
-                    <app-list-filter [items]="items()" [listType]="listType()"
-                        (filterChange)="onFilterChange($event)"></app-list-filter>
-                    }
+                <div class="list-meta-group">
+                    <span class="item-count">{{ items().length }} {{ 'watchlist.items' | translate }}</span>
+
+                    <div class="list-actions">
+                        @if (!isLoading() && !error() && canView() && items().length > 0) {
+                        <app-list-filter [items]="items()" [listType]="listType()"
+                            (filterChange)="onFilterChange($event)"></app-list-filter>
+                        }
+                    </div>
                 </div>
             </div>
 
