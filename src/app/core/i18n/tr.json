@@ -192,6 +192,9 @@
         "noActivitiesOther": "Bu kullanıcının son aktivitesi yok.",
         "noLikesOther": "Bu kullanıcı henüz hiçbir şeyi beğenmemiş."
     },
+    "stats": {
+        "ratings": "Puanlar"
+    },
     "privacy": {
         "everyone": "Herkes",
         "friends": "Sadece Arkadaşlar",

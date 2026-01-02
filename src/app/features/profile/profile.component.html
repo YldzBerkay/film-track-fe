@@ -19,7 +19,7 @@
   <app-header></app-header>
 
   <!-- Profile Header Component -->
-  <app-profile-header [user]="profileData.user" [isOwnProfile]="isOwnProfile()" [isFollowing]="isFollowing()"
+  <app-profile-header [user]="$any(profileData.user)" [isOwnProfile]="isOwnProfile()" [isFollowing]="isFollowing()"
     [isFollowLoading]="isFollowLoading()" [isBannerLoading]="isBannerLoading()" (onEdit)="openEditProfile()"
     (onFollow)="followUser()" (onUnfollow)="unfollowUser()" (onShare)="openShareDialog()" (onReport)="openReports()"
     (onCompareMood)="openMoodComparison()" (onBannerChange)="handleBannerUpload($event)" />
@@ -46,6 +46,42 @@
   <div class="content-container">
     <div class="content-section">
       @if (activeTab() === 'profile') {
+      <!-- Rating Distribution Chart -->
+      @if (ratingDistribution(); as ratings) {
+      <div class="rating-dist-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="material-symbols-outlined section-icon">analytics</span>
+            {{ 'stats.ratings' | translate }}
+          </h2>
+        </div>
+
+        <div class="rating-chart-container">
+          <!-- Background Grid text-decoration-line -->
+          <div class="chart-grid-lines">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+          </div>
+
+          <div class="rating-chart">
+            @for (item of ratings; track item.score) {
+            <div class="chart-column">
+              <div class="tooltip">{{ item.count }}</div>
+              <div class="bar-container">
+                <div class="bar" [style.height.%]="(item.count / (maxRatingCount() || 1)) * 100">
+                </div>
+              </div>
+              <span class="score-label">{{ item.score }}</span>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+      }
+
       <!-- Taste Match Section (Other User's Profile) -->
 
 

@@ -192,6 +192,9 @@
         "tasteMatch": "Taste Match",
         "viewProfile": "View Profile"
     },
+    "stats": {
+        "ratings": "Ratings"
+    },
     "privacy": {
         "everyone": "Everyone",
         "friends": "Friends Only",

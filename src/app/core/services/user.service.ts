@@ -37,6 +37,7 @@ export interface UserProfile {
       moviesWatched: number;
       episodesWatched: number;
       totalRuntime: number;
+      ratingDist?: Record<number, number>;
     };
     followersCount: number;
     followingCount: number;

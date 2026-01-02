@@ -52,6 +52,7 @@ export interface WatchedStatsResponse {
             totalMovies: number;
             totalTvShows: number;
             averageRating: number | null;
+            ratingDist: Record<number, number>;
         };
     };
 }

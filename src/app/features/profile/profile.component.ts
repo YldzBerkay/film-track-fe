@@ -88,6 +88,21 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   private profileState = inject(ProfileStateService);
 
   profile = signal<UserProfile | null>(null);
+
+  ratingDistribution = computed(() => {
+    const stats = this.profile()?.user?.stats;
+    if (!stats?.ratingDist) return null;
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(score => ({
+      score,
+      count: stats.ratingDist![score] || 0
+    }));
+  });
+
+  maxRatingCount = computed(() => {
+    const dist = this.ratingDistribution();
+    if (!dist) return 0;
+    return Math.max(...dist.map(d => d.count), 1);
+  });
   isLoading = signal(true);
   error = signal<string | null>(null);
   activeTab = signal<TabType>('profile');
