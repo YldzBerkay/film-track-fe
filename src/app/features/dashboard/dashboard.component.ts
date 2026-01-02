@@ -18,9 +18,9 @@ import { RecommendationService, MealtimeRecommendation, DailyPick, MoodRecommend
 import { CommentListComponent } from '../../shared/components/comments/comment-list/comment-list.component';
 
 import { CreateListDialogComponent } from '../../shared/components/create-list-dialog/create-list-dialog.component';
-import { ReactionBarComponent } from '../../shared/components/reaction-bar/reaction-bar.component';
 import { FriendMealtimeDialogComponent } from './components/friend-mealtime-dialog/friend-mealtime-dialog.component';
 import { TasteMatchDialogComponent } from './components/taste-match-dialog/taste-match-dialog.component';
+import { ActivityCardComponent } from '../../shared/components/activity-card/activity-card.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,9 +34,9 @@ import { TasteMatchDialogComponent } from './components/taste-match-dialog/taste
     DialogComponent,
     TranslatePipe,
     CreateListDialogComponent,
-    ReactionBarComponent,
     FriendMealtimeDialogComponent,
-    TasteMatchDialogComponent
+    TasteMatchDialogComponent,
+    ActivityCardComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -257,29 +257,7 @@ export class DashboardComponent implements OnInit {
 
 
 
-  getYear(dateString: string): number {
-    return new Date(dateString).getFullYear();
-  }
 
-  getTimeAgo(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) {
-      return 'just now';
-    }
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`;
-    }
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) {
-      return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
-    }
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
-  }
 
   onLogClick(): void {
     // TODO: Open log modal
@@ -386,71 +364,11 @@ export class DashboardComponent implements OnInit {
     return `https://image.tmdb.org/t/p/w300${path}`;
   }
 
-  // Social Features
-  expandedActivityId = signal<string | null>(null);
-  commentText = signal<string>('');
-  isSubmittingComment = signal(false);
-
-  getUserVote(activity: Activity): 'like' | 'dislike' | null {
-    const userId = this.user()?.id;
-    if (!userId) return null;
-
-    if (activity.likes && activity.likes.includes(userId)) return 'like';
-    if (activity.dislikes && activity.dislikes.includes(userId)) return 'dislike';
-    return null;
+  getYear(dateString: string): number {
+    return new Date(dateString).getFullYear();
   }
 
-  isLiked(activity: Activity): boolean {
-    return this.getUserVote(activity) === 'like';
-  }
 
-  toggleLike(activity: Activity): void {
-    if (!this.isAuthenticated()) return;
-
-    const isLiked = this.isLiked(activity);
-
-    // Optimistic update
-    this.activities.update(list => list.map(a => {
-      if (a._id === activity._id) {
-        const userId = this.user()?.id!;
-        const likes = isLiked
-          ? (a.likes || []).filter(id => id !== userId)
-          : [...(a.likes || []), userId];
-        return { ...a, likes };
-      }
-      return a;
-    }));
-
-    const action$ = isLiked
-      ? this.activityService.unlikeActivity(activity._id)
-      : this.activityService.likeActivity(activity._id);
-
-    action$.subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          // Update with server data
-          this.activities.update(list => list.map(a =>
-            a._id === activity._id ? response.data : a
-          ));
-        }
-      },
-      error: (err) => {
-        console.error('Failed to toggle like', err);
-        // Revert optimistic update
-        this.activities.update(list => list.map(a =>
-          a._id === activity._id ? activity : a
-        ));
-      }
-    });
-  }
-
-  toggleComments(activityId: string): void {
-    if (this.expandedActivityId() === activityId) {
-      this.expandedActivityId.set(null);
-    } else {
-      this.expandedActivityId.set(activityId);
-    }
-  }
 
   // Bookmark state - track bookmarked activity IDs
   bookmarkedActivities = signal<Set<string>>(new Set());

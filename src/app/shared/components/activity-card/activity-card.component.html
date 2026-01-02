@@ -1,194 +1,131 @@
-@switch (activity.type) {
-@case ('review') {
-<!-- Full Review Card - Review card has its own click handling -->
-<div class="review-card-wrapper" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
-    @if (showReaction) {
-    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
-        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
-    </div>
-    }
-    <app-review-card [activity]="activity" [isFeedView]="viewMode === 'feed'" [viewMode]="viewMode"
-        [highlightCommentId]="highlightCommentId" (click)="onInteractiveClick($event)"></app-review-card>
-</div>
-}
-
-@case ('rating') {
-<!-- Mini Rating Card -->
-<div class="activity-card mini-card rating-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
-    @if (showReaction) {
-    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
-        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
-    </div>
-    }
-    <div class="mini-icon rating-icon">
-        <span class="material-symbols-outlined">star</span>
-    </div>
-    <div class="mini-content">
-        <div class="mini-header">
-            <span class="mini-user">
-                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
-                    activity.userId.username }}</a>
-            </span>
-            <span class="mini-action">{{ 'activity.rated' | translate }}</span>
-            <a [routerLink]="mediaLink" class="mini-media" (click)="onInteractiveClick($event)">{{ activity.mediaTitle
-                }}</a>
+<article class="activity-card">
+    <div class="activity-header">
+        <div class="activity-user">
+            <div class="user-avatar-small"
+                [style.background-image]="'url(' + (activity.userId.avatar || 'assets/default-avatar.png') + ')'">
+            </div>
+            <div class="activity-meta">
+                <p class="activity-text">
+                    <span class="user-name">{{ activity.userId.name || activity.userId.username }}</span>
+                    <span class="user-title" *ngIf="activity.userId.mastery?.title">
+                        • {{ 'masterRank.' + activity.userId.mastery?.title | translate }}
+                    </span>
+                    @if (activity.type === 'movie_watched') {
+                    {{ 'activity.watched' | translate }}
+                    } @else if (activity.type === 'tv_episode_watched') {
+                    {{ 'activity.watchedEpisode' | translate }}
+                    } @else if (activity.type === 'tv_show_watched') {
+                    {{ 'activity.watched' | translate }}
+                    } @else if (activity.type === 'bulk_import') {
+                    {{ 'activity.importedHistory' | translate }}
+                    }
+                </p>
+                <div class="activity-time-row">
+                    <p class="activity-time">{{ getTimeAgo(activity.createdAt) }}</p>
+                    @if (activity.isMoodPick) {
+                    <span class="mood-pick-badge" title="You liked this from your Mood Recommendations">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span class="mood-text">{{ 'activity.moodPick' | translate }}</span>
+                    </span>
+                    }
+                </div>
+            </div>
         </div>
-        <div class="mini-meta">
-            <span class="rating-badge">
-                <span class="material-symbols-outlined">star</span>
-                {{ activity.rating }}
-            </span>
-            @if ($any(activity).isMoodPick) {
-            <span class="mood-pick-badge" title="You liked this from your Mood Recommendations">
-                <span class="material-symbols-outlined">auto_awesome</span>
-                <span class="mood-text">{{ 'activity.moodPick' | translate }}</span>
-            </span>
-            }
-            <span class="dot">•</span>
-            <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
-        </div>
-    </div>
-    <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">
-        <img [src]="posterUrl" [alt]="activity.mediaTitle">
-    </a>
-</div>
-}
-
-@case ('comment') {
-<!-- Comment Activity Card -->
-<div class="activity-card mini-card comment-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
-    @if (showReaction) {
-    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
-        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
-    </div>
-    }
-    <div class="mini-icon comment-icon">
-        <span class="material-symbols-outlined">{{ activity.parentId ? 'reply' : 'chat_bubble' }}</span>
-    </div>
-    <div class="mini-content">
-        <div class="mini-header">
-            <span class="mini-user">
-                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
-                    activity.userId.username }}</a>
-            </span>
-            @if (activity.parentId) {
-            <!-- It's a reply -->
-            @if (activity.replyToUser) {
-            <span class="mini-action">{{ 'activity.repliedTo' | translate }}</span>
-            <a [routerLink]="['/profile', activity.replyToUser.username]" class="reply-target"
-                (click)="onInteractiveClick($event)">@{{
-                activity.replyToUser.username }}</a>
-            <span class="mini-action">{{ 'activity.on' | translate }}</span>
-            } @else {
-            <span class="mini-action">{{ 'activity.repliedToComment' | translate }}</span>
-            }
-            } @else {
-            <!-- Root comment -->
-            <span class="mini-action">{{ 'activity.commentedOn' | translate }}</span>
-            <span class="target-type">{{ (activity.originalActivityType === 'review' ? 'activity.reviewOf' :
-                'activity.postOf') | translate }}</span>
-            }
-            <a [routerLink]="mediaLink" class="mini-media" (click)="onInteractiveClick($event)">{{ activity.mediaTitle
-                }}</a>
-        </div>
-
-        @if (activity.parentId && activity.parentCommentText) {
-        <!-- Show parent comment snippet for context -->
-        <div class="parent-comment-snippet">
-            <span class="material-symbols-outlined">format_quote</span>
-            <span class="snippet-text">{{ activity.parentCommentText | slice:0:80 }}{{ activity.parentCommentText.length
-                > 80 ? '...' : '' }}</span>
+        @if (activity.rating) {
+        <div class="activity-rating-badge">
+            <span class="material-symbols-outlined">star</span>
+            <span>{{ activity.rating }}/10</span>
         </div>
         }
-
-        <div class="comment-bubble">
-            <span class="quote-mark">"</span>
-            {{ activity.commentText }}
-            <span class="quote-mark">"</span>
-        </div>
-
-        <div class="mini-meta">
-            <span class="time">{{ activity.createdAt | date:'short' }}</span>
-        </div>
     </div>
-    <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">
-        <img [src]="posterUrl" [alt]="activity.mediaTitle">
-    </a>
-</div>
-}
 
-@case ('bulk_import') {
-<!-- Bulk Import Summary -->
-<div class="activity-card mini-card import-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
-    @if (showReaction) {
-    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
-        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
+    <div class="activity-content">
+        @if (activity.type === 'tv_episode_watched' && activity.episodeNumber) {
+        <div class="episodes-grid">
+            <div class="episode-card">
+                <div class="episode-poster"
+                    [style.background-image]="'url(' + tmdbService.getPosterUrl(activity.mediaPosterPath) + ')'"></div>
+                <p class="episode-title">
+                    S{{ activity.seasonNumber }}:E{{ activity.episodeNumber }}
+                    @if (activity.episodeTitle) {
+                    "{{ activity.episodeTitle }}"
+                    }
+                </p>
+                @if (activity.rating) {
+                <div class="episode-rating-badge">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+                    <span>{{ activity.rating }}/10</span>
+                </div>
+                }
+            </div>
+        </div>
+        } @else if (activity.type === 'bulk_import') {
+        <!-- Bulk import: show only title, no poster or year -->
+        <div class="media-content bulk-import-content">
+            <div class="media-info">
+                <h3 class="media-title">
+                    <a [routerLink]="mediaLink" (click)="$event.stopPropagation()">{{ activity.mediaTitle }}</a>
+                </h3>
+            </div>
+        </div>
+        } @else {
+        <div class="media-content">
+            <div class="media-poster"
+                [style.background-image]="'url(' + tmdbService.getPosterUrl(activity.mediaPosterPath) + ')'"
+                [routerLink]="mediaLink" (click)="$event.stopPropagation()"></div>
+            <div class="media-info">
+                <h3 class="media-title">
+                    <a [routerLink]="mediaLink" (click)="$event.stopPropagation()">
+                        {{ activity.mediaTitle }}
+                    </a>
+                    @if (activity.mediaType === 'movie' && activity.createdAt) {
+                    <span class="media-year">({{ getYear(activity.createdAt) }})</span>
+                    }
+                </h3>
+                @if (activity.reviewText) {
+                <p class="media-review">{{ activity.reviewText }}</p>
+                }
+                @if (activity.genres && activity.genres.length > 0) {
+                <div class="media-genres">
+                    @for (genre of activity.genres; track genre) {
+                    <span class="genre-tag">{{ genre }}</span>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="activity-actions">
+        <app-reaction-bar [targetId]="activity._id" [targetType]="'activity'"
+            [likesCount]="activity.likesCount || (activity.likes || []).length"
+            [dislikesCount]="activity.dislikesCount || 0" [userVote]="getUserVote()">
+        </app-reaction-bar>
+        <button class="action-btn" (click)="toggleComments()">
+            <span class="material-symbols-outlined">chat_bubble</span>
+            <span>{{ activity.commentCount || 0 }}</span>
+        </button>
+        <button class="action-btn bookmark-btn" [class.active]="isBookmarked" (click)="onBookmarkClick($event)"
+            [title]="isBookmarked ? ('bookmarks.remove' | translate) : ('bookmarks.subtitle' | translate)">
+            <span class="material-symbols-outlined">{{ isBookmarked ? 'bookmark' :
+                'bookmark_border' }}</span>
+        </button>
+        <!-- Taste Match Button (only for other users) -->
+        @if (currentUser && activity.userId._id !== currentUser.id) {
+        <button class="action-btn taste-match-btn" (click)="onTasteMatchClick($event)"
+            [title]="'dashboard.ourTaste' | translate">
+            <span class="material-symbols-outlined">diversity_1</span>
+        </button>
+        }
+    </div>
+
+    <!-- Comments Section -->
+    @if (isCommentsExpanded()) {
+    <div class="comments-section">
+        <app-comment-list [activityId]="activity._id" [initialCount]="activity.commentCount || 0"
+            (commentAdded)="onCommentAdded()">
+        </app-comment-list>
     </div>
     }
-    <div class="mini-icon import-icon">
-        <span class="material-symbols-outlined">folder_open</span>
-    </div>
-    <div class="mini-content">
-        <div class="mini-header">
-            <span class="mini-user">
-                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
-                    activity.userId.username }}</a>
-            </span>
-            <span class="mini-action">{{ 'activity.importedHistory' | translate }}</span>
-        </div>
-        <div class="import-stats">
-            <span class="stat-badge">
-                <span class="material-symbols-outlined">movie</span>
-                {{ 'activity.itemsImported' | translate }}
-            </span>
-        </div>
-        <div class="mini-meta">
-            <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
-        </div>
-    </div>
-</div>
-}
-
-@case ('movie_watched') {
-<!-- Simple Watched Log -->
-<div class="activity-card mini-card watched-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
-    @if (showReaction) {
-    <div class="reaction-badge" [class.like]="showReaction === 'like'" [class.dislike]="showReaction === 'dislike'">
-        <span class="material-symbols-outlined">{{ showReaction === 'like' ? 'thumb_up' : 'thumb_down' }}</span>
-    </div>
-    }
-    <div class="mini-icon watched-icon">
-        <span class="material-symbols-outlined">visibility</span>
-    </div>
-    <div class="mini-content">
-        <div class="mini-header">
-            <span class="mini-user">
-                <a [routerLink]="profileLink" (click)="onInteractiveClick($event)">{{ activity.userId.name ||
-                    activity.userId.username }}</a>
-            </span>
-            <span class="mini-action">{{ 'activity.watched' | translate }}</span>
-            <a [routerLink]="mediaLink" class="mini-media" (click)="onInteractiveClick($event)">{{ activity.mediaTitle
-                }}</a>
-        </div>
-        <div class="mini-meta">
-            <span class="time">{{ activity.createdAt | date:'mediumDate' }}</span>
-            @if (activity.isMoodPick) {
-            <span class="mood-pick-badge" title="You liked this from your Mood Recommendations">
-                <span class="material-symbols-outlined">auto_awesome</span>
-                <span class="mood-text">{{ 'activity.moodPick' | translate }}</span>
-            </span>
-            }
-        </div>
-    </div>
-    <a [routerLink]="mediaLink" class="mini-poster" (click)="onInteractiveClick($event)">
-        <img [src]="posterUrl" [alt]="activity.mediaTitle">
-    </a>
-</div>
-}
-@default {
-<!-- Fallback for other types -->
-<div class="activity-card mini-card" [class.clickable]="viewMode === 'feed'" (click)="onCardClick()">
-    <div class="mini-content">{{ activity.type }}</div>
-</div>
-}
-}
+</article>
