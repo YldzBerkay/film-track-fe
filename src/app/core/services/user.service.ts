@@ -220,70 +220,82 @@ export class UserService {
   /**
    * Get another user's public lists (respects privacy settings)
    */
-  getUserPublicLists(userId: string, lang?: string): Observable<ApiResponse<{
+  getUserPublicLists(userId: string, lang?: string, limit?: number): Observable<ApiResponse<{
     watchedList: {
-      _id: string;
-      userId: string;
-      name: string;
-      isDefault: boolean;
-      privacyStatus: number;
-      items: Array<{
-        tmdbId: number;
-        mediaType: 'movie' | 'tv';
-        title: string;
-        posterPath?: string;
-        runtime: number;
-        rating?: number;
-        watchedAt: string;
-        addedAt: string;
-      }>;
-      totalRuntime: number;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
+      list: {
+        _id: string;
+        userId: string;
+        name: string;
+        isDefault: boolean;
+        privacyStatus: number;
+        items: Array<{
+          tmdbId: number;
+          mediaType: 'movie' | 'tv';
+          title: string;
+          posterPath?: string;
+          runtime: number;
+          rating?: number;
+          watchedAt: string;
+          addedAt: string;
+        }>;
+        totalRuntime: number;
+        createdAt: string;
+        updatedAt: string;
+      } | null;
+      totalCount: number;
+    };
     defaultWatchlist: {
-      _id: string;
-      userId: string;
-      name: string;
-      icon?: string;
-      isDefault: boolean;
-      privacyStatus: number;
-      items: Array<{
-        tmdbId: number;
-        mediaType: 'movie' | 'tv';
-        title: string;
-        posterPath?: string;
-        addedAt: string;
-      }>;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
+      list: {
+        _id: string;
+        userId: string;
+        name: string;
+        icon?: string;
+        isDefault: boolean;
+        privacyStatus: number;
+        items: Array<{
+          tmdbId: number;
+          mediaType: 'movie' | 'tv';
+          title: string;
+          posterPath?: string;
+          addedAt: string;
+        }>;
+        createdAt: string;
+        updatedAt: string;
+      } | null;
+      totalCount: number;
+    };
     customWatchlists: Array<{
-      _id: string;
-      userId: string;
-      name: string;
-      icon?: string;
-      isDefault: boolean;
-      privacyStatus: number;
-      items: Array<{
-        tmdbId: number;
-        mediaType: 'movie' | 'tv';
-        title: string;
-        posterPath?: string;
-        addedAt: string;
-      }>;
-      createdAt: string;
-      updatedAt: string;
+      list: {
+        _id: string;
+        userId: string;
+        name: string;
+        icon?: string;
+        isDefault: boolean;
+        privacyStatus: number;
+        items: Array<{
+          tmdbId: number;
+          mediaType: 'movie' | 'tv';
+          title: string;
+          posterPath?: string;
+          addedAt: string;
+        }>;
+        createdAt: string;
+        updatedAt: string;
+      };
+      totalCount: number;
     }>;
   }>> {
     let params = new HttpParams();
     if (lang) {
       params = params.set('lang', lang);
     }
+    if (limit) {
+      params = params.set('limit', limit.toString());
+    }
     return this.http.get<ApiResponse<{
-      watchedList: any;
-      defaultWatchlist: any;
-      customWatchlists: any[];
+      watchedList: { list: any; totalCount: number };
+      defaultWatchlist: { list: any; totalCount: number };
+      customWatchlists: Array<{ list: any; totalCount: number }>;
     }>>(`${this.apiUrl}/${userId}/lists`, { params });
   }
 

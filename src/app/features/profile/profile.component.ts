@@ -191,6 +191,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   customWatchlists = signal<Watchlist[]>([]);
   listsViewMode = signal<'slider' | 'list'>('slider');
 
+  // Total counts for lists (used when items are limited)
+  watchedTotalCount = signal<number>(0);
+  defaultWatchlistTotalCount = signal<number>(0);
+  customWatchlistsTotalCounts = signal<number[]>([]);
+
   // Privacy dropdown state
   activePrivacyDropdown = signal<string | null>(null);  // 'watched', 'watchlist', or list ID
 
@@ -926,6 +931,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       next: (response) => {
         if (response.success && response.data.watchedList) {
           this.watched.set(response.data.watchedList);
+          this.watchedTotalCount.set(response.data.totalCount || response.data.watchedList.items.length);
         }
       },
       error: (err) => console.error('Failed to load watched list', err)
@@ -956,6 +962,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       next: (response) => {
         if (response.success && response.data.watchlist) {
           this.defaultWatchlist.set(response.data.watchlist);
+          this.defaultWatchlistTotalCount.set(response.data.totalCount || response.data.watchlist.items.length);
         }
       },
       error: (err) => console.error('Failed to load default watchlist', err)
@@ -967,6 +974,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         if (response.success && response.data.watchlists) {
           const customLists = response.data.watchlists.filter(l => !l.isDefault);
           this.customWatchlists.set(customLists);
+          this.customWatchlistsTotalCounts.set(customLists.map(l => l.totalCount || l.items.length));
         }
       },
       error: (err) => console.error('Failed to load watchlists', err)
@@ -976,17 +984,20 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   private loadUserLists(userId: string): void {
     const lang = this.languageService.language();
 
-    this.userService.getUserPublicLists(userId, lang).subscribe({
+    this.userService.getUserPublicLists(userId, lang, 10).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           // Set watched list (may be null if private)
-          this.watched.set(response.data.watchedList as any);
+          this.watched.set(response.data.watchedList.list as any);
+          this.watchedTotalCount.set(response.data.watchedList.totalCount);
 
           // Set default watchlist (may be null if private)
-          this.defaultWatchlist.set(response.data.defaultWatchlist as any);
+          this.defaultWatchlist.set(response.data.defaultWatchlist.list as any);
+          this.defaultWatchlistTotalCount.set(response.data.defaultWatchlist.totalCount);
 
           // Set custom watchlists (filtered by privacy)
-          this.customWatchlists.set(response.data.customWatchlists as any[]);
+          this.customWatchlists.set(response.data.customWatchlists.map(w => w.list) as any[]);
+          this.customWatchlistsTotalCounts.set(response.data.customWatchlists.map(w => w.totalCount));
         }
       },
       error: (err) => console.error('Failed to load user lists', err)

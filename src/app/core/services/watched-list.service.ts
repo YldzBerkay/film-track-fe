@@ -32,6 +32,7 @@ export interface WatchedListResponse {
     success: boolean;
     data: {
         watchedList: WatchedList;
+        totalCount?: number;
     };
 }
 

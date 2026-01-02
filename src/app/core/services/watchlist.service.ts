@@ -24,6 +24,7 @@ export interface Watchlist {
     items: WatchlistItem[];
     createdAt: string;
     updatedAt: string;
+    totalCount?: number;
 }
 
 export interface WatchlistsResponse {
@@ -37,6 +38,7 @@ export interface WatchlistResponse {
     success: boolean;
     data: {
         watchlist: Watchlist;
+        totalCount?: number;
     };
 }
 

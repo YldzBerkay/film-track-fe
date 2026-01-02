@@ -360,7 +360,7 @@
             <div class="list-card-title">
               <span class="material-symbols-outlined list-icon">visibility</span>
               <h3>{{ 'watched.title' | translate }}</h3>
-              <span class="list-badge">{{ watchedList.items.length }}</span>
+              <span class="list-badge">{{ watchedTotalCount() || watchedList.items.length }}</span>
             </div>
             <div class="list-card-actions">
               @if (isOwnProfile()) {
@@ -404,7 +404,7 @@
             </button>
 
             <div class="list-slider" #watchedContainer>
-              @for (item of watchedList.items.slice(0, 20); track item.tmdbId) {
+              @for (item of watchedList.items.slice(0, 10); track item.tmdbId) {
               <div class="list-poster-card"
                 (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
                 @if (item.posterPath) {
@@ -447,7 +447,7 @@
             <div class="list-card-title">
               <span class="material-symbols-outlined list-icon">bookmark</span>
               <h3>{{ 'watchlist.title' | translate }}</h3>
-              <span class="list-badge">{{ watchlist.items.length }}</span>
+              <span class="list-badge">{{ defaultWatchlistTotalCount() || watchlist.items.length }}</span>
             </div>
             <div class="list-card-actions">
               @if (isOwnProfile()) {
@@ -491,7 +491,7 @@
             </button>
 
             <div class="list-slider" #watchlistContainer>
-              @for (item of watchlist.items.slice(0, 20); track item.tmdbId) {
+              @for (item of watchlist.items.slice(0, 10); track item.tmdbId) {
               <div class="list-poster-card"
                 (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
                 @if (item.posterPath) {
@@ -522,13 +522,13 @@
         }
 
         <!-- Custom Lists Section -->
-        @for (list of customWatchlists(); track list._id) {
+        @for (list of customWatchlists(); track list._id; let i = $index) {
         <div class="list-card">
           <div class="list-card-header">
             <div class="list-card-title">
               <span class="material-symbols-outlined list-icon">{{ list.icon || 'list' }}</span>
               <h3>{{ list.name }}</h3>
-              <span class="list-badge">{{ list.items.length }}</span>
+              <span class="list-badge">{{ customWatchlistsTotalCounts()[i] || list.items.length }}</span>
             </div>
             <div class="list-card-actions">
               @if (isOwnProfile()) {
@@ -572,7 +572,7 @@
             </button>
 
             <div class="list-slider" [id]="'list-' + list._id">
-              @for (item of list.items.slice(0, 20); track item.tmdbId) {
+              @for (item of list.items.slice(0, 10); track item.tmdbId) {
               <div class="list-poster-card"
                 (click)="router.navigate([item.mediaType === 'tv' ? '/tv' : '/movies', item.tmdbId])">
                 @if (item.posterPath) {
