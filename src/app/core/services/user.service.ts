@@ -216,5 +216,100 @@ export class UserService {
   }): Observable<ApiResponse<{ privacySettings: any }>> {
     return this.http.patch<ApiResponse<{ privacySettings: any }>>(`${this.apiUrl}/profile/privacy`, settings);
   }
+
+  /**
+   * Get another user's public lists (respects privacy settings)
+   */
+  getUserPublicLists(userId: string, lang?: string): Observable<ApiResponse<{
+    watchedList: {
+      _id: string;
+      userId: string;
+      name: string;
+      isDefault: boolean;
+      privacyStatus: number;
+      items: Array<{
+        tmdbId: number;
+        mediaType: 'movie' | 'tv';
+        title: string;
+        posterPath?: string;
+        runtime: number;
+        rating?: number;
+        watchedAt: string;
+        addedAt: string;
+      }>;
+      totalRuntime: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+    defaultWatchlist: {
+      _id: string;
+      userId: string;
+      name: string;
+      icon?: string;
+      isDefault: boolean;
+      privacyStatus: number;
+      items: Array<{
+        tmdbId: number;
+        mediaType: 'movie' | 'tv';
+        title: string;
+        posterPath?: string;
+        addedAt: string;
+      }>;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+    customWatchlists: Array<{
+      _id: string;
+      userId: string;
+      name: string;
+      icon?: string;
+      isDefault: boolean;
+      privacyStatus: number;
+      items: Array<{
+        tmdbId: number;
+        mediaType: 'movie' | 'tv';
+        title: string;
+        posterPath?: string;
+        addedAt: string;
+      }>;
+      createdAt: string;
+      updatedAt: string;
+    }>;
+  }>> {
+    let params = new HttpParams();
+    if (lang) {
+      params = params.set('lang', lang);
+    }
+    return this.http.get<ApiResponse<{
+      watchedList: any;
+      defaultWatchlist: any;
+      customWatchlists: any[];
+    }>>(`${this.apiUrl}/${userId}/lists`, { params });
+  }
+
+  /**
+   * Get a specific list for a user with privacy filtering
+   */
+  getUserListDetail(userId: string, listType: string, lang?: string): Observable<ApiResponse<{
+    list: any | null;
+    type: 'watched' | 'watchlist' | 'custom';
+    ownerUsername: string;
+    ownerAvatar: string | null;
+    canView: boolean;
+    privacyMessage?: string;
+  }>> {
+    let params = new HttpParams();
+    if (lang) {
+      params = params.set('lang', lang);
+    }
+    return this.http.get<ApiResponse<{
+      list: any;
+      type: 'watched' | 'watchlist' | 'custom';
+      ownerUsername: string;
+      ownerAvatar: string | null;
+      canView: boolean;
+      privacyMessage?: string;
+    }>>(`${this.apiUrl}/${userId}/lists/${listType}`, { params });
+  }
 }
 

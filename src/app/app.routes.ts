@@ -75,6 +75,11 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'profile/:username/lists/:listType',
+    loadComponent: () =>
+      import('./features/lists/public-list-detail/public-list-detail.component').then((m) => m.PublicListDetailComponent)
+  },
+  {
     path: 'profile/:username',
     loadComponent: () =>
       import('./features/profile/profile.component').then((m) => m.ProfileComponent)

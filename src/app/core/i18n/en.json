@@ -189,7 +189,8 @@
         "noLikes": "No likes yet. Go show some love to reviews and lists!",
         "noLikesOther": "This user hasn't liked anything yet.",
         "report": "Report",
-        "tasteMatch": "Taste Match"
+        "tasteMatch": "Taste Match",
+        "viewProfile": "View Profile"
     },
     "privacy": {
         "everyone": "Everyone",

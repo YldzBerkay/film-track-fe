@@ -590,6 +590,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             this.loadMoodTimeline();
             this.loadBadges();
           }
+
+          // Load lists if permitted
+          if (this.canViewLibrary()) {
+            this.loadLists();
+          }
         } else {
           this.error.set('Profile not found');
         }
@@ -928,6 +933,19 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   loadLists(): void {
+    if (this.isOwnProfile()) {
+      // For own profile, use authenticated endpoints
+      this.loadOwnLists();
+    } else {
+      // For other users' profiles, use public endpoint with privacy filtering
+      const userId = this.profile()?.user.id;
+      if (userId) {
+        this.loadUserLists(userId);
+      }
+    }
+  }
+
+  private loadOwnLists(): void {
     const limit = this.activeTab() === 'profile' ? 10 : undefined;
 
     // Load watched list
@@ -952,6 +970,26 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => console.error('Failed to load watchlists', err)
+    });
+  }
+
+  private loadUserLists(userId: string): void {
+    const lang = this.languageService.language();
+
+    this.userService.getUserPublicLists(userId, lang).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          // Set watched list (may be null if private)
+          this.watched.set(response.data.watchedList as any);
+
+          // Set default watchlist (may be null if private)
+          this.defaultWatchlist.set(response.data.defaultWatchlist as any);
+
+          // Set custom watchlists (filtered by privacy)
+          this.customWatchlists.set(response.data.customWatchlists as any[]);
+        }
+      },
+      error: (err) => console.error('Failed to load user lists', err)
     });
   }
 

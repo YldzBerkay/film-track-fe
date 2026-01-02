@@ -182,7 +182,15 @@
         "noImports": "Henüz içe aktarım yok",
         "noLikes": "Henüz beğeni yok. İncelemeleri ve listeleri beğenmeye başla!",
         "report": "Rapor",
-        "tasteMatch": "Zevk Eşleşmesi"
+        "tasteMatch": "Zevk Eşleşmesi",
+        "viewProfile": "Profili Görüntüle",
+        "privateLibrary": "Bu kullanıcının kütüphanesi gizli.",
+        "privateActivity": "Bu kullanıcının aktivite geçmişi gizli.",
+        "privateMood": "Bu kullanıcının mood verileri gizli.",
+        "privateStats": "İstatistikler gizli.",
+        "noListsOther": "Bu kullanıcı henüz liste oluşturmamış.",
+        "noActivitiesOther": "Bu kullanıcının son aktivitesi yok.",
+        "noLikesOther": "Bu kullanıcı henüz hiçbir şeyi beğenmemiş."
     },
     "privacy": {
         "everyone": "Herkes",

@@ -389,7 +389,8 @@
                 }
               </div>
               }
-              <button class="expand-btn" routerLink="/lists/watched">
+              <button class="expand-btn"
+                [routerLink]="isOwnProfile() ? '/lists/watched' : ['/profile', profile()!.user.username, 'lists', 'watched']">
                 <span>{{ 'profile.viewAll' | translate }}</span>
                 <span class="material-symbols-outlined">arrow_forward</span>
               </button>
@@ -475,7 +476,8 @@
                 }
               </div>
               }
-              <button class="expand-btn" routerLink="/lists/watchlist">
+              <button class="expand-btn"
+                [routerLink]="isOwnProfile() ? '/lists/watchlist' : ['/profile', profile()!.user.username, 'lists', 'watchlist']">
                 <span>{{ 'profile.viewAll' | translate }}</span>
                 <span class="material-symbols-outlined">arrow_forward</span>
               </button>
@@ -555,7 +557,8 @@
                 }
               </div>
               }
-              <button class="expand-btn" [routerLink]="['/lists', list._id]">
+              <button class="expand-btn"
+                [routerLink]="isOwnProfile() ? ['/lists', list._id] : ['/profile', profile()!.user.username, 'lists', list._id]">
                 <span>{{ 'profile.viewAll' | translate }}</span>
                 <span class="material-symbols-outlined">arrow_forward</span>
               </button>
@@ -603,7 +606,8 @@
         <div class="lists-compact-view">
           <!-- Watched List -->
           @if (watched(); as watchedList) {
-          <a class="compact-list-item" routerLink="/lists/watched">
+          <a class="compact-list-item"
+            [routerLink]="isOwnProfile() ? '/lists/watched' : ['/profile', profile()!.user.username, 'lists', 'watched']">
             <div class="compact-list-icon">
               <span class="material-symbols-outlined">visibility</span>
             </div>
@@ -617,7 +621,8 @@
 
           <!-- Default Watchlist -->
           @if (defaultWatchlist(); as watchlist) {
-          <a class="compact-list-item" routerLink="/lists/watchlist">
+          <a class="compact-list-item"
+            [routerLink]="isOwnProfile() ? '/lists/watchlist' : ['/profile', profile()!.user.username, 'lists', 'watchlist']">
             <div class="compact-list-icon">
               <span class="material-symbols-outlined">bookmark</span>
             </div>

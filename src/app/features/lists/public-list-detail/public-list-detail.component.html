@@ -1,0 +1,99 @@
+<div class="list-detail-container">
+    <!-- Floating Ambient Orbs -->
+    <div class="floating-orb floating-orb--primary"></div>
+    <div class="floating-orb floating-orb--accent"></div>
+
+    <app-header></app-header>
+
+    <main class="main-content">
+        <!-- Header Section -->
+        <div class="list-header">
+            <button class="back-btn" (click)="goBack()">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="list-title-section">
+                <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
+                <h1>{{ listTitle() }}</h1>
+                <span class="item-count">{{ items().length }} {{ 'watchlist.items' | translate }}</span>
+            </div>
+
+            <!-- Owner Info -->
+            <div class="owner-info" (click)="navigateToProfile()">
+                @if (ownerAvatar()) {
+                <img [src]="ownerAvatar()" alt="Owner avatar" class="owner-avatar" />
+                } @else {
+                <div class="owner-avatar-placeholder">
+                    <span class="material-symbols-outlined">person</span>
+                </div>
+                }
+                <span class="owner-username">@{{ ownerUsername() }}</span>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="list-content">
+            @if (isLoading()) {
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>{{ 'common.loading' | translate }}</p>
+            </div>
+            } @else if (error()) {
+            <div class="error-state">
+                <span class="material-symbols-outlined">error</span>
+                <p>{{ error() }}</p>
+                <button class="retry-btn" (click)="goBack()">{{ 'common.goBack' | translate }}</button>
+            </div>
+            } @else if (!canView()) {
+            <div class="private-state">
+                <span class="material-symbols-outlined">lock</span>
+                <p>{{ privacyMessage() || ('profile.privateLibrary' | translate) }}</p>
+                <button class="back-profile-btn" (click)="navigateToProfile()">
+                    <span class="material-symbols-outlined">person</span>
+                    {{ 'profile.viewProfile' | translate }}
+                </button>
+            </div>
+            } @else if (items().length === 0) {
+            <div class="empty-state">
+                <span class="material-symbols-outlined">{{ listIcon() }}</span>
+                <p>
+                    @if (listType() === 'watched') {
+                    {{ 'watched.empty' | translate }}
+                    } @else {
+                    {{ 'watchlist.empty' | translate }}
+                    }
+                </p>
+            </div>
+            } @else {
+            <div class="items-grid">
+                @for (item of items(); track item.tmdbId) {
+                <div class="item-card" (click)="navigateToItem(item)">
+                    @if (item.posterPath) {
+                    <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title"
+                        class="item-poster" />
+                    } @else {
+                    <div class="item-poster-placeholder">
+                        <span class="material-symbols-outlined">movie</span>
+                    </div>
+                    }
+                    <div class="item-overlay">
+                        <span class="material-symbols-outlined">play_circle</span>
+                    </div>
+                    <div class="item-info">
+                        <p class="item-title">{{ item.title }}</p>
+                        <div class="item-meta">
+                            <span class="media-type-badge">{{ item.mediaType === 'tv' ? 'TV' : 'Movie' }}</span>
+                            @if (listType() === 'watched' && $any(item).rating) {
+                            <span class="item-rating">
+                                <span class="material-symbols-outlined">star</span>
+                                {{ $any(item).rating.toFixed(1) }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </main>
+</div>
