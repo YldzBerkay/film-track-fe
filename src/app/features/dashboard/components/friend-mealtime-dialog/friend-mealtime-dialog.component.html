@@ -1,0 +1,80 @@
+<div class="friend-dialog-backdrop" *ngIf="isOpen()" (click)="close.emit()">
+    <div class="friend-dialog" (click)="$event.stopPropagation()">
+        <div class="friend-dialog-header">
+            <h3>{{ 'dashboard.watchWithFriends' | translate }}</h3>
+            <button class="close-btn" (click)="close.emit()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="friend-dialog-body">
+            <!-- Loading State -->
+            @if (isFriendPickLoading()) {
+            <div class="friend-loading">
+                <div class="spinner"></div>
+                <p>{{ 'dashboard.findingEpisode' | translate }}</p>
+            </div>
+            } @else if (friendPickResult(); as result) {
+            <!-- Result State -->
+            <div class="friend-result">
+                <div class="friend-result-poster"
+                    [style.background-image]="'url(' + (result.stillPath || result.showPoster) + ')'"></div>
+                <div class="friend-result-info">
+                    <h4>{{ result.showTitle }}</h4>
+                    <p class="episode-info">S{{ result.seasonNumber }} E{{ result.episodeNumber }} - {{
+                        result.episodeTitle }}</p>
+                    <p class="runtime">{{ result.runtime }}m</p>
+                    <p class="shared-with" *ngIf="result.sharedWith.length > 0">
+                        {{ 'dashboard.sharedInterestWith' | translate:{ names: result.sharedWith.join(', ') } }}
+                    </p>
+                </div>
+                <div class="friend-result-actions">
+                    <button class="btn-primary">{{ 'dashboard.watchNow' | translate }}</button>
+                    <button class="btn-secondary" (click)="friendPickResult.set(null)">{{ 'dashboard.pickAnother' |
+                        translate
+                        }}</button>
+                </div>
+            </div>
+            } @else {
+            <!-- Friend Selection State -->
+            @if (isFriendsLoading()) {
+            <div class="friend-loading">
+                <div class="spinner"></div>
+                <p>{{ 'dashboard.loadingFriends' | translate }}</p>
+            </div>
+            } @else if (friendsList().length === 0) {
+            <div class="no-friends">
+                <span class="material-symbols-outlined">group_off</span>
+                <p>{{ 'dashboard.noFriends' | translate }}</p>
+                <p class="hint">{{ 'dashboard.noFriendsHint' | translate }}</p>
+            </div>
+            } @else {
+            <p class="select-hint">{{ 'dashboard.selectFriendsHint' | translate }}</p>
+            <div class="friend-list">
+                @for (friend of friendsList(); track friend.id) {
+                <div class="friend-item" [class.selected]="isFriendSelected(friend.id)"
+                    (click)="toggleFriendSelection(friend.id)">
+                    <div class="friend-avatar"></div>
+                    <div class="friend-info">
+                        <span class="friend-nickname">{{ friend.name || friend.username }}</span>
+                        <span class="friend-username">@{{ friend.username }}</span>
+                    </div>
+                    <div class="friend-check">
+                        <span class="material-symbols-outlined">{{ isFriendSelected(friend.id) ? 'check_circle' :
+                            'radio_button_unchecked' }}</span>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+            }
+        </div>
+
+        <div class="friend-dialog-footer" *ngIf="!isFriendPickLoading() && !friendPickResult()">
+            <button class="btn-secondary" (click)="close.emit()">{{ 'dialog.cancel' | translate }}</button>
+            <button class="btn-primary" [disabled]="selectedFriends().size === 0" (click)="submitFriendPick()">
+                {{ 'dashboard.findEpisode' | translate:{ count: selectedFriends().size } }}
+            </button>
+        </div>
+    </div>
+</div>

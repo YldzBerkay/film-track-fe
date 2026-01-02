@@ -1,11 +1,10 @@
 .dialog-backdrop {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -13,58 +12,49 @@
 }
 
 .dialog-modal {
-    background: rgba(30, 30, 30, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 24, 28, 0.98);
+    border: 1px solid var(--color-border);
     border-radius: 16px;
     width: 90%;
-    max-width: 400px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    max-width: 420px;
+    max-height: 85vh;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 
-    // Type variants
+    // Type variants (border accents)
     &.danger {
-        border-color: rgba(255, 82, 82, 0.3);
-
-        .dialog-header {
-            background: linear-gradient(to right, rgba(255, 82, 82, 0.1), transparent);
-        }
+        border-color: rgba(255, 82, 82, 0.5);
     }
 
     &.success {
-        border-color: rgba(76, 175, 80, 0.3);
-
-        .dialog-header {
-            background: linear-gradient(to right, rgba(76, 175, 80, 0.1), transparent);
-        }
+        border-color: rgba(76, 175, 80, 0.5);
     }
 
     &.warning {
-        border-color: rgba(255, 193, 7, 0.3);
-
-        .dialog-header {
-            background: linear-gradient(to right, rgba(255, 193, 7, 0.1), transparent);
-        }
+        border-color: rgba(255, 193, 7, 0.5);
     }
 }
 
 .dialog-header {
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border);
 
     .dialog-title {
         margin: 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--color-text-main);
     }
 
     .close-btn {
         background: none;
         border: none;
-        color: var(--text-muted);
+        color: var(--color-text-muted);
         cursor: pointer;
         padding: 4px;
         border-radius: 50%;
@@ -75,16 +65,18 @@
 
         &:hover {
             background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
+            color: var(--color-text-main);
         }
     }
 }
 
 .dialog-body {
     padding: 1.5rem;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     line-height: 1.6;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    overflow-y: auto;
+    flex: 1;
 
     .dialog-input-container {
         margin-top: 1rem;
@@ -93,23 +85,24 @@
     .dialog-textarea,
     .dialog-input {
         width: 100%;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 0.75rem;
-        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 0.875rem;
+        color: var(--color-text-main);
         font-size: 0.95rem;
-        transition: border-color 0.2s;
+        transition: all 0.2s;
         box-sizing: border-box;
 
         &:focus {
             outline: none;
-            border-color: var(--primary-color);
-            background: rgba(0, 0, 0, 0.3);
+            border-color: var(--color-primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 224, 84, 0.1);
         }
 
         &::placeholder {
-            color: var(--text-muted);
+            color: var(--color-text-muted);
         }
     }
 
@@ -119,13 +112,13 @@
     }
 
     .dialog-input {
-        height: 42px; // Fixed height for single line input
+        height: 44px;
     }
 
     .char-count {
         text-align: right;
         font-size: 0.8rem;
-        color: var(--text-muted);
+        color: var(--color-text-muted);
         margin-top: 0.5rem;
         transition: color 0.2s;
 
@@ -144,12 +137,12 @@
     }
 
     .spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid rgba(255, 255, 255, 0.1);
-        border-top-color: var(--primary-color, #6366f1);
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-primary);
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
@@ -160,8 +153,8 @@
 
     .loading-text {
         margin-top: 1rem;
-        color: var(--text-muted);
-        font-size: 0.95rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
     }
 
     // Result State
@@ -184,12 +177,12 @@
         }
 
         &.success {
-            background: rgba(76, 175, 80, 0.15);
-            color: #4caf50;
+            background: rgba(0, 224, 84, 0.1);
+            color: var(--color-primary);
         }
 
         &.failure {
-            background: rgba(255, 82, 82, 0.15);
+            background: rgba(255, 82, 82, 0.1);
             color: #ff5252;
         }
     }
@@ -197,38 +190,39 @@
     .result-title {
         margin: 0 0 0.5rem;
         font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
+        font-weight: 700;
+        color: var(--color-text-main);
     }
 
     .result-message {
         margin: 0 0 1rem;
-        color: var(--text-secondary);
+        color: var(--color-text-secondary);
         font-size: 0.95rem;
         line-height: 1.5;
     }
 
     .confidence-bar {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
     }
 
     .confidence-label {
         font-size: 0.85rem;
-        color: var(--text-muted);
+        color: var(--color-text-muted);
         margin-bottom: 0.5rem;
+        text-align: center;
     }
 
     .confidence-track {
-        height: 8px;
+        height: 6px;
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        border-radius: 999px;
         overflow: hidden;
     }
 
     .confidence-fill {
         height: 100%;
-        background: linear-gradient(90deg, #6366f1, #8b5cf6);
-        border-radius: 4px;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+        border-radius: 999px;
         transition: width 0.5s ease;
     }
 }
@@ -236,50 +230,55 @@
 .dialog-footer {
     padding: 1rem 1.5rem;
     display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+    justify-content: flex-end;
+    gap: 12px;
     background: rgba(0, 0, 0, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--color-border);
 
     .btn {
-        padding: 0.6rem 1.2rem;
-        border-radius: 8px;
-        font-weight: 500;
+        padding: 10px 20px;
+        border-radius: 9999px;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
         border: none;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
 
         &.btn-secondary {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
 
             &:hover {
-                background: rgba(255, 255, 255, 0.05);
-                color: var(--text-primary);
-                border-color: rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--color-text-main);
             }
         }
 
         &.btn-primary {
-            background: var(--primary-color);
-            color: white;
+            background: linear-gradient(135deg, var(--color-primary), #00b345);
+            color: #000; // Assuming text on primary is dark (or light depending on theme, standard for this app seems dark on green?)
+            // Wait, styles.css says --color-primary is #00E054. Text on specific green usually black or very dark.
+            // dashboard.scss had: color: var(--color-background); for btn-primary.
+            color: var(--color-background);
 
             &:hover {
-                filter: brightness(1.1);
+                box-shadow: 0 4px 16px rgba(0, 224, 84, 0.3);
+                transform: translateY(-1px);
             }
 
             &.btn-danger {
-                background: #ff5252;
+                background: linear-gradient(135deg, #ff5252, #d32f2f);
+                color: white;
             }
 
             &.btn-success {
-                background: #4caf50;
+                background: linear-gradient(135deg, #4caf50, #2e7d32);
+                color: white;
             }
 
             &.btn-warning {
-                background: #ffc107;
+                background: linear-gradient(135deg, #ffca28, #ffb300);
                 color: black;
             }
         }
@@ -288,6 +287,8 @@
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
+            transform: none !important;
+            box-shadow: none !important;
         }
     }
 }

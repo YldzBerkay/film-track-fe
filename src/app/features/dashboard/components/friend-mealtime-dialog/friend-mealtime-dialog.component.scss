@@ -1,0 +1,293 @@
+// Friend Mealtime Dialog Styles
+.friend-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.friend-dialog {
+    background: rgba(20, 24, 28, 0.98);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 420px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    animation: dialog-enter 0.2s ease-out;
+}
+
+@keyframes dialog-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.friend-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+
+    h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--color-text-main);
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 50%;
+        transition: all 0.2s;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text-main);
+        }
+    }
+}
+
+.friend-dialog-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+
+    .select-hint {
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+        margin: 0 0 1rem;
+    }
+}
+
+.friend-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    p {
+        color: var(--color-text-muted);
+        margin: 1rem 0 0;
+        font-size: 0.9rem;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.no-friends {
+    text-align: center;
+    padding: 2rem 0;
+
+    .material-symbols-outlined {
+        font-size: 48px;
+        color: var(--color-text-muted);
+        margin-bottom: 1rem;
+    }
+
+    p {
+        margin: 0;
+        color: var(--color-text-secondary);
+    }
+
+    .hint {
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+        margin-top: 0.5rem;
+    }
+}
+
+.friend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--color-border);
+    }
+
+    &.selected {
+        background: rgba(0, 224, 84, 0.08);
+        border-color: var(--color-primary);
+
+        .friend-check .material-symbols-outlined {
+            color: var(--color-primary);
+        }
+    }
+}
+
+.friend-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    flex-shrink: 0;
+}
+
+.friend-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .friend-nickname {
+        font-weight: 600;
+        color: var(--color-text-main);
+        font-size: 0.95rem;
+    }
+
+    .friend-username {
+        color: var(--color-text-muted);
+        font-size: 0.8rem;
+    }
+}
+
+.friend-check {
+    .material-symbols-outlined {
+        font-size: 24px;
+        color: var(--color-text-muted);
+        transition: color 0.2s;
+    }
+}
+
+.friend-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-border);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 10px 20px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), #00b345);
+    color: var(--color-background);
+
+    &:hover:not(:disabled) {
+        box-shadow: 0 4px 16px rgba(0, 224, 84, 0.3);
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--color-text-main);
+    }
+}
+
+// Friend Result
+.friend-result {
+    text-align: center;
+}
+
+.friend-result-poster {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--color-surface);
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.friend-result-info {
+    margin-bottom: 1.5rem;
+
+    h4 {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-text-main);
+    }
+
+    .episode-info {
+        margin: 0;
+        color: var(--color-text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .runtime {
+        margin: 0.25rem 0 0;
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+    }
+
+    .shared-with {
+        margin: 0.75rem 0 0;
+        color: var(--color-primary);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+}
+
+.friend-result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}

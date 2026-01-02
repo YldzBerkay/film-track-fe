@@ -8,20 +8,19 @@ import { TMDBService } from '../../core/services/tmdb.service';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 import { HeaderComponent } from '../../layout/header/header.component';
 import { LanguageService } from '../../core/services/language.service';
-import { TranslatePipe, TranslationService } from '../../core/i18n';
-import { WatchlistService, Watchlist, DashboardListSummary } from '../../core/services/watchlist.service';
-import { WatchedListService, WatchedList } from '../../core/services/watched-list.service';
+import { TranslatePipe } from '../../core/i18n';
+import { WatchlistService, DashboardListSummary } from '../../core/services/watchlist.service';
+import { WatchedListService } from '../../core/services/watched-list.service';
 
 type FeedType = 'following' | 'friends' | 'global';
 
-import { RecommendationService, MealtimeRecommendation, DailyPick, Friend, FriendMealtimeRecommendation, MoodRecommendation } from '../../core/services/recommendation.service';
-import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
+import { RecommendationService, MealtimeRecommendation, DailyPick, MoodRecommendation } from '../../core/services/recommendation.service';
 import { CommentListComponent } from '../../shared/components/comments/comment-list/comment-list.component';
 
 import { CreateListDialogComponent } from '../../shared/components/create-list-dialog/create-list-dialog.component';
 import { ReactionBarComponent } from '../../shared/components/reaction-bar/reaction-bar.component';
-import { TasteMatchComponent } from '../../shared/components/taste-match/taste-match.component';
-import { MatchService, TasteMatchResult } from '../../core/services/match.service';
+import { FriendMealtimeDialogComponent } from './components/friend-mealtime-dialog/friend-mealtime-dialog.component';
+import { TasteMatchDialogComponent } from './components/taste-match-dialog/taste-match-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,15 +35,14 @@ import { MatchService, TasteMatchResult } from '../../core/services/match.servic
     TranslatePipe,
     CreateListDialogComponent,
     ReactionBarComponent,
-    TasteMatchComponent
+    FriendMealtimeDialogComponent,
+    TasteMatchDialogComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
-  // ...
-
   private authService = inject(AuthService);
   private activityService = inject(ActivityService);
   private recommendationService = inject(RecommendationService);
@@ -108,11 +106,6 @@ export class DashboardComponent implements OnInit {
 
   // Friend Mealtime Roulette state
   showFriendDialog = signal(false);
-  friendsList = signal<Friend[]>([]);
-  selectedFriends = signal<Set<string>>(new Set());
-  isFriendPickLoading = signal(false);
-  friendPickResult = signal<FriendMealtimeRecommendation | null>(null);
-  isFriendsLoading = signal(false);
 
   // Mood Recommendations state
   moodRecommendations = signal<MoodRecommendation[]>([]);
@@ -121,12 +114,8 @@ export class DashboardComponent implements OnInit {
   includeWatched = signal(false);
 
   // Taste Match Dialog state
-  private matchService = inject(MatchService);
   showTasteMatchDialog = signal(false);
   tasteMatchTargetUser = signal<{ id: string; name: string } | null>(null);
-  tasteMatchResult = signal<TasteMatchResult | null>(null);
-  isTasteMatchLoading = signal(false);
-  tasteMatchError = signal<string | null>(null);
 
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
@@ -348,65 +337,10 @@ export class DashboardComponent implements OnInit {
   // Friend Mealtime Roulette Methods
   openFriendDialog(): void {
     this.showFriendDialog.set(true);
-    this.friendPickResult.set(null);
-    this.selectedFriends.set(new Set());
-    this.loadFriends();
   }
 
   closeFriendDialog(): void {
     this.showFriendDialog.set(false);
-    this.friendPickResult.set(null);
-    this.selectedFriends.set(new Set());
-    this.isFriendPickLoading.set(false);
-  }
-
-  loadFriends(): void {
-    this.isFriendsLoading.set(true);
-    this.recommendationService.getFriends().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.friendsList.set(response.data);
-        }
-        this.isFriendsLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Failed to load friends:', err);
-        this.isFriendsLoading.set(false);
-      }
-    });
-  }
-
-  toggleFriendSelection(friendId: string): void {
-    const current = new Set(this.selectedFriends());
-    if (current.has(friendId)) {
-      current.delete(friendId);
-    } else {
-      current.add(friendId);
-    }
-    this.selectedFriends.set(current);
-  }
-
-  isFriendSelected(friendId: string): boolean {
-    return this.selectedFriends().has(friendId);
-  }
-
-  submitFriendPick(): void {
-    const selected = Array.from(this.selectedFriends());
-    if (selected.length === 0) return;
-
-    this.isFriendPickLoading.set(true);
-    this.recommendationService.getFriendMealtimePick(selected).subscribe({
-      next: (response) => {
-        this.isFriendPickLoading.set(false);
-        if (response.success && response.data) {
-          this.friendPickResult.set(response.data);
-        }
-      },
-      error: (err) => {
-        console.error('Failed to get friend mealtime pick:', err);
-        this.isFriendPickLoading.set(false);
-      }
-    });
   }
 
   onSearch(): void {
@@ -593,30 +527,9 @@ export class DashboardComponent implements OnInit {
 
     this.tasteMatchTargetUser.set({ id: userId, name: userName });
     this.showTasteMatchDialog.set(true);
-    this.tasteMatchResult.set(null);
-    this.tasteMatchError.set(null);
-    this.isTasteMatchLoading.set(true);
-
-    this.matchService.getTasteMatch(userId).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.tasteMatchResult.set(response.data);
-        } else {
-          this.tasteMatchError.set('Failed to calculate taste match');
-        }
-        this.isTasteMatchLoading.set(false);
-      },
-      error: (err) => {
-        this.tasteMatchError.set(err.error?.message || 'Failed to calculate taste match');
-        this.isTasteMatchLoading.set(false);
-      }
-    });
   }
 
   closeTasteMatchDialog(): void {
     this.showTasteMatchDialog.set(false);
-    this.tasteMatchTargetUser.set(null);
-    this.tasteMatchResult.set(null);
-    this.tasteMatchError.set(null);
   }
 }
