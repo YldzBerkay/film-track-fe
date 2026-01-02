@@ -6,13 +6,14 @@ import { TMDBService } from '../../../core/services/tmdb.service';
 import { UserService } from '../../../core/services/user.service';
 import { TranslatePipe, TranslationService } from '../../../core/i18n';
 import { LanguageService } from '../../../core/services/language.service';
+import { ListFilterComponent } from '../../../shared/components/list-filter/list-filter.component';
 
 type ListType = 'watched' | 'watchlist' | 'custom';
 
 @Component({
     selector: 'app-public-list-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, HeaderComponent, TranslatePipe],
+    imports: [CommonModule, RouterModule, HeaderComponent, TranslatePipe, ListFilterComponent],
     templateUrl: './public-list-detail.component.html',
     styleUrl: './public-list-detail.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -41,6 +42,8 @@ export class PublicListDetailComponent implements OnInit {
     isLoading = signal(true);
     error = signal<string | null>(null);
 
+    filteredItems = signal<any[]>([]);
+
     private previousLanguage = this.languageService.language();
 
     constructor() {
@@ -51,6 +54,10 @@ export class PublicListDetailComponent implements OnInit {
                 this.loadListDetail();
             }
         });
+
+        effect(() => {
+            this.filteredItems.set(this.items());
+        }, { allowSignalWrites: true });
     }
 
     readonly listTitle = computed(() => {
@@ -165,5 +172,9 @@ export class PublicListDetailComponent implements OnInit {
 
     navigateToProfile(): void {
         this.router.navigate(['/profile', this.username()]);
+    }
+
+    onFilterChange(items: any[]): void {
+        this.filteredItems.set(items);
     }
 }

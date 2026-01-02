@@ -18,6 +18,11 @@
 
                 <!-- Actions -->
                 <div class="list-actions">
+                    @if (!isLoading() && !error() && items().length > 0) {
+                    <app-list-filter [items]="items()" [listType]="listType()"
+                        (filterChange)="onFilterChange($event)"></app-list-filter>
+                    }
+
                     <button class="action-btn" (click)="openEditDialog()"
                         [title]="'profile.editDirectorsCut' | translate">
                         <span class="material-symbols-outlined">edit</span>
@@ -78,7 +83,7 @@
             </div>
             } @else {
             <div class="items-grid">
-                @for (item of items(); track item.tmdbId) {
+                @for (item of filteredItems(); track item.tmdbId) {
                 <div class="item-card" (click)="navigateToItem(item)">
                     @if (item.posterPath) {
                     <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title"

@@ -15,6 +15,13 @@
                 <span class="material-symbols-outlined list-icon">{{ listIcon() }}</span>
                 <h1>{{ listTitle() }}</h1>
                 <span class="item-count">{{ items().length }} {{ 'watchlist.items' | translate }}</span>
+
+                <div class="list-actions">
+                    @if (!isLoading() && !error() && canView() && items().length > 0) {
+                    <app-list-filter [items]="items()" [listType]="listType()"
+                        (filterChange)="onFilterChange($event)"></app-list-filter>
+                    }
+                </div>
             </div>
 
             <!-- Owner Info -->
@@ -65,7 +72,7 @@
             </div>
             } @else {
             <div class="items-grid">
-                @for (item of items(); track item.tmdbId) {
+                @for (item of filteredItems(); track item.tmdbId) {
                 <div class="item-card" (click)="navigateToItem(item)">
                     @if (item.posterPath) {
                     <img [src]="tmdbService.getPosterUrl(item.posterPath, 'w300')" [alt]="item.title"

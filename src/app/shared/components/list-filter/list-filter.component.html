@@ -1,0 +1,131 @@
+<div class="filter-container">
+    <button class="action-btn" [class.active-trigger]="hasActiveFilters()" (click)="toggleExpand($event)"
+        title="Filter List">
+        <span class="material-symbols-outlined">filter_list</span>
+        @if (hasActiveFilters()) {
+        <span class="active-dot"></span>
+        }
+    </button>
+
+    @if (isExpanded()) {
+    <div class="filter-dropdown" (click)="$event.stopPropagation()">
+        <div class="filter-header-mobile">
+            <span>Filters</span>
+            <button class="close-btn" (click)="toggleExpand($event)">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="filter-scroll-area">
+            <div class="filter-grid">
+                <!-- Year -->
+                <div class="filter-group">
+                    <label>Year</label>
+                    <select [ngModel]="selectedYear()" (ngModelChange)="selectedYear.set($event)">
+                        <option [ngValue]="null">All Years</option>
+                        @for (year of availableYears(); track year) {
+                        <option [value]="year">{{ year }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Genre -->
+                <div class="filter-group">
+                    <label>Genre</label>
+                    <select [ngModel]="selectedGenre()" (ngModelChange)="selectedGenre.set($event)">
+                        <option [ngValue]="null">All Genres</option>
+                        @for (genre of availableGenres(); track genre) {
+                        <option [value]="genre">{{ genre }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Country -->
+                <div class="filter-group">
+                    <label>Country</label>
+                    <select [ngModel]="selectedCountry()" (ngModelChange)="selectedCountry.set($event)">
+                        <option [ngValue]="null">All Countries</option>
+                        @for (country of availableCountries(); track country) {
+                        <option [value]="country">{{ country }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Language -->
+                <div class="filter-group">
+                    <label>Language</label>
+                    <select [ngModel]="selectedLanguage()" (ngModelChange)="selectedLanguage.set($event)">
+                        <option [ngValue]="null">All Languages</option>
+                        @for (lang of availableLanguages(); track lang) {
+                        <option [value]="lang">{{ lang | uppercase }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Media Type -->
+                <div class="filter-group">
+                    <label>Type</label>
+                    <select [ngModel]="selectedMediaType()" (ngModelChange)="selectedMediaType.set($event)">
+                        <option [ngValue]="null">All Types</option>
+                        <option value="movie">Movies</option>
+                        <option value="tv">TV Shows</option>
+                    </select>
+                </div>
+
+                <!-- Status Filters -->
+                @if (showWatchedFilter()) {
+                <div class="filter-group toggle-group">
+                    <label>Watched</label>
+                    <button class="toggle-btn" [class.active]="filterWatched()" (click)="toggleWatched()">
+                        <span class="material-symbols-outlined">{{ filterWatched() ? 'check_circle' : 'circle' }}</span>
+                        <span>Watched</span>
+                    </button>
+                </div>
+                }
+
+                @if (showLikedFilter()) {
+                <div class="filter-group toggle-group">
+                    <label>Liked</label>
+                    <button class="toggle-btn" [class.active]="filterLiked()" (click)="toggleLiked()">
+                        <span class="material-symbols-outlined">{{ filterLiked() ? 'favorite' : 'favorite_border'
+                            }}</span>
+                        <span>Liked</span>
+                    </button>
+                </div>
+                }
+
+                @if (showRatedReviewFilter()) {
+                <div class="filter-group toggle-group">
+                    <label>Rated</label>
+                    <button class="toggle-btn" [class.active]="filterRated()" (click)="toggleRated()">
+                        <span class="material-symbols-outlined">{{ filterRated() ? 'star' : 'star_outline' }}</span>
+                        <span>Rated</span>
+                    </button>
+                </div>
+
+                <div class="filter-group toggle-group">
+                    <label>Reviewed</label>
+                    <button class="toggle-btn" [class.active]="filterReviewed()" (click)="toggleReviewed()">
+                        <span class="material-symbols-outlined">{{ filterReviewed() ? 'rate_review' :
+                            'chat_bubble_outline' }}</span>
+                        <span>Reviewed</span>
+                    </button>
+                </div>
+                }
+            </div>
+        </div>
+
+        @if (hasActiveFilters()) {
+        <div class="filter-actions">
+            <button class="clear-btn" (click)="clearAll()">
+                <span class="material-symbols-outlined">close</span>
+                Clear Filters
+            </button>
+        </div>
+        }
+    </div>
+    @if (isExpanded()) {
+    <div class="backdrop" (click)="toggleExpand($event)"></div>
+    }
+    }
+</div>

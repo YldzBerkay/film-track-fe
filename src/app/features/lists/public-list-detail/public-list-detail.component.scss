@@ -125,6 +125,13 @@
         font-size: 0.9rem;
         font-weight: 500;
     }
+
+    .list-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto;
+    }
 }
 
 // Owner Info

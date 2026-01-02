@@ -7,6 +7,7 @@ import { WatchlistService, Watchlist, WatchlistResponse } from '../../../core/se
 import { WatchedListService, WatchedList, WatchedListResponse } from '../../../core/services/watched-list.service';
 import { TranslatePipe, TranslationService } from '../../../core/i18n';
 import { EditListDialogComponent, ListItem } from '../../../shared/components/edit-list-dialog/edit-list-dialog.component';
+import { ListFilterComponent } from '../../../shared/components/list-filter/list-filter.component';
 import { LanguageService } from '../../../core/services/language.service';
 
 type ListType = 'watched' | 'watchlist' | 'custom';
@@ -14,7 +15,7 @@ type ListType = 'watched' | 'watchlist' | 'custom';
 @Component({
     selector: 'app-list-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, HeaderComponent, TranslatePipe, EditListDialogComponent],
+    imports: [CommonModule, RouterModule, HeaderComponent, TranslatePipe, EditListDialogComponent, ListFilterComponent],
     templateUrl: './list-detail.component.html',
     styleUrl: './list-detail.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,6 +36,8 @@ export class ListDetailComponent implements OnInit {
     isLoading = signal(true);
     error = signal<string | null>(null);
 
+    filteredItems = signal<any[]>([]);
+
     // Privacy dropdown state
     showPrivacyDropdown = signal(false);
 
@@ -48,6 +51,12 @@ export class ListDetailComponent implements OnInit {
                 this.reloadList();
             }
         });
+
+        effect(() => {
+            // Reset filtered items when raw items change (e.g. data load)
+            // We only set this initially, the filter component will drive updates
+            this.filteredItems.set(this.items());
+        }, { allowSignalWrites: true });
     }
 
     reloadList(): void {
@@ -268,5 +277,9 @@ export class ListDetailComponent implements OnInit {
                 });
             }
         }
+    }
+
+    onFilterChange(items: any[]): void {
+        this.filteredItems.set(items);
     }
 }
