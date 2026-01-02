@@ -206,6 +206,75 @@
         }
     </div>
 
+    <!-- Import as List Section -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <span class="material-symbols-outlined settings-icon">playlist_add</span>
+            <h3>{{ 'settings.importAsList' | translate }}</h3>
+        </div>
+        <p class="settings-description">{{ 'settings.importAsListDescription' | translate }}</p>
+
+        <div class="import-form">
+            <div class="file-upload-area">
+                <input type="file" id="listCsvUpload" accept=".csv" (change)="onListCsvFileSelected($event)"
+                    class="file-input" />
+                <label for="listCsvUpload" class="file-upload-label" [class.disabled]="isImportingList()">
+                    @if (isImportingList()) {
+                    <div class="spinner-small"></div>
+                    <span>{{ 'settings.importing' | translate }}</span>
+                    } @else {
+                    <span class="material-symbols-outlined">upload_file</span>
+                    <span>{{ 'settings.selectCsvFile' | translate }}</span>
+                    }
+                </label>
+            </div>
+
+            <div class="import-hint">
+                <span class="material-symbols-outlined">info</span>
+                <span>{{ 'settings.importAsListHint' | translate }}</span>
+            </div>
+        </div>
+
+        @if (importListResult(); as result) {
+        <div class="import-result" [class.success]="result.failedCount === 0" [class.partial]="result.failedCount > 0">
+            <div class="result-summary">
+                @if (result.listName) {
+                <div class="result-item list-name">
+                    <span class="result-label">{{ 'settings.listCreated' | translate }}</span>
+                    <span class="result-value">{{ result.listName }}</span>
+                </div>
+                }
+                <div class="result-item">
+                    <span class="result-label">{{ 'settings.imported' | translate }}</span>
+                    <span class="result-value success">{{ result.importedCount }}</span>
+                </div>
+                @if (result.failedCount > 0) {
+                <div class="result-item">
+                    <span class="result-label">{{ 'settings.failed' | translate }}</span>
+                    <span class="result-value error">{{ result.failedCount }}</span>
+                </div>
+                }
+            </div>
+
+            @if (result.failedItems?.length) {
+            <button class="toggle-failed-btn" (click)="toggleListFailedItems()">
+                <span class="material-symbols-outlined">{{ showListFailedItems() ? 'expand_less' : 'expand_more'
+                    }}</span>
+                {{ 'settings.showFailedItems' | translate }} ({{ result.failedItems.length }})
+            </button>
+
+            @if (showListFailedItems()) {
+            <div class="failed-items-list">
+                @for (item of result.failedItems; track item) {
+                <span class="failed-item">{{ item }}</span>
+                }
+            </div>
+            }
+            }
+        </div>
+        }
+    </div>
+
     <!-- Password Change Section -->
     <div class="settings-card">
         <div class="settings-card-header">
@@ -281,6 +350,31 @@
         </div>
     </div>
 </div>
+<!-- Import Confirmation Dialog -->
+@if (showImportDialog()) {
+<div class="import-dialog-overlay" (click)="closeImportDialog()">
+    <div class="import-dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+            <span class="material-symbols-outlined">help</span>
+            <h3>{{ 'settings.importQuestion' | translate }}</h3>
+        </div>
+        <p class="dialog-message">{{ 'settings.importQuestionDesc' | translate }}</p>
+        <div class="dialog-actions">
+            <button class="btn-secondary" (click)="confirmImport(true)">
+                <span class="material-symbols-outlined">star</span>
+                {{ 'settings.onlyRated' | translate }}
+            </button>
+            <button class="btn-primary" (click)="confirmImport(false)">
+                <span class="material-symbols-outlined">check_circle</span>
+                {{ 'settings.allContent' | translate }}
+            </button>
+        </div>
+        <button class="close-btn" (click)="closeImportDialog()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</div>
+}
 
 <!-- Delete Account Confirmation Dialog -->
 <app-dialog [isOpen]="showDeleteModal()" [title]="'settings.deleteAccount' | translate"

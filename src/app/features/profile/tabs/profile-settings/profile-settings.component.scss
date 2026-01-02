@@ -217,6 +217,10 @@
     opacity: 0;
     cursor: pointer;
     z-index: 10;
+
+    &:disabled {
+        pointer-events: none;
+    }
 }
 
 .file-upload-label {
@@ -642,6 +646,144 @@
     }
 
     &:active {
+        transform: translateY(0);
+    }
+}
+
+// Import Confirmation Dialog
+.import-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.import-dialog {
+    position: relative;
+    background: linear-gradient(145deg, #1a1f26, #0d1117);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 420px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+
+    .dialog-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+
+        .material-symbols-outlined {
+            font-size: 28px;
+            color: #00e054;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: #f1f1f1;
+        }
+    }
+
+    .dialog-message {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin: 0 0 24px;
+    }
+
+    .dialog-actions {
+        display: flex;
+        gap: 12px;
+
+        button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+
+            .material-symbols-outlined {
+                font-size: 20px;
+            }
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #f1f1f1;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.12);
+                transform: translateY(-2px);
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00e054, #00c94b);
+            color: #0a0d10;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 224, 84, 0.3);
+            }
+        }
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        transition: all 0.2s;
+
+        &:hover {
+            color: #f1f1f1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .material-symbols-outlined {
+            font-size: 20px;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
         transform: translateY(0);
     }
 }

@@ -52,6 +52,15 @@ export class ProfileSettingsComponent {
     overwriteExisting = signal(false);
     showFailedItems = signal(false);
 
+    // Import List state
+    isImportingList = signal(false);
+    importListResult = signal<{ listId: string; listName: string; importedCount: number; failedCount: number; failedItems: string[] } | null>(null);
+    showListFailedItems = signal(false);
+
+    // Import confirmation dialog state
+    showImportDialog = signal(false);
+    pendingImportFile = signal<File | null>(null);
+
     // Password state
     passwordData = signal<PasswordData>({ oldPassword: '', newPassword: '', confirmPassword: '' });
     isUpdatingPassword = signal(false);
@@ -177,15 +186,32 @@ export class ProfileSettingsComponent {
         if (!input.files?.length) return;
 
         const file = input.files[0];
+        this.pendingImportFile.set(file);
+        this.showImportDialog.set(true);
+
+        input.value = ''; // Reset for re-selection
+    }
+
+    closeImportDialog(): void {
+        this.showImportDialog.set(false);
+        this.pendingImportFile.set(null);
+    }
+
+    confirmImport(onlyRated: boolean): void {
+        const file = this.pendingImportFile();
+        if (!file) return;
+
+        this.showImportDialog.set(false);
         this.isImporting.set(true);
         this.importResult.set(null);
 
-        this.userService.uploadWatchHistoryCsv(file, this.overwriteExisting()).subscribe({
+        this.userService.uploadWatchHistoryCsv(file, this.overwriteExisting(), onlyRated).subscribe({
             next: (response) => {
                 if (response.success) {
                     this.importResult.set(response.data);
                 }
                 this.isImporting.set(false);
+                this.pendingImportFile.set(null);
             },
             error: (err: { error?: { message?: string } }) => {
                 console.error('Import failed:', err);
@@ -196,14 +222,48 @@ export class ProfileSettingsComponent {
                     failedItems: [err.error?.message || 'Import failed']
                 });
                 this.isImporting.set(false);
+                this.pendingImportFile.set(null);
             }
         });
-
-        input.value = ''; // Reset for re-selection
     }
 
     toggleFailedItems(): void {
         this.showFailedItems.update(v => !v);
+    }
+
+    toggleListFailedItems(): void {
+        this.showListFailedItems.update(v => !v);
+    }
+
+    onListCsvFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (!input.files?.length) return;
+
+        const file = input.files[0];
+        this.isImportingList.set(true);
+        this.importListResult.set(null);
+
+        this.userService.uploadListCsv(file).subscribe({
+            next: (response) => {
+                if (response.success) {
+                    this.importListResult.set(response.data);
+                }
+                this.isImportingList.set(false);
+            },
+            error: (err: { error?: { message?: string } }) => {
+                console.error('List import failed:', err);
+                this.importListResult.set({
+                    listId: '',
+                    listName: '',
+                    importedCount: 0,
+                    failedCount: 1,
+                    failedItems: [err.error?.message || 'Import failed']
+                });
+                this.isImportingList.set(false);
+            }
+        });
+
+        input.value = ''; // Reset for re-selection
     }
 
     getEstimatedMinutes(): number {

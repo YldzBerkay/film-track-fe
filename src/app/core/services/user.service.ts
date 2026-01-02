@@ -190,7 +190,7 @@ export class UserService {
     return this.http.get<ApiResponse<Badge[]>>(this.badgeApiUrl, { params });
   }
 
-  uploadWatchHistoryCsv(file: File, overwriteExisting: boolean = false): Observable<ApiResponse<{
+  uploadWatchHistoryCsv(file: File, overwriteExisting: boolean = false, onlyRated: boolean = false): Observable<ApiResponse<{
     importedCount: number;
     skippedCount: number;
     failedCount: number;
@@ -200,6 +200,7 @@ export class UserService {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('overwriteExisting', String(overwriteExisting));
+    formData.append('onlyRated', String(onlyRated));
     return this.http.post<ApiResponse<{
       importedCount: number;
       skippedCount: number;
@@ -207,6 +208,27 @@ export class UserService {
       failedItems: string[];
       estimatedProcessingSeconds: number;
     }>>('http://localhost:3000/api/import/watch-history', formData);
+  }
+
+  uploadListCsv(file: File, listName?: string): Observable<ApiResponse<{
+    listId: string;
+    listName: string;
+    importedCount: number;
+    failedCount: number;
+    failedItems: string[];
+  }>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (listName) {
+      formData.append('listName', listName);
+    }
+    return this.http.post<ApiResponse<{
+      listId: string;
+      listName: string;
+      importedCount: number;
+      failedCount: number;
+      failedItems: string[];
+    }>>('http://localhost:3000/api/import/list', formData);
   }
 
   updatePrivacySettings(settings: {
