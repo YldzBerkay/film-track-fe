@@ -9,7 +9,7 @@
                     <a [routerLink]="profileLink" (click)="$event.stopPropagation()" class="user-name">{{
                         activity.userId.name || activity.userId.username }}</a>
                     <span class="user-title" *ngIf="activity.userId.mastery?.title">
-                        • {{ 'masterRank.' + activity.userId.mastery?.title | translate }}
+                        • {{ getMasteryTranslationKey(activity.userId.mastery?.title) | translate }}
                     </span>
                     @if (activity.type === 'movie_watched') {
                     {{ 'activity.watched' | translate }}

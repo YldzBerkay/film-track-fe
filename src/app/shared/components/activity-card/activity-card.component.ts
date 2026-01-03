@@ -122,4 +122,30 @@ export class ActivityCardComponent {
 
         return `genres.${key}`;
     }
+
+    getMasteryTranslationKey(title: string | undefined): string {
+        if (!title) return '';
+
+        // Map legacy/human-readable titles to translation keys
+        const titleMap: Record<string, string> = {
+            'Novice': 'novice',
+            'Ticket Holder': 'ticketHolder',
+            'Movie Buff': 'movieBuff',
+            'Amateur Critic': 'criticAmateur',
+            'Cinephile': 'cinephile',
+            'Culture Guardian': 'cultureGuardian',
+            'Grandmaster': 'grandmaster',
+            // Turkish fallback just in case
+            'Acemi İzleyici': 'novice',
+            'Biletçi': 'ticketHolder',
+            'Film Tutkunu': 'movieBuff',
+            'Amatör Eleştirmen': 'criticAmateur',
+            'Sinefil': 'cinephile',
+            'Kültür Bekçisi': 'cultureGuardian',
+            'Sinema Üstadı': 'grandmaster'
+        };
+
+        const key = titleMap[title] || title;
+        return `masterRank.${key}`;
+    }
 }
