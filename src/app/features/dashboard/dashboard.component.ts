@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +42,7 @@ import { ActivityCardComponent } from '../../shared/components/activity-card/act
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private authService = inject(AuthService);
   private activityService = inject(ActivityService);
   private recommendationService = inject(RecommendationService);
@@ -64,6 +64,13 @@ export class DashboardComponent implements OnInit {
         this.reloadLanguageDependentContent();
       }
     });
+
+    // Effect for infinite scroll
+    effect(() => {
+      if (this.isAnchorIntersecting() && this.hasMore() && !this.isLoading()) {
+        this.loadMore();
+      }
+    }, { allowSignalWrites: true });
   }
 
   private reloadLanguageDependentContent(): void {
@@ -117,6 +124,10 @@ export class DashboardComponent implements OnInit {
   showTasteMatchDialog = signal(false);
   tasteMatchTargetUser = signal<{ id: string; name: string } | null>(null);
 
+  @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;
+  private observer: IntersectionObserver | null = null;
+  isAnchorIntersecting = signal(false);
+
   ngOnInit(): void {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/login']);
@@ -128,6 +139,30 @@ export class DashboardComponent implements OnInit {
     this.loadMoodRecommendations();
     this.loadLists();
     this.loadSavedActivityIds();
+  }
+
+  ngAfterViewInit(): void {
+    const options = {
+      root: null,
+      rootMargin: '100px', // Preload before reaching bottom
+      threshold: 0.1
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        this.isAnchorIntersecting.set(entry.isIntersecting);
+      });
+    }, options);
+
+    if (this.scrollAnchor) {
+      this.observer.observe(this.scrollAnchor.nativeElement);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   openCreateListDialog(): void {
@@ -220,6 +255,7 @@ export class DashboardComponent implements OnInit {
     this.activeFeedType.set(type);
     this.currentPage.set(1);
     this.activities.set([]);
+    window.scrollTo(0, 0); // Reset scroll position
     this.loadFeed();
   }
 
@@ -236,7 +272,7 @@ export class DashboardComponent implements OnInit {
               this.activities.set([...this.activities(), ...response.data.activities]);
             }
             this.hasMore.set(
-              response.data.pagination.page < response.data.pagination.totalPages
+              response.data.pagination.page < response.data.pagination.pages
             );
           }
           this.isLoading.set(false);

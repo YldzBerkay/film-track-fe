@@ -122,10 +122,12 @@
           }
           }
 
-          @if (hasMore() && !isLoading()) {
-          <button class="load-more-btn" (click)="loadMore()">
-            Load more
-          </button>
+          <div #scrollAnchor class="scroll-anchor" [hidden]="!hasMore()"></div>
+
+          @if (isLoading() && activities().length > 0) {
+          <div class="load-more-spinner">
+            <div class="spinner-small"></div>
+          </div>
           }
         </div>
       </div>

@@ -770,7 +770,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           } else {
             this.activities.update(current => [...current, ...res.data.activities]);
           }
-          this.hasMoreActivities.set(res.data.pagination.page < res.data.pagination.totalPages);
+          this.hasMoreActivities.set(res.data.pagination.page < res.data.pagination.pages);
         }
         this.isLoadingActivities.set(false);
       },
@@ -800,7 +800,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           } else {
             this.likedActivities.update(a => [...a, ...res.data.activities]);
           }
-          this.hasMoreLikes.set(res.data.pagination.page < res.data.pagination.totalPages);
+          this.hasMoreLikes.set(res.data.pagination.page < res.data.pagination.pages);
         }
         this.isLoadingLikes.set(false);
       },

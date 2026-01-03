@@ -36,7 +36,7 @@ export class BookmarksComponent implements OnInit {
                         this.activities.set([...this.activities(), ...response.data.activities]);
                     }
                     this.hasMore.set(
-                        response.data.pagination.page < response.data.pagination.totalPages
+                        response.data.pagination.page < response.data.pagination.pages
                     );
                 }
                 this.isLoading.set(false);
