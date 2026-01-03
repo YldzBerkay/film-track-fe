@@ -50,7 +50,7 @@
                         <div class="notification-item" (click)="onNotificationClick(notification)">
                             <div class="notification-icon"
                                 [class.has-poster]="notification.type === 'new_episode' && notification.data?.posterPath">
-                                @switch (notification.type) {
+                                @switch ($any(notification).type) {
                                 @case ('follow') {
                                 <span class="material-symbols-outlined">person_add</span>
                                 }
@@ -62,13 +62,33 @@
                                 <span class="material-symbols-outlined">tv</span>
                                 }
                                 }
+                                @case ('import_completed') {
+                                <span class="material-symbols-outlined">folder_zip</span>
+                                }
                                 @default {
                                 <span class="material-symbols-outlined">notifications</span>
                                 }
                                 }
                             </div>
                             <div class="notification-content">
+                                @if ($any(notification).type === 'import_completed') {
+                                <p class="notification-message">
+                                    {{ 'notifications.importCompleted' | translate:{
+                                    mode: ('notifications.modes.' + (notification.data?.mode || 'watch-history') |
+                                    translate),
+                                    count: notification.data?.count || 0
+                                    } }}
+                                    @if (notification.data?.skipped && notification.data.skipped > 0) {
+                                    <br>
+                                    <span class="text-error">
+                                        {{ 'notifications.importSkipped' | translate:{ count: notification.data.skipped
+                                        } }}
+                                    </span>
+                                    }
+                                </p>
+                                } @else {
                                 <p class="notification-message">{{ notification.message }}</p>
+                                }
                                 <span class="notification-time">{{ formatTimeAgo(notification.createdAt) }}</span>
                             </div>
                         </div>

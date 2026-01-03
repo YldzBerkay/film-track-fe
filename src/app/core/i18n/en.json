@@ -534,7 +534,8 @@
         "itemsImported": "items imported",
         "reviewed": "reviewed",
         "watchedEpisode": "watched episode",
-        "moodPick": "Mood Pick"
+        "moodPick": "Mood Pick",
+        "bulkImportTitle": "Imported {{count}} items"
     },
     "bookmarks": {
         "subtitle": "Your saved activities and reviews",
@@ -570,5 +571,13 @@
         "SOAP": "Soap",
         "TALK": "Talk",
         "WAR_AND_POLITICS": "War & Politics"
+    },
+    "notifications": {
+        "importCompleted": "Your {{mode}} import is complete! Imported {{count}} items.",
+        "importSkipped": "Skipped {{count}} items (not found).",
+        "modes": {
+            "watch-history": "watch history",
+            "custom-list": "list"
+        }
     }
 }

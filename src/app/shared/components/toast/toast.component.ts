@@ -29,13 +29,31 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
               @case ('success') {
                 <span class="material-symbols-outlined">check_circle</span>
               }
+              @case ('import_completed') {
+                <span class="material-symbols-outlined">folder_zip</span>
+              }
               @default {
                 <span class="material-symbols-outlined">notifications</span>
               }
             }
           </div>
           <div class="toast-content">
-            <p class="toast-message">{{ currentToast()!.message }}</p>
+            @if (currentToast()!.type === 'import_completed') {
+              <p class="toast-message">
+                {{ 'notifications.importCompleted' | translate:{ 
+                    mode: ('notifications.modes.' + currentToast()!.data.mode | translate),
+                    count: currentToast()!.data.count 
+                } }}
+                @if (currentToast()!.data.skipped > 0) {
+                    <br>
+                    <span style="opacity: 0.8; font-size: 0.9em;">
+                        {{ 'notifications.importSkipped' | translate:{ count: currentToast()!.data.skipped } }}
+                    </span>
+                }
+              </p>
+            } @else {
+              <p class="toast-message">{{ currentToast()!.message }}</p>
+            }
             <span class="toast-time">{{ 'common.justNow' | translate }}</span>
           </div>
           <button class="toast-close" (click)="dismissToast()">

@@ -16,7 +16,7 @@ export interface Activity {
     avatar?: string;
   };
   type: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import' | 'comment';
-  mediaType: 'movie' | 'tv_show' | 'tv_episode';
+  mediaType: 'movie' | 'tv_show' | 'tv_episode' | 'mixed' | 'other';
   tmdbId: number;
   mediaTitle: string;
   mediaPosterPath: string | null;
@@ -35,6 +35,12 @@ export interface Activity {
   likesCount: number;
   dislikesCount: number;
   commentCount: number;
+  // Bulk Import Data
+  data?: {
+    importedCount: number;
+    samplePosters: string[];
+    source?: string;
+  };
   // Virtual properties for comment activities
   originalActivityType?: 'movie_watched' | 'tv_episode_watched' | 'tv_show_watched' | 'review' | 'rating' | 'bulk_import';
   commentText?: string;

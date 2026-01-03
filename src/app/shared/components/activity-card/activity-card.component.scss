@@ -455,3 +455,23 @@
 .bookmark-btn {
     margin-left: auto;
 }
+
+// Bulk Import Grid
+.poster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 4px;
+    margin-top: 12px;
+    // Limit to 3 rows roughly
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.grid-poster {
+    aspect-ratio: 2/3;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--color-surface-hover);
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+}

@@ -534,7 +534,8 @@
         "itemsImported": "içerik içe aktarıldı",
         "reviewed": "inceledi",
         "watchedEpisode": "bölüm izledi",
-        "moodPick": "Mood Seçimi"
+        "moodPick": "Mood Seçimi",
+        "bulkImportTitle": "{{count}} içerik içe aktarıldı"
     },
     "bookmarks": {
         "subtitle": "Kaydettiğiniz aktiviteler ve incelemeler",
@@ -570,5 +571,13 @@
         "SOAP": "Pembe Dizi",
         "TALK": "Sohbet",
         "WAR_AND_POLITICS": "Savaş & Politik"
+    },
+    "notifications": {
+        "importCompleted": "{{mode}} içe aktarımı tamamlandı! {{count}} içerik aktarıldı.",
+        "importSkipped": "{{count}} içerik atlandı (bulunamadı).",
+        "modes": {
+            "watch-history": "İzleme geçmişi",
+            "custom-list": "Liste"
+        }
     }
 }
