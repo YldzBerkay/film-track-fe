@@ -1,11 +1,11 @@
 <div class="reaction-pill">
-    <button class="reaction-btn like-btn" [class.active]="currentStatus() === 'like'" (click)="onReact('like')">
+    <button class="reaction-btn like-btn" [class.active]="currentStatus() === 'like'" (click)="onReact('like', $event)">
         <span class="icon">👍</span>
         <span class="count" *ngIf="displayLikes() > 0">{{ displayLikes() }}</span>
     </button>
     <div class="divider"></div>
     <button class="reaction-btn dislike-btn" [class.active]="currentStatus() === 'dislike'"
-        (click)="onReact('dislike')">
+        (click)="onReact('dislike', $event)">
         <span class="icon">👎</span>
         <span class="count" *ngIf="displayDislikes() > 0">{{ displayDislikes() }}</span>
     </button>

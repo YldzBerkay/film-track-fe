@@ -121,7 +121,10 @@ export class ReactionBarComponent implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
     }
 
-    onReact(action: 'like' | 'dislike') {
+    onReact(action: 'like' | 'dislike', event?: Event) {
+        if (event) {
+            event.stopPropagation();
+        }
         const oldState = this.currentStatus();
         let newState: 'like' | 'dislike' | 'none' = action;
 

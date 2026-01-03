@@ -50,7 +50,10 @@ export class ActivityCardComponent {
         return [`/${type}`, this.activity.tmdbId];
     }
 
-    toggleComments(): void {
+    toggleComments(event?: Event): void {
+        if (event) {
+            event.stopPropagation();
+        }
         this.isCommentsExpanded.update(v => !v);
     }
 
@@ -66,6 +69,10 @@ export class ActivityCardComponent {
             id: typeof user === 'string' ? user : user._id,
             name: (typeof user !== 'string' && (user.name || user.username)) || ''
         });
+    }
+
+    navigateToActivity(): void {
+        this.router.navigate(['/activity', this.activity._id]);
     }
 
     getUserVote(): 'like' | 'dislike' | null {

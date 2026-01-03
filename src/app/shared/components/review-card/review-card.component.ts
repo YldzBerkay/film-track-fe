@@ -61,7 +61,10 @@ export class ReviewCardComponent implements OnInit, AfterViewInit {
         this.isExpanded.set(!this.isExpanded());
     }
 
-    toggleComments() {
+    toggleComments(event?: Event) {
+        if (event) {
+            event.stopPropagation();
+        }
         this.showComments.set(!this.showComments());
     }
 

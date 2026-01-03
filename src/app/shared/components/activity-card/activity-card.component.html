@@ -1,4 +1,4 @@
-<article class="activity-card">
+<article class="activity-card" (click)="navigateToActivity()" style="cursor: pointer;">
     <div class="activity-header">
         <div class="activity-user">
             <div class="user-avatar-small"
@@ -103,7 +103,7 @@
             [likesCount]="activity.likesCount || (activity.likes || []).length"
             [dislikesCount]="activity.dislikesCount || 0" [userVote]="getUserVote()">
         </app-reaction-bar>
-        <button class="action-btn" (click)="toggleComments()">
+        <button class="action-btn" (click)="toggleComments($event)">
             <span class="material-symbols-outlined">chat_bubble</span>
             <span>{{ activity.commentCount || 0 }}</span>
         </button>

@@ -57,6 +57,12 @@
 
 .profile-avatar-section {
     flex-shrink: 0;
+
+    &:hover {
+        .edit-avatar-btn {
+            display: flex;
+        }
+    }
 }
 
 .profile-avatar-large {
@@ -83,23 +89,20 @@
 
 .edit-avatar-btn {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    bottom: 50%;
+    right: 50%;
+    transform: translate(50%, 50%);
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(0, 224, 84, 0.9);
+    background: rgba(0, 224, 84, 0.7);
     border: none;
     color: #14181c;
     cursor: pointer;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease;
-
-    &:hover {
-        transform: scale(1.1);
-    }
 
     .material-symbols-outlined {
         font-size: 18px;

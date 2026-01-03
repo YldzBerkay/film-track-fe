@@ -1,14 +1,16 @@
 <div class="review-card">
     <!-- Header -->
     <div class="card-header">
-        <div class="user-avatar" [routerLink]="['/profile', activity.userId.username]">
+        <div class="user-avatar" [routerLink]="['/profile', activity.userId.username]"
+            (click)="$event.stopPropagation()">
             <!-- Avatar logic (using placeholder or actual image if available) -->
             <div class="avatar-placeholder">{{ activity.userId.username.charAt(0).toUpperCase() }}</div>
         </div>
 
         <div class="header-content">
             <div class="user-row">
-                <a [routerLink]="['/profile', activity.userId.username]" class="username">{{ activity.userId.username
+                <a [routerLink]="['/profile', activity.userId.username]" class="username"
+                    (click)="$event.stopPropagation()">{{ activity.userId.username
                     }}</a>
                 @if (activity.userId.mastery?.title) {
                 <span class="user-badge">{{ activity.userId.mastery?.title }}</span>
@@ -35,7 +37,7 @@
         </div>
 
         <!-- Context Menu button (placeholder) -->
-        <button class="context-menu-btn">
+        <button class="context-menu-btn" (click)="$event.stopPropagation()">
             <span class="material-symbols-outlined">more_horiz</span>
         </button>
     </div>
@@ -71,12 +73,12 @@
          We'll need to check if current user ID is in those arrays.
     -->
 
-        <button class="action-btn reply-btn" (click)="toggleComments()">
+        <button class="action-btn reply-btn" (click)="toggleComments($event)">
             <span class="material-symbols-outlined">chat_bubble</span>
             <span>{{ 'review.reply' | translate }}</span>
         </button>
 
-        <button class="action-btn share-btn">
+        <button class="action-btn share-btn" (click)="$event.stopPropagation()">
             <span class="material-symbols-outlined">share</span>
         </button>
     </div>
