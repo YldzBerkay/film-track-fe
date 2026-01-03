@@ -43,7 +43,10 @@ export class ActivityCardComponent {
     }
 
     get mediaLink() {
-        const type = this.activity.mediaType === 'tv_show' ? 'tv_shows' : 'movies';
+        // Fix: Use 'tv' route instead of invalid 'tv_shows'
+        // Handle both 'tv_show' and 'tv_episode' types to point to the show
+        const isTv = this.activity.mediaType === 'tv_show' || this.activity.mediaType === 'tv_episode';
+        const type = isTv ? 'tv' : 'movies';
         return [`/${type}`, this.activity.tmdbId];
     }
 
