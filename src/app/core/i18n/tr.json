@@ -579,5 +579,16 @@
             "watch-history": "İzleme geçmişi",
             "custom-list": "Liste"
         }
+    },
+    "importReport": {
+        "title": "İçe Aktarım Raporu",
+        "itemsImported": "Aktarılan İçerikler",
+        "itemsSkipped": "Atlanan İçerikler",
+        "modeInfo": "Bu bir {{mode}} içe aktarımıydı.",
+        "skippedItemsTitle": "Atlanan İçerikler",
+        "skippedItemsDesc": "Bu içerikler TMDB'de bulunamadığı için atlandı.",
+        "completedAt": "Tamamlandı",
+        "notFound": "İçe aktarım raporu bulunamadı.",
+        "goToDashboard": "Ana Sayfaya Git"
     }
 }

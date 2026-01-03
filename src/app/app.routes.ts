@@ -106,5 +106,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/activity/activity-detail/activity-detail.component').then((m) => m.ActivityDetailComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'import-report/:id',
+    loadComponent: () =>
+      import('./features/import-report/import-report.component').then((m) => m.ImportReportComponent),
+    canActivate: [authGuard]
   }
 ];

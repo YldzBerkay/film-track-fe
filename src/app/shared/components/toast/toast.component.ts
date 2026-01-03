@@ -41,10 +41,10 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
             @if (currentToast()!.type === 'import_completed') {
               <p class="toast-message">
                 {{ 'notifications.importCompleted' | translate:{ 
-                    mode: ('notifications.modes.' + currentToast()!.data.mode | translate),
-                    count: currentToast()!.data.count 
+                    mode: ('notifications.modes.' + (currentToast()!.data?.mode || 'watch-history') | translate),
+                    count: currentToast()!.data?.count || 0
                 } }}
-                @if (currentToast()!.data.skipped > 0) {
+                @if (currentToast()!.data?.skipped && currentToast()!.data.skipped > 0) {
                     <br>
                     <span style="opacity: 0.8; font-size: 0.9em;">
                         {{ 'notifications.importSkipped' | translate:{ count: currentToast()!.data.skipped } }}

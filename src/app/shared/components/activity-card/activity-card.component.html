@@ -65,12 +65,16 @@
             <div class="media-info">
                 <h3 class="media-title" style="margin-bottom: 12px;">
                     <a [routerLink]="profileLink" (click)="$event.stopPropagation()">
+                        @if (activity.mediaTitle?.startsWith('activity.')) {
                         {{ activity.mediaTitle | translate:{ count: activity.data?.importedCount || 0 } }}
+                        } @else {
+                        {{ activity.mediaTitle }}
+                        }
                     </a>
                 </h3>
                 @if (activity.data?.samplePosters?.length) {
                 <div class="poster-grid">
-                    @for (poster of activity.data!.samplePosters; track poster) {
+                    @for (poster of activity.data!.samplePosters; track $index) {
                     <div class="grid-poster" [style.background-image]="'url(' + tmdbService.getPosterUrl(poster) + ')'">
                     </div>
                     }

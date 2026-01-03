@@ -579,5 +579,16 @@
             "watch-history": "watch history",
             "custom-list": "list"
         }
+    },
+    "importReport": {
+        "title": "Import Report",
+        "itemsImported": "Items Imported",
+        "itemsSkipped": "Items Skipped",
+        "modeInfo": "This was a {{mode}} import.",
+        "skippedItemsTitle": "Skipped Items",
+        "skippedItemsDesc": "These items could not be found on TMDB and were skipped.",
+        "completedAt": "Completed at",
+        "notFound": "Import report not found.",
+        "goToDashboard": "Go to Dashboard"
     }
 }

@@ -117,6 +117,10 @@ export class HeaderComponent {
                     this.navigateToUser(notification.fromUser?.username);
                 }
                 break;
+            case 'import_completed':
+                // Navigate to import report page
+                this.router.navigate(['/import-report', notification.id]);
+                break;
             case 'follow':
             default:
                 // Navigate to user profile
