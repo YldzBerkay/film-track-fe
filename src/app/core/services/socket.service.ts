@@ -1,4 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { io, Socket } from 'socket.io-client';
 import { AuthService } from './auth.service';
@@ -160,6 +161,39 @@ export class SocketService {
                 this.unreadCount.set(0);
             },
             error: (err) => console.error('Failed to clear notifications:', err)
+        });
+    }
+
+    /**
+     * Listen to import progress
+     */
+    listenToImportProgress(): Observable<{ percent: number; item: string; status: string; error?: string }> {
+        return new Observable(observer => {
+            if (!this.socket) {
+                // Try to connect if not connected
+                this.connect();
+                // If still not connected (async), we might miss events? 
+                // connect() is sync logic mostly.
+            }
+
+            // Ensure socket is ready
+            if (!this.socket) {
+                // Fallback if connect() failed or no token
+                observer.error('Socket not available');
+                return;
+            }
+
+            this.socket.on('import:progress', (data) => observer.next(data));
+            this.socket.on('import:error', (data) => observer.error(data));
+
+            return () => {
+                // Do not disconnect socket, just remove listeners if needed specific to this obs?
+                // this.socket?.off('import:progress'); 
+                // Removing listener globally might affect other components? 
+                // Angular components usually specific. Safe to remove.
+                this.socket?.off('import:progress');
+                this.socket?.off('import:error');
+            };
         });
     }
 }

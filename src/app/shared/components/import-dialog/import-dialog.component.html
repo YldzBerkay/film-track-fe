@@ -1,0 +1,92 @@
+<div class="dialog-modal">
+    <div class="dialog-header">
+        <h3 class="dialog-title flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">cloud_upload</span>
+            <span>
+                @if(status() === 'uploading') { Uploading... }
+                @else if(status() === 'processing') { Importing... }
+                @else if(status() === 'completed') { Import Complete }
+                @else if(status() === 'failed') { Import Failed }
+                @else { Import }
+            </span>
+        </h3>
+        <!-- Close button (hidden during active process if dialogRef.disableClose is true) -->
+        <!-- But we can show it if we allow backgrounding? -->
+    </div>
+
+    <div class="dialog-body">
+        @if(status() === 'uploading') {
+        <div class="loading-container">
+            <mat-progress-bar mode="indeterminate" class="w-full mb-4 rounded"></mat-progress-bar>
+            <p class="loading-text">Uploading your file to the server...</p>
+        </div>
+        }
+
+        @if(status() === 'processing') {
+        <div class="flex flex-col gap-4 py-4">
+            <div class="flex justify-between text-sm items-end pl-1 pr-1">
+                <span class="font-medium truncate max-w-[70%] text-gray-300" [title]="currentProcessingItem()">
+                    {{ currentProcessingItem() || 'Initializing worker...' }}
+                </span>
+                <span class="font-bold text-primary">{{ progress() }}%</span>
+            </div>
+
+            <mat-progress-bar mode="determinate" [value]="progress()"
+                class="h-2 rounded overflow-hidden"></mat-progress-bar>
+
+            <p class="text-xs text-gray-500 text-center mt-2">
+                Running in background. You can minimize this window.
+            </p>
+        </div>
+        }
+
+        @if(status() === 'completed') {
+        <div class="result-container">
+            <div class="result-icon success">
+                <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <h4 class="result-title">Import Successful!</h4>
+            <p class="result-message">Your library has been updated successfully.</p>
+
+            @if(stats(); as s) {
+            <div
+                class="mt-4 grid grid-cols-2 gap-4 text-sm bg-[rgba(255,255,255,0.03)] p-3 rounded-lg border border-[var(--color-border)]">
+                <div class="text-center">
+                    <div class="text-gray-400 text-xs uppercase tracking-wider">Imported</div>
+                    <div class="text-xl font-bold text-primary">{{ s.imported }}</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-gray-400 text-xs uppercase tracking-wider">Failed</div>
+                    <div class="text-xl font-bold" [class.text-red-500]="s.failed > 0"
+                        [class.text-gray-300]="s.failed === 0">{{ s.failed }}</div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        @if(status() === 'failed') {
+        <div class="result-container">
+            <div class="result-icon failure">
+                <span class="material-symbols-outlined">error</span>
+            </div>
+            <h4 class="result-title">Import Failed</h4>
+            <p class="result-message">{{ error() }}</p>
+        </div>
+        }
+    </div>
+
+    <div class="dialog-footer">
+        @if(status() === 'processing') {
+        <button class="btn btn-secondary" (click)="runInBackground()">
+            Run in Background
+        </button>
+        }
+
+        @if(status() === 'completed' || status() === 'failed') {
+        <button class="btn btn-primary" (click)="close()">
+            Done
+        </button>
+        }
+    </div>
+</div>

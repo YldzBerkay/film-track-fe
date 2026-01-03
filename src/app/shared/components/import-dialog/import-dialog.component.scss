@@ -1,0 +1,134 @@
+// Copied from dialog.component.scss
+.dialog-modal {
+    background: rgba(20, 24, 28, 0.98);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    width: 100%;
+    /* MatDialog handles width */
+    max-width: none;
+    /* MatDialog handles max-width */
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    // Type variants (border accents)
+    &.danger {
+        border-color: rgba(255, 82, 82, 0.5);
+    }
+
+    &.success {
+        border-color: rgba(76, 175, 80, 0.5);
+    }
+
+    &.warning {
+        border-color: rgba(255, 193, 7, 0.5);
+    }
+}
+
+.dialog-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+
+    .dialog-title {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--color-text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text-main);
+        }
+    }
+}
+
+.dialog-body {
+    padding: 1.5rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    overflow-y: auto;
+    flex: 1;
+
+    // Loading State
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 0;
+    }
+
+    .loading-text {
+        margin-top: 1rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+    }
+}
+
+.dialog-footer {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--color-border);
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 9999px; // Pill shape
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        background: transparent; // Reset
+        font-size: 0.9rem;
+
+        // Reset MatButton styles if used with class .btn
+        &.mat-mdc-button-base {
+            border-radius: 9999px;
+            height: auto;
+        }
+
+        &.btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--color-text-main);
+            }
+        }
+
+        &.btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), #00b345);
+            color: var(--color-background);
+
+            &:hover {
+                box-shadow: 0 4px 16px rgba(0, 224, 84, 0.3);
+                transform: translateY(-1px);
+            }
+        }
+    }
+}

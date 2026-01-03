@@ -210,7 +210,7 @@ export class UserService {
     }>>('http://localhost:3000/api/import/watch-history', formData);
   }
 
-  uploadListCsv(file: File, listName?: string): Observable<ApiResponse<{
+  uploadListCsv(file: File, listName?: string, onlyRated: boolean = false): Observable<ApiResponse<{
     listId: string;
     listName: string;
     importedCount: number;
@@ -222,6 +222,7 @@ export class UserService {
     if (listName) {
       formData.append('listName', listName);
     }
+    formData.append('onlyRated', String(onlyRated));
     return this.http.post<ApiResponse<{
       listId: string;
       listName: string;

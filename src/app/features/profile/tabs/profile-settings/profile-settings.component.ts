@@ -14,8 +14,10 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { SubscriptionTier } from '../../../../core/models/subscription.types';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ImportDialogComponent } from '../../../../shared/components/import-dialog/import-dialog.component';
 
-interface ImportResult {
+export interface ImportResult {
     importedCount: number;
     skippedCount: number;
     failedCount: number;
@@ -42,6 +44,7 @@ export class ProfileSettingsComponent {
     private userService = inject(UserService);
     private authService = inject(AuthService);
     private translationService = inject(TranslationService);
+    private dialog = inject(MatDialog);
 
 
     isOwnProfile = this.profileState.isOwnProfile;
@@ -186,8 +189,18 @@ export class ProfileSettingsComponent {
         if (!input.files?.length) return;
 
         const file = input.files[0];
-        this.pendingImportFile.set(file);
-        this.showImportDialog.set(true);
+
+        this.dialog.open(ImportDialogComponent, {
+            data: {
+                file,
+                mode: 'watch-history',
+                overwriteExisting: this.overwriteExisting(),
+                onlyRated: false // Default for watch history
+            },
+            disableClose: true,
+            minWidth: '450px',
+            panelClass: 'glass-dialog'
+        });
 
         input.value = ''; // Reset for re-selection
     }
@@ -197,34 +210,27 @@ export class ProfileSettingsComponent {
         this.pendingImportFile.set(null);
     }
 
-    confirmImport(onlyRated: boolean): void {
+    confirmListImport(onlyRated: boolean): void {
         const file = this.pendingImportFile();
         if (!file) return;
 
-        this.showImportDialog.set(false);
-        this.isImporting.set(true);
-        this.importResult.set(null);
+        this.showImportDialog.set(false); // Close confirmation modal
 
-        this.userService.uploadWatchHistoryCsv(file, this.overwriteExisting(), onlyRated).subscribe({
-            next: (response) => {
-                if (response.success) {
-                    this.importResult.set(response.data);
-                }
-                this.isImporting.set(false);
-                this.pendingImportFile.set(null);
+        this.dialog.open(ImportDialogComponent, {
+            data: {
+                file,
+                mode: 'custom-list',
+                onlyRated,
+                // Asking for list name? The backend now extracts it or accepts it.
+                // The current pendingImportFile logic doesn't capture list name input.
+                // We'll trust the filename extraction for now or add list name support later.
             },
-            error: (err: { error?: { message?: string } }) => {
-                console.error('Import failed:', err);
-                this.importResult.set({
-                    importedCount: 0,
-                    skippedCount: 0,
-                    failedCount: 1,
-                    failedItems: [err.error?.message || 'Import failed']
-                });
-                this.isImporting.set(false);
-                this.pendingImportFile.set(null);
-            }
+            disableClose: true,
+            minWidth: '450px',
+            panelClass: 'glass-dialog'
         });
+
+        this.pendingImportFile.set(null);
     }
 
     toggleFailedItems(): void {
@@ -240,28 +246,8 @@ export class ProfileSettingsComponent {
         if (!input.files?.length) return;
 
         const file = input.files[0];
-        this.isImportingList.set(true);
-        this.importListResult.set(null);
-
-        this.userService.uploadListCsv(file).subscribe({
-            next: (response) => {
-                if (response.success) {
-                    this.importListResult.set(response.data);
-                }
-                this.isImportingList.set(false);
-            },
-            error: (err: { error?: { message?: string } }) => {
-                console.error('List import failed:', err);
-                this.importListResult.set({
-                    listId: '',
-                    listName: '',
-                    importedCount: 0,
-                    failedCount: 1,
-                    failedItems: [err.error?.message || 'Import failed']
-                });
-                this.isImportingList.set(false);
-            }
-        });
+        this.pendingImportFile.set(file);
+        this.showImportDialog.set(true);
 
         input.value = ''; // Reset for re-selection
     }
