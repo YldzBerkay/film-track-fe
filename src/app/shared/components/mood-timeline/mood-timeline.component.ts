@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import { TranslatePipe } from '../../../core/i18n';
+import { TranslatePipe, TranslationService } from '../../../core/i18n';
+import { LanguageService } from '../../../core/services/language.service';
 
 export interface MoodTimelineEntry {
     date: string;
@@ -30,6 +31,8 @@ export interface MoodTimelineEntry {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MoodTimelineComponent {
+    private ts = inject(TranslationService);
+    private langService = inject(LanguageService);
     timelineData = input<MoodTimelineEntry[]>([]);
     isLoading = input<boolean>(false);
     isOwnProfile = input<boolean>(true);
@@ -43,16 +46,17 @@ export class MoodTimelineComponent {
             };
         }
 
+        const currentLang = this.langService.language();
         const labels = data.map(entry => {
             const date = new Date(entry.date);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return date.toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US', { month: 'short', day: 'numeric' });
         });
 
         return {
             labels,
             datasets: [
                 {
-                    label: 'Joy',
+                    label: this.ts.t('mood.joy'),
                     data: data.map(e => e.mood.joy),
                     borderColor: '#00E054',
                     backgroundColor: 'rgba(0, 224, 84, 0.1)',
@@ -62,7 +66,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Adrenaline',
+                    label: this.ts.t('mood.adrenaline'),
                     data: data.map(e => e.mood.adrenaline),
                     borderColor: '#FF6B6B',
                     backgroundColor: 'rgba(255, 107, 107, 0.1)',
@@ -72,7 +76,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Romance',
+                    label: this.ts.t('mood.romance'),
                     data: data.map(e => e.mood.romance || 0),
                     borderColor: '#FF69B4',
                     backgroundColor: 'rgba(255, 105, 180, 0.1)',
@@ -82,7 +86,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Wonder',
+                    label: this.ts.t('mood.wonder'),
                     data: data.map(e => e.mood.wonder || 0),
                     borderColor: '#00CED1',
                     backgroundColor: 'rgba(0, 206, 209, 0.1)',
@@ -92,7 +96,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Inspiration',
+                    label: this.ts.t('mood.inspiration'),
                     data: data.map(e => e.mood.inspiration || 0),
                     borderColor: '#FFD700',
                     backgroundColor: 'rgba(255, 215, 0, 0.1)',
@@ -102,7 +106,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Intellect',
+                    label: this.ts.t('mood.intellect'),
                     data: data.map(e => e.mood.intellect),
                     borderColor: '#7B61FF',
                     backgroundColor: 'rgba(123, 97, 255, 0.1)',
@@ -112,7 +116,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Tension',
+                    label: this.ts.t('mood.tension'),
                     data: data.map(e => e.mood.tension),
                     borderColor: '#FF8C00',
                     backgroundColor: 'rgba(255, 140, 0, 0.1)',
@@ -122,7 +126,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Darkness',
+                    label: this.ts.t('mood.darkness'),
                     data: data.map(e => e.mood.darkness || 0),
                     borderColor: '#4A4A4A',
                     backgroundColor: 'rgba(74, 74, 74, 0.1)',
@@ -132,7 +136,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Melancholy',
+                    label: this.ts.t('mood.melancholy'),
                     data: data.map(e => e.mood.melancholy),
                     borderColor: '#4ECDC4',
                     backgroundColor: 'rgba(78, 205, 196, 0.1)',
@@ -142,7 +146,7 @@ export class MoodTimelineComponent {
                     pointHoverRadius: 5
                 },
                 {
-                    label: 'Nostalgia',
+                    label: this.ts.t('mood.nostalgia'),
                     data: data.map(e => e.mood.nostalgia || 0),
                     borderColor: '#DEB887',
                     backgroundColor: 'rgba(222, 184, 135, 0.1)',

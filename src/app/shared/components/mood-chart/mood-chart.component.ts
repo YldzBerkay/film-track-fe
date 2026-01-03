@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { MoodService, MoodVector } from '../../../core/services/mood.service';
-import { TranslatePipe } from '../../../core/i18n';
+import { TranslatePipe, TranslationService } from '../../../core/i18n';
 
 @Component({
   selector: 'app-mood-chart',
@@ -14,6 +14,8 @@ import { TranslatePipe } from '../../../core/i18n';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MoodChartComponent {
+  private ts = inject(TranslationService);
+
   moodData = input<MoodVector | null>(null);
   isLoading = input<boolean>(false);
   compareVector = input<MoodVector | null>(null);
@@ -37,8 +39,16 @@ export class MoodChartComponent {
     const data = this.moodData();
     const compare = this.compareVector();
     const labels = [
-      'Adrenaline', 'Joy', 'Romance', 'Wonder', 'Inspiration',
-      'Intellect', 'Nostalgia', 'Melancholy', 'Darkness', 'Tension'
+      this.ts.t('mood.adrenaline'),
+      this.ts.t('mood.joy'),
+      this.ts.t('mood.romance'),
+      this.ts.t('mood.wonder'),
+      this.ts.t('mood.inspiration'),
+      this.ts.t('mood.intellect'),
+      this.ts.t('mood.nostalgia'),
+      this.ts.t('mood.melancholy'),
+      this.ts.t('mood.darkness'),
+      this.ts.t('mood.tension')
     ];
 
     if (!data) {
@@ -82,7 +92,7 @@ export class MoodChartComponent {
         pointRadius: 4,
         pointHoverRadius: 6,
         order: 2,
-        label: 'You'
+        label: this.ts.t('profile.you')
       }
     ];
 
@@ -112,7 +122,7 @@ export class MoodChartComponent {
         pointHoverRadius: 5,
         fill: true,
         order: 1,
-        label: 'Match'
+        label: this.ts.t('profile.match')
       });
     }
 
