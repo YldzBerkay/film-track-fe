@@ -4,17 +4,22 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { MoodService, MoodVector, MoodTrend, GenreCorrelation } from '../../core/services/mood.service';
 import { HeaderComponent } from '../../layout/header/header.component';
+import { TranslationService } from '../../core/i18n/translation.service';
+import { GenreTranslatePipe } from '../../shared/pipes/genre-translate.pipe';
 
 @Component({
     selector: 'app-analytics',
     standalone: true,
-    imports: [CommonModule, BaseChartDirective, HeaderComponent],
+    imports: [CommonModule, BaseChartDirective, HeaderComponent, GenreTranslatePipe],
+    providers: [GenreTranslatePipe],
     templateUrl: './analytics.component.html',
     styleUrl: './analytics.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AnalyticsComponent implements OnInit {
     moodService = inject(MoodService);
+    private ts = inject(TranslationService);
+    private genrePipe = inject(GenreTranslatePipe);
 
     // Signals for data
     evolutionData = signal<Record<keyof MoodVector, MoodTrend[]> | null>(null);
@@ -171,7 +176,10 @@ export class AnalyticsComponent implements OnInit {
         // Sort by count desc, take top 6
         const topGenres = [...data].sort((a, b) => b.count - a.count).slice(0, 6);
 
-        const labels = topGenres.map(g => g.genre);
+        const labels = topGenres.map(g => {
+            const key = this.genrePipe.transform(g.genre);
+            return this.ts.t(key);
+        });
 
         // For each genre, we want to show its PRIMARY mood intensity.
         // Or maybe dataset for "Joy", dataset for "Adrenaline"? 

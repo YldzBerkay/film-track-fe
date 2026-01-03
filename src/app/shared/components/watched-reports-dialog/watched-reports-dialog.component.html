@@ -84,7 +84,7 @@
                             <div class="genre-list">
                                 @for (genre of getSortedGenres().slice(0, 5); track genre.name) {
                                 <div class="genre-item">
-                                    <span class="genre-name">{{ genre.name }}</span>
+                                    <span class="genre-name">{{ genre.name | genreTranslate | translate }}</span>
                                     <span class="genre-count">{{ genre.count }}</span>
                                 </div>
                                 } @empty {

@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { WatchedListService, WatchedReportsResponse } from '../../../core/services/watched-list.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { GenreTranslatePipe } from '../../pipes/genre-translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
     selector: 'app-watched-reports-dialog',
     standalone: true,
-    imports: [CommonModule, TranslatePipe],
+    imports: [CommonModule, TranslatePipe, GenreTranslatePipe],
     templateUrl: './watched-reports-dialog.component.html',
     styleUrls: ['./watched-reports-dialog.component.scss'],
     animations: [
