@@ -89,7 +89,7 @@
                 @if (activity.genres && activity.genres.length > 0) {
                 <div class="media-genres">
                     @for (genre of activity.genres; track genre) {
-                    <span class="genre-tag">{{ genre }}</span>
+                    <span class="genre-tag">{{ getGenreTranslationKey(genre) | translate }}</span>
                     }
                 </div>
                 }

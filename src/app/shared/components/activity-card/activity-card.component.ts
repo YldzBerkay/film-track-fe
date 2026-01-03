@@ -8,6 +8,7 @@ import { TranslatePipe } from '../../../core/i18n';
 import { ReactionBarComponent } from '../reaction-bar/reaction-bar.component';
 import { CommentListComponent } from '../comments/comment-list/comment-list.component';
 import { User } from '../../../core/services/auth.service';
+import { GenreTranslatePipe } from '../../pipes/genre-translate.pipe';
 
 @Component({
     selector: 'app-activity-card',
@@ -107,5 +108,18 @@ export class ActivityCardComponent {
 
     onCommentAdded(): void {
         this.activity.commentCount = (this.activity.commentCount || 0) + 1;
+    }
+
+    getGenreTranslationKey(genre: string): string {
+        if (!genre) return '';
+        // Normalize string: Science Fiction -> SCIENCE_FICTION
+        const key = genre
+            .toUpperCase()
+            .replace(/&/g, 'AND')
+            .replace(/[^A-Z0-9_]/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_|_$/g, '');
+
+        return `genres.${key}`;
     }
 }

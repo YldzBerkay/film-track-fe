@@ -32,9 +32,16 @@
 
         <!-- Activity Card -->
         @if (!isLoading() && !error() && activity()) {
-        <app-feed-card [activity]="activity()!" [viewMode]="'detail'"
+        <app-activity-card [activity]="activity()!" [viewMode]="'detail'" [currentUser]="user()"
+            [isBookmarked]="isActivityBookmarked(activity()!._id)" (bookmarkToggle)="toggleBookmark($event)"
+            (tasteMatch)="openTasteMatchDialog($event.id, $event.name)"
             [highlightCommentId]="highlightCommentId() || undefined">
-        </app-feed-card>
+        </app-activity-card>
         }
+
+        <!-- Taste Match Dialog -->
+        <app-taste-match-dialog [isOpen]="showTasteMatchDialog()" [targetUser]="tasteMatchTargetUser()"
+            (close)="closeTasteMatchDialog()">
+        </app-taste-match-dialog>
     </div>
 </div>
